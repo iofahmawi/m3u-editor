@@ -208,16 +208,15 @@
         .delete-btn-icon { color: #f44336; }
         .delete-btn-icon:hover { color: #d32f2f; }
         
-        /* --- جديد: نظام الإشعارات (Toast) بتصميم محسن --- */
         #toastContainer {
             position: fixed;
             top: 20px;
-            left: 20px; /* يظهر من اليسار كما طلبت */
+            left: 20px;
             z-index: 2000;
             display: flex;
             flex-direction: column;
             gap: 10px;
-            direction: ltr; /* لضمان ترتيب العناصر بشكل صحيح داخل الإشعار */
+            direction: ltr;
         }
         .toast {
             display: flex;
@@ -231,7 +230,7 @@
             opacity: 0;
             transform: translateX(-120%);
             transition: all 0.5s cubic-bezier(0.68, -0.55, 0.27, 1.55);
-            border-left: 5px solid #ccc; /* خط جانبي افتراضي */
+            border-left: 5px solid #ccc;
         }
         .toast.show {
             opacity: 1;
@@ -244,7 +243,7 @@
         .toast-content {
             flex-grow: 1;
             margin: 0 10px;
-            text-align: right; /* ليتناسب مع اللغة العربية */
+            text-align: right;
         }
         .toast-close {
             background: none;
@@ -413,14 +412,17 @@
         document.getElementById('fileInput').addEventListener('change', handleFileSelect);
         document.getElementById('mergeFileInput').addEventListener('change', mergePlaylists);
 
-        // --- معدل: دالة الإشعارات بالتصميم الجديد ---
+        // --- معدل: دالة الإشعارات لإزالة النقطة ---
         function showToast(message, type = 'info', duration = 3000) {
             const container = document.getElementById('toastContainer');
             const toast = document.createElement('div');
             toast.className = `toast ${type}`;
             
+            // --- جديد: إزالة النقطة من نهاية الرسالة ---
+            const cleanMessage = message.trim().replace(/\.$/, '');
+
             toast.innerHTML = `
-                <div class="toast-content">${message}</div>
+                <div class="toast-content">${cleanMessage}</div>
                 <button class="toast-close">&times;</button>
             `;
 
@@ -492,7 +494,7 @@
                 selectedIndices.clear();
                 updateTvgChnoInAllChannels();
                 searchChannels();
-                showToast(`تم حذف ${count} قناة بنجاح.`, 'success');
+                showToast(`تم حذف ${count} قناة بنجاح`, 'success');
             });
         }
         
@@ -514,7 +516,7 @@
             if (!file) return;
             const fileName = file.name.toLowerCase();
             if (!/\.(m3u|m3u8|pls)$/.test(fileName)) {
-                return showToast("يرجى اختيار ملف بامتداد M3U, M3U8, أو PLS.", "error");
+                return showToast("يرجى اختيار ملف بامتداد M3U, M3U8, أو PLS", "error");
             }
             document.getElementById('loadingIndicator').style.display = 'block';
             const reader = new FileReader();
@@ -527,7 +529,7 @@
                     showPlaylistControls();
                     isMerged = false; isSorted = false;
                 } else {
-                    showToast("الملف المختار لا يحتوي على قنوات صالحة.", "error");
+                    showToast("الملف المختار لا يحتوي على قنوات صالحة", "error");
                 }
                 document.getElementById('loadingIndicator').style.display = 'none';
             };
@@ -657,7 +659,7 @@
             document.getElementById('loadingIndicator').style.display = 'none';
             event.target.value = '';
             isMerged = true; isSorted = false;
-            showToast(`تم دمج القوائم وإزالة ${duplicatesRemoved} قناة مكررة.`, 'success');
+            showToast(`تم دمج القوائم وإزالة ${duplicatesRemoved} قناة مكررة`, 'success');
         }
 
         function removeDuplicates(criteria = 'name') {
@@ -678,7 +680,7 @@
         }
 
         function removeDuplicatesManually() {
-            if (channelsData.length === 0) return showToast("لا توجد قنوات.", 'error');
+            if (channelsData.length === 0) return showToast("لا توجد قنوات", 'error');
             document.getElementById('removeDuplicatesModal').style.display = 'block';
         }
 
@@ -688,18 +690,18 @@
             updateTvgChnoInAllChannels();
             searchChannels();
             closeModal('removeDuplicatesModal');
-            showToast(`تم إزالة ${duplicatesRemoved} قناة مكررة.`, 'success');
+            showToast(`تم إزالة ${duplicatesRemoved} قناة مكررة`, 'success');
         }
         
         function fetchPlaylistFromUrl() {
             const url = document.getElementById('urlInput').value;
-            if (!url) return showToast("يرجى إدخال رابط صالح.", "error");
+            if (!url) return showToast("يرجى إدخال رابط صالح", "error");
             document.getElementById('loadingIndicator').style.display = 'block';
             fetch(url)
-                .then(response => { if (!response.ok) throw new Error('فشل تحميل الملف.'); return response.text(); })
+                .then(response => { if (!response.ok) throw new Error('فشل تحميل الملف'); return response.text(); })
                 .then(content => {
                     const newChannels = parsePlaylist(content);
-                    if (newChannels.length === 0) return showToast("الرابط لا يحتوي على قنوات.", "error");
+                    if (newChannels.length === 0) return showToast("الرابط لا يحتوي على قنوات", "error");
                     channelsData = newChannels;
                     isMerged = false; isSorted = false;
                     updateTvgChnoInAllChannels();
@@ -717,7 +719,7 @@
                 selectedIndices.clear();
                 showPlaylistControls();
                 displayPaginatedChannels();
-                showToast('تم إنشاء قائمة جديدة فارغة.', 'info');
+                showToast('تم إنشاء قائمة جديدة فارغة', 'info');
             });
         }
         
@@ -748,7 +750,7 @@
                     const originalCount = channelsData.length;
                     channelsData = channelsData.filter(channel => !((isUncategorized && !channel.group) || channel.group === selectedGroup));
                     const removedCount = originalCount - channelsData.length;
-                    showToast(`تم حذف ${removedCount} قناة من المجموعة.`, 'success');
+                    showToast(`تم حذف ${removedCount} قناة من المجموعة`, 'success');
                     updateTvgChnoInAllChannels();
                     searchChannels();
                     closeModal('manageGroupsModal');
@@ -759,14 +761,14 @@
                     channelsData.forEach(channel => {
                         if ((isUncategorized && !channel.group) || channel.group === selectedGroup) { channel.group = newGroupName; }
                     });
-                    showToast(`تم إعادة تسمية المجموعة.`, 'success');
+                    showToast(`تم إعادة تسمية المجموعة`, 'success');
                 } else if (action === 'split') {
                     const groupChannels = channelsData.filter(channel => (isUncategorized && !channel.group) || channel.group === selectedGroup);
                     if (groupChannels.length > 0) {
                         const content = '#EXTM3U\n' + groupChannels.map(ch => `${buildUpdatedExtinf(ch.originalExtinf, ch.group, ch.logo, ch.name, ch.chno)}\n${ch.url}`).join('\n\n');
                         const fileName = `Group_${selectedGroup.replace(/[\/\\?%*:|"<>]/g, '-')}.m3u`;
                         downloadFile(content, fileName, 'text/plain;charset=utf-8');
-                    } else { showToast('لم يتم العثور على قنوات في هذه المجموعة.', 'info'); }
+                    } else { showToast('لم يتم العثور على قنوات في هذه المجموعة', 'info'); }
                     closeModal('manageGroupsModal');
                     return;
                 }
@@ -778,17 +780,17 @@
         
         function executeMerge() {
             const url = document.getElementById('mergeUrlInput').value;
-            if (!url) return showToast("يرجى إدخال رابط للدمج.", 'error');
+            if (!url) return showToast("يرجى إدخال رابط للدمج", 'error');
             closeModal('mergeModal');
             document.getElementById('loadingIndicator').style.display = 'block';
             fetch(url)
-                .then(response => { if (!response.ok) throw new Error('فشل تحميل الملف.'); return response.text(); })
+                .then(response => { if (!response.ok) throw new Error('فشل تحميل الملف'); return response.text(); })
                 .then(content => {
                     const newChannels = parsePlaylist(content);
-                    if (newChannels.length === 0) return showToast("الرابط لا يحتوي على قنوات.", 'error');
+                    if (newChannels.length === 0) return showToast("الرابط لا يحتوي على قنوات", 'error');
                     channelsData.push(...newChannels);
                     const duplicatesRemoved = removeDuplicates('name-url');
-                    showToast(`تم دمج القائمة وإزالة ${duplicatesRemoved} قناة مكررة.`, 'success');
+                    showToast(`تم دمج القائمة وإزالة ${duplicatesRemoved} قناة مكررة`, 'success');
                     isMerged = true; isSorted = false;
                     updateTvgChnoInAllChannels();
                     searchChannels();
@@ -802,14 +804,14 @@
                 channelsData.splice(index, 1);
                 updateTvgChnoInAllChannels();
                 searchChannels();
-                showToast('تم حذف القناة بنجاح.', 'success');
+                showToast('تم حذف القناة بنجاح', 'success');
             });
         }
         
         function saveEdit() {
             const originalIndex = parseInt(document.getElementById('editOriginalIndex').value);
             let newIndex = parseInt(document.getElementById('editIndexField').value) - 1;
-            if (!document.getElementById('editName').value || !document.getElementById('editUrl').value) return showToast("الاسم والرابط مطلوبان.", 'error');
+            if (!document.getElementById('editName').value || !document.getElementById('editUrl').value) return showToast("الاسم والرابط مطلوبان", 'error');
             const channel = {
                 name: document.getElementById('editName').value,
                 group: document.getElementById('editGroup').value,
@@ -827,7 +829,7 @@
         }
 
         function saveNewChannel() {
-            if (!document.getElementById('addName').value || !document.getElementById('addUrl').value) return showToast("الاسم والرابط مطلوبان.", 'error');
+            if (!document.getElementById('addName').value || !document.getElementById('addUrl').value) return showToast("الاسم والرابط مطلوبان", 'error');
             let newIndex = parseInt(document.getElementById('addIndexField').value) - 1;
             const newChannel = {
                 name: document.getElementById('addName').value,
@@ -840,7 +842,7 @@
             updateTvgChnoInAllChannels();
             closeModal('addModal');
             searchChannels();
-            showToast('تمت إضافة القناة بنجاح.', 'success');
+            showToast('تمت إضافة القناة بنجاح', 'success');
         }
 
         function handleDragStart(e) { e.currentTarget.style.cursor = 'grabbing'; draggedIndex = parseInt(e.currentTarget.dataset.index); }
@@ -862,11 +864,11 @@
 
         function openAddModal() { document.getElementById('addIndexField').value = channelsData.length + 1; ['addName', 'addGroup', 'addLogo', 'addUrl'].forEach(id => document.getElementById(id).value = ''); updateLogoPreview('addPreviewImage', ''); document.getElementById('addModal').style.display = 'block'; }
         function openEditModal(index) { const channel = channelsData[index]; document.getElementById('editIndexField').value = index + 1; document.getElementById('editName').value = channel.name || ''; document.getElementById('editGroup').value = channel.group || ''; document.getElementById('editLogo').value = channel.logo || ''; document.getElementById('editUrl').value = channel.url || ''; document.getElementById('editOriginalIndex').value = index; updateLogoPreview('previewImage', channel.logo); document.getElementById('editModal').style.display = 'block'; }
-        function openSortModal() { if (channelsData.length === 0) return showToast("لا توجد قنوات لفرزها.", "error"); document.getElementById('sortModal').style.display = 'block'; }
+        function openSortModal() { if (channelsData.length === 0) return showToast("لا توجد قنوات لفرزها", "error"); document.getElementById('sortModal').style.display = 'block'; }
         function handleSortCriteriaChange() { const criteria = document.querySelector('input[name="sortCriteria"]:checked').value; document.getElementById('sortByNameInputContainer').style.display = criteria === 'name' ? 'block' : 'none'; document.getElementById('sortByGroupInputContainer').style.display = criteria === 'group' ? 'block' : 'none'; }
-        function openManageGroupsModal() { if (channelsData.length === 0) return showToast("لا توجد قنوات لإدارة مجموعاتها.", "error"); const groupSelector = document.getElementById('groupSelector'); groupSelector.innerHTML = ''; const groups = new Set(channelsData.map(ch => ch.group || 'غير مصنفة')); Array.from(groups).sort((a, b) => a.localeCompare(b, 'ar')).forEach(group => { const option = document.createElement('option'); option.value = group; option.textContent = group; groupSelector.appendChild(option); }); handleGroupActionChange(); document.getElementById('manageGroupsModal').style.display = 'block'; }
+        function openManageGroupsModal() { if (channelsData.length === 0) return showToast("لا توجد قنوات لإدارة مجموعاتها", "error"); const groupSelector = document.getElementById('groupSelector'); groupSelector.innerHTML = ''; const groups = new Set(channelsData.map(ch => ch.group || 'غير مصنفة')); Array.from(groups).sort((a, b) => a.localeCompare(b, 'ar')).forEach(group => { const option = document.createElement('option'); option.value = group; option.textContent = group; groupSelector.appendChild(option); }); handleGroupActionChange(); document.getElementById('manageGroupsModal').style.display = 'block'; }
         function handleGroupActionChange() { const action = document.querySelector('input[name="groupAction"]:checked').value; document.getElementById('renameGroupInputContainer').style.display = action === 'rename' ? 'block' : 'none'; }
-        function openMergeModal() { if (channelsData.length === 0) return showToast("يجب تحميل قائمة تشغيل أولاً للدمج معها.", "error"); document.getElementById('mergeUrlInput').value = ''; document.getElementById('mergeOptionSelector').value = 'file'; handleMergeOptionChange(); document.getElementById('mergeModal').style.display = 'block'; }
+        function openMergeModal() { if (channelsData.length === 0) return showToast("يجب تحميل قائمة تشغيل أولاً للدمج معها", "error"); document.getElementById('mergeUrlInput').value = ''; document.getElementById('mergeOptionSelector').value = 'file'; handleMergeOptionChange(); document.getElementById('mergeModal').style.display = 'block'; }
         function handleMergeOptionChange() { const selectedOption = document.getElementById('mergeOptionSelector').value; document.getElementById('mergeFileOption').style.display = (selectedOption === 'file') ? 'block' : 'none'; document.getElementById('mergeUrlOption').style.display = (selectedOption === 'url') ? 'block' : 'none'; }
         function showPlaylistControls() { document.getElementById('uploadArea').style.display = 'none'; document.getElementById('urlLoadContainer').style.display = 'none'; document.getElementById('saveAddRow').style.display = 'flex'; document.getElementById('toolsMergeRow').style.display = 'flex'; document.getElementById('searchContainer').style.display = 'block'; ['openExportModalButton', 'addChannelButton', 'openSortModalButton', 'manageGroupsButton', 'openMergeModalButton', 'removeDuplicatesButton'].forEach(id => { const button = document.getElementById(id); if (button) button.style.display = 'inline-block'; }); }
         function closeModal(modalId) { document.getElementById(modalId).style.display = 'none'; }
@@ -875,9 +877,9 @@
         document.getElementById('addLogo').addEventListener('input', e => updateLogoPreview('addPreviewImage', e.target.value));
         function buildUpdatedExtinf(originalExtinf, group, logo, name, chno) { let line = originalExtinf ? originalExtinf.replace(/,.*$/, '').split(/\s+/).filter(p => !p.toLowerCase().startsWith('group-title=') && !p.toLowerCase().startsWith('tvg-logo=') && !p.toLowerCase().startsWith('tvg-chno=')).join(' ') : '#EXTINF:-1'; if (chno) line += ` tvg-chno="${chno}"`; if (logo) line += ` tvg-logo="${logo}"`; if (group) line += ` group-title="${group}"`; return `${line},${name}`; }
         function updateTvgChnoInAllChannels() { channelsData.forEach((channel, index) => { channel.chno = index + 1; channel.originalExtinf = buildUpdatedExtinf(channel.originalExtinf, channel.group, channel.logo, channel.name, channel.chno); }); }
-        function openExportModal() { if (channelsData.length === 0) return showToast("لا توجد قنوات لتصديرها.", "error"); document.getElementById('exportModal').style.display = 'block'; }
+        function openExportModal() { if (channelsData.length === 0) return showToast("لا توجد قنوات لتصديرها", "error"); document.getElementById('exportModal').style.display = 'block'; }
         function executeExport() { const format = document.querySelector('input[name="exportFormat"]:checked').value; if (format === 'm3u') savePlaylist(); else if (format === 'm3u8') savePlaylistAsM3u8(); else if (format === 'pls') savePlaylistAsPls(); closeModal('exportModal'); }
-        const createPlaylistContent = (type) => { if (channelsData.length === 0) { showToast("لا يوجد قنوات للحفظ.", "error"); return null; } if (type === 'pls') { return '[playlist]\nNumberOfEntries=' + channelsData.length + '\nVersion=2\n' + channelsData.map((ch, i) => `File${i+1}=${ch.url}\nTitle${i+1}=${ch.name}\nLength${i+1}=-1`).join('\n'); } return '#EXTM3U\n' + channelsData.map(ch => `${ch.originalExtinf}\n${ch.url}`).join('\n\n'); }
+        const createPlaylistContent = (type) => { if (channelsData.length === 0) { showToast("لا يوجد قنوات للحفظ", "error"); return null; } if (type === 'pls') { return '[playlist]\nNumberOfEntries=' + channelsData.length + '\nVersion=2\n' + channelsData.map((ch, i) => `File${i+1}=${ch.url}\nTitle${i+1}=${ch.name}\nLength${i+1}=-1`).join('\n'); } return '#EXTM3U\n' + channelsData.map(ch => `${ch.originalExtinf}\n${ch.url}`).join('\n\n'); }
         function savePlaylist() { const c = createPlaylistContent('m3u'); if(c) downloadFile(c, 'playlist.m3u', 'text/plain;charset=utf-8'); }
         function savePlaylistAsM3u8() { const c = createPlaylistContent('m3u8'); if(c) downloadFile(c, 'playlist.m3u8', 'application/x-mpegurl;charset=utf-8'); }
         function savePlaylistAsPls() { const c = createPlaylistContent('pls'); if(c) downloadFile(c, 'playlist.pls', 'text/plain;charset=utf-8'); }
