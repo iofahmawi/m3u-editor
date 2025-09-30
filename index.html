@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>محرر قائمة التشغيل M3U/M3U8</title>
+    <title>محرر قائمة تشغيل M3U/M3U8</title>
     <style>
         /* تصميم CSS عام */
         body {
@@ -71,7 +71,7 @@
         #urlLoadContainer {
             width: 100%;
             max-width: 600px;
-            margin: 20px auto 0 auto; /* تعديل الهامش */
+            margin: 20px auto 0 auto;
             text-align: center;
         }
 
@@ -87,7 +87,7 @@
         }
         
         /* تنسيق الأزرار */
-        #addChannelButton, #loadUrlButton, #createNewPlaylistButton, #manageGroupsButton, #openSortModalButton, #removeDuplicatesButton, #openMergeModalButton, #openExportModalButton {
+        .action-btn {
             background-color: #007bff;
             color: white;
             padding: 10px 20px;
@@ -99,9 +99,11 @@
             margin: 10px 5px;
             flex-shrink: 0; 
         }
-        #addChannelButton:hover, #loadUrlButton:hover, #createNewPlaylistButton:hover, #manageGroupsButton:hover, #openSortModalButton:hover, #removeDuplicatesButton:hover, #openMergeModalButton:hover, #openExportModalButton:hover {
+        .action-btn:hover {
             background-color: #0056b3;
         }
+        .action-btn.delete-btn { background-color: #f44336; }
+        .action-btn.delete-btn:hover { background-color: #d32f2f; }
         
         /* إخفاء الأزرار بشكل افتراضي */
         #manageGroupsButton, #openSortModalButton, #removeDuplicatesButton, #addChannelButton, #openMergeModalButton, #openExportModalButton {
@@ -114,7 +116,6 @@
             margin-bottom: 20px;
         }
         
-        /* ترتيب الأزرار في أسطر متعددة */
         .button-row {
             display: flex; 
             justify-content: center; 
@@ -132,135 +133,108 @@
             margin: 0;
         }
         
-        /* تصميم متجاوب لضمان زرين فقط في كل سطر على الشاشات الصغيرة */
         @media (max-width: 768px) {
-            #mainControls button {
-                width: 45%; 
-                margin: 5px 0;
-            }
-             #initialButtonsRow {
-                flex-direction: column;
-             }
-             #initialButtonsRow button {
-                width: 100%;
-             }
-            #urlInput {
-                width: 100%; 
-                max-width: 100%;
-                margin: 5px auto;
-            }
+            #mainControls button { width: 45%; margin: 5px 0; }
+             #initialButtonsRow { flex-direction: column; }
+             #initialButtonsRow button { width: 100%; }
+            #urlInput { width: 100%; max-width: 100%; margin: 5px auto; }
         }
         
         @media (min-width: 769px) {
-            #mainControls button {
-                width: auto;
-                min-width: 150px;
-            }
-            #initialButtonsRow button {
-                width: auto;
-            }
+            #mainControls button { width: auto; min-width: 150px; }
+            #initialButtonsRow button { width: auto; }
         }
 
-        /* تنسيق البحث */
-        #searchContainer {
-            margin: 20px 0;
-            text-align: center;
-            display: none; 
-        }
+        #searchContainer { margin: 20px 0; text-align: center; display: none; }
         #searchInput {
-            padding: 10px;
-            width: 300px;
-            max-width: 100%;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            box-sizing: border-box;
-            font-size: 16px;
-            outline: none;
-            transition: border-color 0.3s;
+            padding: 10px; width: 300px; max-width: 100%; border: 1px solid #ccc;
+            border-radius: 4px; box-sizing: border-box; font-size: 16px;
+            outline: none; transition: border-color 0.3s;
         }
-        #searchInput:focus {
-            border-color: #4CAF50;
-        }
+        #searchInput:focus { border-color: #4CAF50; }
 
         /* تنسيق الجدول */
-        #results {
-            text-align: center;
-            display: flex;
-            justify-content: center;
-        }
+        #results { text-align: center; }
         table {
-            width: 95%;
-            border-collapse: collapse;
-            margin: 20px auto;
+            width: 100%; border-collapse: collapse; margin: 20px auto;
             table-layout: fixed;
         }
         th, td {
-            border: 1px solid #ddd;
-            padding: 8px;
-            text-align: center;
-            box-sizing: border-box;
-            overflow: hidden;
-            vertical-align: middle;
+            border: 1px solid #ddd; padding: 8px; text-align: center;
+            box-sizing: border-box; overflow: hidden; vertical-align: middle;
+            word-wrap: break-word; /* للسماح بكسر النص الطويل في خلية المجموعة */
         }
-        th {
-            background-color: #4CAF50;
-            color: white;
-        }
-        tr:nth-child(even) {
-            background-color: #f2f2f2;
-        }
+        th { background-color: #4CAF50; color: white; }
+        tr:nth-child(even) { background-color: #f2f2f2; }
+        tbody tr { cursor: pointer; } 
+        tbody tr.drag-over-indicator { border-top: 3px solid #4CAF50; }
+        tr.selected { background-color: #dcedff !important; }
 
-        /* تحديد أحجام الأعمدة - تم التعديل هنا */
-        table th:nth-child(1), table td:nth-child(1) { width: 8%; min-width: 60px; } /* زيادة العرض */
+        table th:nth-child(1), table td:nth-child(1) { width: 12%; min-width: 80px; }
         table th:nth-child(2), table td:nth-child(2) { width: 10%; min-width: 50px; }
-        table th:nth-child(3), table td:nth-child(3) { width: 47%; min-width: 100px; } /* تقليل العرض قليلاً للتعويض */
+        table th:nth-child(3), table td:nth-child(3) { width: 43%; min-width: 100px;}
         table th:nth-child(4), table td:nth-child(4) { width: 20%; min-width: 80px; }
         table th:nth-child(5), table td:nth-child(5) { width: 15%; min-width: 60px; }
 
-        /* تنسيق الصورة الرمزية */
-        td.logo img {
-            width: 30px;
-            height: 30px;
-            object-fit: contain;
-            display: block;
-            margin: 0 auto;
-        }
-        td.logo .placeholder {
-            font-size: 20px;
-            text-align: center;
-        }
+        td.logo img { width: 30px; height: 30px; object-fit: contain; display: block; margin: 0 auto; }
+        td.logo .placeholder { font-size: 20px; text-align: center; }
+        .channel-name { white-space: normal !important; word-break: break-word; overflow: hidden; }
 
-        /* تنسيق اسم القناة */
-        .channel-name {
-            white-space: normal !important;
-            word-break: break-word;
-            overflow: hidden;
-        }
-
-        /* إخفاء عمود الصورة على الشاشات الصغيرة - تم التعديل هنا */
         @media (max-width: 600px) {
             .container { padding: 15px; margin: 10px auto; }
-            .upload-area { padding: 15px; }
             table { font-size: 14px; }
             th, td { padding: 6px 3px; }
-            table th:nth-child(1), table td:nth-child(1) { width: 15%; min-width: 55px; } /* زيادة العرض */
-            table th:nth-child(2), table td:nth-child(2) { display: none; }
-            table th:nth-child(3), table td:nth-child(3) { width: 50%; min-width: 100px; } /* تقليل العرض للتعويض */
-            table th:nth-child(4), table td:nth-child(4) { width: 20%; min-width: 60px; }
-            table th:nth-child(5), table td:nth-child(5) { width: 15%; min-width: 45px; }
+            table th:nth-child(2), table td:nth-child(2) { display: none; } 
+        }
+        
+        #bulkActionsContainer {
+            display: none;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #e8f5e9;
+            padding: 8px 15px;
+            border-radius: 8px;
+            margin: 15px 0 10px 0;
         }
 
         .error-message { color: red; font-weight: bold; margin-top: 15px; text-align: center; }
         
-        .action-button {
-            background: none; border: none; cursor: pointer; font-size: 1.2em;
-            margin: 0 1px; padding: 5px 3px; display: inline-block; text-align: center;
-            color: #007bff; font-weight: bold; transition: color 0.3s;
+        .action-button-icon {
+            background: none; border: none; cursor: pointer; font-size: 1.2em; margin: 0 1px;
+            padding: 5px 3px; display: inline-block; text-align: center; color: #007bff;
+            font-weight: bold; transition: color 0.3s;
         }
-        .action-button:hover { color: #0056b3; }
-        .delete-btn { color: #f44336; }
-        .delete-btn:hover { color: #d32f2f; }
-        td.actions { text-align: center; vertical-align: middle; }
+        .action-button-icon:hover { color: #0056b3; }
+        .delete-btn-icon { color: #f44336; }
+        .delete-btn-icon:hover { color: #d32f2f; }
+
+        #toastContainer {
+            position: fixed; top: 20px; left: 20px; z-index: 2000;
+            display: flex; flex-direction: column; gap: 10px;
+        }
+        .toast {
+            background-color: #333; color: #fff; padding: 15px 20px; border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15); font-size: 1em;
+            opacity: 0; transform: translateX(-100%); transition: all 0.5s ease;
+        }
+        .toast.show { opacity: 1; transform: translateX(0); }
+        .toast.success { background-color: #4CAF50; }
+        .toast.error { background-color: #f44336; }
+        .toast.info { background-color: #007bff; }
+
+        #paginationControls {
+            display: flex; justify-content: center; align-items: center;
+            margin-top: 20px; gap: 10px;
+        }
+        #paginationControls button {
+            background-color: #f0f0f0; border: 1px solid #ccc; padding: 8px 16px;
+            border-radius: 4px; cursor: pointer;
+        }
+        #paginationControls button:disabled { background-color: #e9ecef; cursor: not-allowed; }
+        #pageInfo { font-weight: bold; }
+
+        #confirmModal .modal-content { max-width: 400px; text-align: center; }
+        #confirmMessage { margin: 20px 0; font-size: 1.1em; }
 
         /* Modal Styles */
         .modal {
@@ -277,9 +251,7 @@
         .close {
             color: #aaa; float: left; font-size: 28px; font-weight: bold;
         }
-        .close:hover, .close:focus {
-            color: #000; text-decoration: none; cursor: pointer;
-        }
+        .close:hover, .close:focus { color: #000; text-decoration: none; cursor: pointer; }
         .modal-content input[type="text"], .modal-content input[type="url"],
         .modal-content input[type="number"], .modal-content select {
             width: 95%; padding: 8px; margin: 10px 0; display: inline-block;
@@ -299,39 +271,16 @@
             display: flex; justify-content: center; align-items: center; margin-top: 25px;
             flex-wrap: wrap; gap: 10px; width: 100%;
         }
-        
         #loadingIndicator { font-weight: bold; color: #4CAF50; text-align: center; margin: 20px; }
         #logoPreview img, #addPreviewImage { max-width: 50px; max-height: 50px; display: none; }
-
-        /* Styles for new dropdown-based modal */
-        #mergeModal .modal-content-body {
-            padding: 15px;
-            text-align: center;
-        }
-        #mergeOptionSelector {
-            width: 100%;
-            padding: 10px;
-            font-size: 1em;
-            margin-bottom: 20px;
-        }
-        .merge-option-container {
-            padding: 10px;
-        }
-        .merge-option-container p {
-             margin-bottom: 20px;
-             color: #666;
-        }
+        #mergeModal .modal-content-body { padding: 15px; text-align: center; }
+        #mergeOptionSelector { width: 100%; padding: 10px; font-size: 1em; margin-bottom: 20px; }
+        .merge-option-container { padding: 10px; }
+        .merge-option-container p { margin-bottom: 20px; color: #666; }
          .merge-option-container button {
-             background-color: #007bff;
-             color: white;
-             padding: 10px 25px;
-             font-size: 1em;
+             background-color: #007bff; color: white; padding: 10px 25px; font-size: 1em;
          }
-         .merge-option-container button:hover {
-            background-color: #0056b3;
-            opacity: 1;
-        }
-
+         .merge-option-container button:hover { background-color: #0056b3; opacity: 1; }
     </style>
 </head>
 <body>
@@ -340,8 +289,8 @@
         
         <div id="loadingIndicator" style="display: none;"><p>جارٍ التحميل...</p></div>
         
-        <div id="mainControls" style="text-align: center;">
-            <label for="fileInput" id="uploadArea" class="upload-area" ondrop="handleDrop(event)" ondragover="handleDragOver(event)">
+        <div id="mainControls">
+            <label for="fileInput" id="uploadArea" class="upload-area" ondrop="handleDropFile(event)" ondragover="handleDragOverFile(event)">
                 <p style="font-size: 1.1em; font-weight: bold;">اضغط لرفع ملف قائمة التشغيل</p>
                 <span class="upload-label">اختيار ملف M3U أو M3U8</span>
             </label>
@@ -349,84 +298,75 @@
             <div id="urlLoadContainer">
                  <input type="url" id="urlInput" placeholder="أدخل رابط ملف M3U/M3U8">
                  <div class="button-row" id="initialButtonsRow">
-                    <button id="loadUrlButton" onclick="fetchPlaylistFromUrl()">تحميل من رابط</button>
-                    <button id="createNewPlaylistButton" onclick="createNewPlaylist()">إنشاء قائمة جديدة</button>
+                    <button class="action-btn" id="loadUrlButton" onclick="fetchPlaylistFromUrl()">تحميل من رابط</button>
+                    <button class="action-btn" id="createNewPlaylistButton" onclick="createNewPlaylist()">إنشاء قائمة جديدة</button>
                  </div>
             </div>
 
             <div class="button-row" id="saveAddRow">
-                <button id="openExportModalButton" onclick="openExportModal()">تصدير القائمة</button>
-                <button id="addChannelButton" onclick="openAddModal()">إضافة قناة</button>
+                <button class="action-btn" id="openExportModalButton" onclick="openExportModal()">تصدير القائمة</button>
+                <button class="action-btn" id="addChannelButton" onclick="openAddModal()">إضافة قناة</button>
             </div>
-            
             <div class="button-row" id="toolsMergeRow">
-                <button id="openSortModalButton" onclick="openSortModal()">فرز وترتيب</button>
-                <button id="manageGroupsButton" onclick="openManageGroupsModal()">إدارة المجموعات</button>
-                <button id="openMergeModalButton" onclick="openMergeModal()">دمج قوائم تشغيل</button>
-                <button id="removeDuplicatesButton" onclick="removeDuplicatesManually()">إزالة التكرار</button>
+                <button class="action-btn" id="openSortModalButton" onclick="openSortModal()">فرز وترتيب</button>
+                <button class="action-btn" id="manageGroupsButton" onclick="openManageGroupsModal()">إدارة المجموعات</button>
+                <button class="action-btn" id="openMergeModalButton" onclick="openMergeModal()">دمج قوائم</button>
+                <button class="action-btn" id="removeDuplicatesButton" onclick="removeDuplicatesManually()">إزالة التكرار</button>
             </div>
         </div>
         <div id="searchContainer" style="display: none;">
             <input type="text" id="searchInput" placeholder="ابحث عن قناة..." oninput="searchChannels()">
         </div>
 
-        <input type="file" id="fileInput" accept=".m3u,.m3u8,.pls">
+        <div id="bulkActionsContainer">
+            <span id="selectionCount" style="font-weight: bold;"></span>
+            <button class="action-btn delete-btn" style="margin: 0;" onclick="deleteSelected()">حذف المحدد</button>
+        </div>
+
+        <input type="file" id="fileInput" accept=".m3u,.m3u8,.pls" style="display: none;">
         <input type="file" id="mergeFileInput" accept=".m3u,.m3u8,.pls" multiple style="display: none;">
         <div id="results"></div>
+        <div id="paginationControls"></div>
     </div>
 
     <!-- Modals -->
-    <div id="editModal" class="modal"><div class="modal-content"><span class="close" onclick="closeModal('editModal')">&times;</span><h2>تحرير القناة</h2><label for="editIndexField">رقم القناة الجديد:</label><input type="number" id="editIndexField" min="1"><label for="editName">اسم القناة:</label><input type="text" id="editName"><label for="editGroup">المجموعة:</label><input type="text" id="editGroup"><label for="editLogo">رابط الصورة:</label><input type="url" id="editLogo"><div id="logoPreview"><img id="previewImage"></div><label for="editUrl">رابط التشغيل:</label><input type="url" id="editUrl"><input type="hidden" id="editOriginalIndex"><div class="modal-buttons"><button onclick="saveEdit()">حفظ</button><button onclick="closeModal('editModal')" class="cancel">إلغاء</button></div></div></div>
-    <div id="addModal" class="modal"><div class="modal-content"><span class="close" onclick="closeModal('addModal')">&times;</span><h2>إضافة قناة جديدة</h2><label for="addIndexField">رقم القناة:</label><input type="number" id="addIndexField" min="1"><label for="addName">اسم القناة:</label><input type="text" id="addName" required><label for="addGroup">المجموعة:</label><input type="text" id="addGroup"><label for="addLogo">رابط الصورة:</label><input type="url" id="addLogo"><div id="addLogoPreview"><img id="addPreviewImage"></div><label for="addUrl">رابط التشغيل:</label><input type="url" id="addUrl" required><div class="modal-buttons"><button onclick="saveNewChannel()">إضافة</button><button onclick="closeModal('addModal')" class="cancel">إلغاء</button></div></div></div>
+    <div id="editModal" class="modal"><div class="modal-content"><span class="close" onclick="closeModal('editModal')">&times;</span><h2>تحرير القناة</h2><label for="editIndexField">رقم القناة الجديد:</label><input type="number" id="editIndexField" min="1"><label for="editName">اسم القناة:</label><input type="text" id="editName"><label for="editGroup">المجموعة (لأكثر من مجموعة، افصل بينها بـ ;):</label><input type="text" id="editGroup"><label for="editLogo">رابط الصورة:</label><input type="url" id="editLogo"><div id="logoPreview"><img id="previewImage"></div><label for="editUrl">رابط التشغيل:</label><input type="url" id="editUrl"><input type="hidden" id="editOriginalIndex"><div class="modal-buttons"><button onclick="saveEdit()">حفظ</button><button onclick="closeModal('editModal')" class="cancel">إلغاء</button></div></div></div>
+    <div id="addModal" class="modal"><div class="modal-content"><span class="close" onclick="closeModal('addModal')">&times;</span><h2>إضافة قناة جديدة</h2><label for="addIndexField">رقم القناة:</label><input type="number" id="addIndexField" min="1"><label for="addName">اسم القناة:</label><input type="text" id="addName" required><label for="addGroup">المجموعة (لأكثر من مجموعة، افصل بينها بـ ;):</label><input type="text" id="addGroup"><label for="addLogo">رابط الصورة:</label><input type="url" id="addLogo"><div id="addLogoPreview"><img id="addPreviewImage"></div><label for="addUrl">رابط التشغيل:</label><input type="url" id="addUrl" required><div class="modal-buttons"><button onclick="saveNewChannel()">إضافة</button><button onclick="closeModal('addModal')" class="cancel">إلغاء</button></div></div></div>
     <div id="removeDuplicatesModal" class="modal"><div class="modal-content"><span class="close" onclick="closeModal('removeDuplicatesModal')">&times;</span><h2>إزالة التكرار</h2><label>اختر الشرط:</label><div class="modal-row"><input type="radio" id="crit-name" name="duplicateCriteria" value="name" checked><label for="crit-name">الاسم فقط</label></div><div class="modal-row"><input type="radio" id="crit-name-url" name="duplicateCriteria" value="name-url"><label for="crit-name-url">الاسم + الرابط</label></div><div class="modal-row"><input type="radio" id="crit-name-url-group" name="duplicateCriteria" value="name-url-group"><label for="crit-name-url-group">الاسم + الرابط + المجموعة</label></div><div class="modal-buttons"><button onclick="executeRemoveDuplicates()">إزالة</button><button onclick="closeModal('removeDuplicatesModal')" class="cancel">إلغاء</button></div></div></div>
     <div id="sortModal" class="modal"><div class="modal-content"><span class="close" onclick="closeModal('sortModal')">&times;</span><h2>فرز وترتيب القنوات</h2><div class="modal-row"><input type="radio" id="sort-alpha" name="sortCriteria" value="alphabetical" checked onchange="handleSortCriteriaChange()"><label for="sort-alpha">فرز أبجدي</label></div><div class="modal-row"><input type="radio" id="sort-name" name="sortCriteria" value="name" onchange="handleSortCriteriaChange()"><label for="sort-name">حسب اسم القناة</label></div><div id="sortByNameInputContainer" style="display: none; margin-right: 25px;"><input type="text" id="sortByNameField" placeholder="أدخل اسم القناة (مثال: mbc)"></div><div class="modal-row"><input type="radio" id="sort-group" name="sortCriteria" value="group" onchange="handleSortCriteriaChange()"><label for="sort-group">حسب اسم المجموعة</label></div><div id="sortByGroupInputContainer" style="display: none; margin-right: 25px;"><input type="text" id="sortByGroupField" placeholder="أدخل اسم المجموعة"></div><div class="modal-buttons"><button onclick="executeSort()">تطبيق</button><button onclick="closeModal('sortModal')" class="cancel">إلغاء</button></div></div></div>
     <div id="manageGroupsModal" class="modal"><div class="modal-content"><span class="close" onclick="closeModal('manageGroupsModal')">&times;</span><h2>إدارة المجموعات</h2><label for="groupSelector">اختر المجموعة:</label><select id="groupSelector"></select><label>اختر الإجراء:</label><div class="modal-row"><input type="radio" id="action-rename" name="groupAction" value="rename" checked onchange="handleGroupActionChange()"><label for="action-rename">إعادة تسمية</label></div><div id="renameGroupInputContainer" style="margin-right: 25px;"><input type="text" id="newGroupNameField" placeholder="أدخل الاسم الجديد للمجموعة"></div><div class="modal-row"><input type="radio" id="action-delete" name="groupAction" value="delete" onchange="handleGroupActionChange()"><label for="action-delete">حذف المجموعة</label></div><div class="modal-row"><input type="radio" id="action-split" name="groupAction" value="split" onchange="handleGroupActionChange()"><label for="action-split">فصل أو استخراج المجموعة</label></div><div class="modal-buttons"><button onclick="executeGroupAction()">تنفيذ</button><button onclick="closeModal('manageGroupsModal')" class="cancel">إلغاء</button></div></div></div>
-    
-    <!-- REDESIGNED MERGE MODAL (DROPDOWN) -->
-    <div id="mergeModal" class="modal">
+    <div id="mergeModal" class="modal"><div class="modal-content"><span class="close" onclick="closeModal('mergeModal')">&times;</span><h2>خيارات الدمج</h2><div class="modal-content-body"><label for="mergeOptionSelector" style="display:block; margin-bottom: 5px; text-align: right;">اختر طريقة الدمج:</label><select id="mergeOptionSelector" onchange="handleMergeOptionChange()"><option value="file" selected>من ملف</option><option value="url">من رابط</option></select><div id="mergeFileOption" class="merge-option-container" style="display: block;"><p>اختر ملف أو أكثر لدمجه مع القائمة الحالية.</p><button onclick="document.getElementById('mergeFileInput').click()">اختيار ملفات</button></div><div id="mergeUrlOption" class="merge-option-container" style="display: none;"><p>أدخل رابط قائمة التشغيل ليتم دمجها.</p><input type="url" id="mergeUrlInput" placeholder="https://example.com/playlist.m3u" style="width: 100%; margin-bottom: 20px;"><button onclick="executeMerge()">دمج الرابط</button></div></div></div></div>
+    <div id="exportModal" class="modal"><div class="modal-content"><span class="close" onclick="closeModal('exportModal')">&times;</span><h2>تصدير قائمة التشغيل</h2><p>اختر الصيغة المطلوبة للحفظ:</p><div class="modal-row"><input type="radio" id="export-m3u" name="exportFormat" value="m3u" checked><label for="export-m3u">M3U</label></div><div class="modal-row"><input type="radio" id="export-m3u8" name="exportFormat" value="m3u8"><label for="export-m3u8">M3U8</label></div><div class="modal-row"><input type="radio" id="export-pls" name="exportFormat" value="pls"><label for="export-pls">PLS</label></div><div class="modal-buttons"><button onclick="executeExport()">تصدير</button><button onclick="closeModal('exportModal')" class="cancel">إلغاء</button></div></div></div>
+
+    <div id="confirmModal" class="modal">
         <div class="modal-content">
-            <span class="close" onclick="closeModal('mergeModal')">&times;</span>
-            <h2>خيارات الدمج</h2>
-            <div class="modal-content-body">
-                <label for="mergeOptionSelector" style="display:block; margin-bottom: 5px; text-align: right;">اختر طريقة الدمج:</label>
-                <select id="mergeOptionSelector" onchange="handleMergeOptionChange()">
-                    <option value="file" selected>من ملف</option>
-                    <option value="url">من رابط</option>
-                </select>
-
-                <div id="mergeFileOption" class="merge-option-container" style="display: block;">
-                    <p>اختر ملف أو أكثر لدمجه مع القائمة الحالية.</p>
-                    <button onclick="document.getElementById('mergeFileInput').click()">اختيار ملفات</button>
-                </div>
-
-                <div id="mergeUrlOption" class="merge-option-container" style="display: none;">
-                    <p>أدخل رابط قائمة التشغيل ليتم دمجها.</p>
-                    <input type="url" id="mergeUrlInput" placeholder="https://example.com/playlist.m3u" style="width: 100%; margin-bottom: 20px;">
-                    <button onclick="executeMerge()">دمج الرابط</button>
-                </div>
+            <span class="close" onclick="closeModal('confirmModal')">&times;</span>
+            <h2 id="confirmTitle">تأكيد الإجراء</h2>
+            <p id="confirmMessage">هل أنت متأكد؟</p>
+            <div class="modal-buttons">
+                <button id="confirmBtn" class="action-btn">تأكيد</button>
+                <button onclick="closeModal('confirmModal')" class="action-btn delete-btn">إلغاء</button>
             </div>
         </div>
     </div>
-    
-    <div id="exportModal" class="modal"><div class="modal-content"><span class="close" onclick="closeModal('exportModal')">&times;</span><h2>تصدير قائمة التشغيل</h2><p>اختر الصيغة المطلوبة للحفظ:</p><div class="modal-row"><input type="radio" id="export-m3u" name="exportFormat" value="m3u" checked><label for="export-m3u">M3U</label></div><div class="modal-row"><input type="radio" id="export-m3u8" name="exportFormat" value="m3u8"><label for="export-m3u8">M3U8</label></div><div class="modal-row"><input type="radio" id="export-pls" name="exportFormat" value="pls"><label for="export-pls">PLS</label></div><div class="modal-buttons"><button onclick="executeExport()">تصدير</button><button onclick="closeModal('exportModal')" class="cancel">إلغاء</button></div></div></div>
 
+    <div id="toastContainer"></div>
 
     <script>
         let channelsData = [];
-        let isMerged = false; 
-        let isSorted = false; 
+        let displayedChannels = [];
+        let isMerged = false, isSorted = false, draggedIndex = null;
+        
+        let selectedIndices = new Set();
+        let currentPage = 1;
+        const rowsPerPage = 100;
 
-        document.addEventListener('DOMContentLoaded', function() {
-            // Initial view elements
+        document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('uploadArea').style.display = 'block';
             document.getElementById('urlLoadContainer').style.display = 'block';
-
-            // Playlist view elements (initially hidden)
             document.getElementById('saveAddRow').style.display = 'none';
             document.getElementById('toolsMergeRow').style.display = 'none';
             document.getElementById('searchContainer').style.display = 'none';
-            
-            // Hide individual buttons inside the rows too
             ['openExportModalButton', 'addChannelButton', 'openSortModalButton', 'manageGroupsButton', 'openMergeModalButton', 'removeDuplicatesButton'].forEach(id => {
                 const button = document.getElementById(id);
                 if (button) button.style.display = 'none';
@@ -437,8 +377,79 @@
         document.getElementById('fileInput').addEventListener('change', handleFileSelect);
         document.getElementById('mergeFileInput').addEventListener('change', mergePlaylists);
 
-        function handleDragOver(event) { event.preventDefault(); event.currentTarget.classList.add('dragging'); }
-        function handleDrop(event) {
+        function showToast(message, type = 'info', duration = 3000) {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.textContent = message;
+            container.appendChild(toast);
+            setTimeout(() => toast.classList.add('show'), 10);
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => { if (container.contains(toast)) container.removeChild(toast); }, 500);
+            }, duration);
+        }
+
+        function showConfirm(title, message, onConfirm) {
+            document.getElementById('confirmTitle').textContent = title;
+            document.getElementById('confirmMessage').textContent = message;
+            const confirmBtn = document.getElementById('confirmBtn');
+            const newConfirmBtn = confirmBtn.cloneNode(true);
+            confirmBtn.parentNode.replaceChild(newConfirmBtn, confirmBtn);
+
+            newConfirmBtn.onclick = () => {
+                onConfirm();
+                closeModal('confirmModal');
+            };
+            document.getElementById('confirmModal').style.display = 'block';
+        }
+
+        function handleRowClick(event) {
+            const row = event.currentTarget;
+            if (event.target.closest('.action-button-icon')) return;
+            const index = parseInt(row.dataset.index);
+            if (selectedIndices.has(index)) {
+                selectedIndices.delete(index);
+                row.classList.remove('selected');
+            } else {
+                selectedIndices.add(index);
+                row.classList.add('selected');
+            }
+            updateBulkActionsUI();
+        }
+        
+        function updateBulkActionsUI() {
+            const bulkActionsContainer = document.getElementById('bulkActionsContainer');
+            const selectionCountSpan = document.getElementById('selectionCount');
+            const count = selectedIndices.size;
+
+            if (count > 0) {
+                bulkActionsContainer.style.display = 'flex';
+                selectionCountSpan.textContent = `تم تحديد ${count} قناة`;
+            } else {
+                bulkActionsContainer.style.display = 'none';
+            }
+        }
+
+        function deleteSelected() {
+            const count = selectedIndices.size;
+            if (count === 0) return;
+
+            showConfirm('تأكيد الحذف', `هل أنت متأكد من حذف ${count} قناة؟ لا يمكن التراجع عن هذا الإجراء.`, () => {
+                const indicesToDelete = Array.from(selectedIndices).sort((a, b) => b - a);
+                indicesToDelete.forEach(index => {
+                    channelsData.splice(index, 1);
+                });
+
+                selectedIndices.clear();
+                updateTvgChnoInAllChannels();
+                searchChannels();
+                showToast(`تم حذف ${count} قناة بنجاح.`, 'success');
+            });
+        }
+        
+        function handleDragOverFile(event) { event.preventDefault(); event.currentTarget.classList.add('dragging'); }
+        function handleDropFile(event) {
             event.preventDefault();
             event.currentTarget.classList.remove('dragging');
             const files = event.dataTransfer.files;
@@ -455,40 +466,129 @@
             if (!file) return;
             const fileName = file.name.toLowerCase();
             if (!/\.(m3u|m3u8|pls)$/.test(fileName)) {
-                return displayError("يرجى اختيار ملف بامتداد M3U, M3U8, أو PLS.");
+                return showToast("يرجى اختيار ملف بامتداد M3U, M3U8, أو PLS.", "error");
             }
             document.getElementById('loadingIndicator').style.display = 'block';
             const reader = new FileReader();
             reader.onload = function(e) {
                 channelsData = parsePlaylist(e.target.result);
                 if (channelsData.length > 0) {
+                    displayedChannels = [...channelsData];
                     updateTvgChnoInAllChannels();
-                    displayChannels(channelsData);
+                    displayPaginatedChannels();
                     showPlaylistControls();
                     isMerged = false; isSorted = false;
                 } else {
-                    displayError("الملف المختار لا يحتوي على قنوات صالحة.");
+                    showToast("الملف المختار لا يحتوي على قنوات صالحة.", "error");
                 }
                 document.getElementById('loadingIndicator').style.display = 'none';
             };
             reader.readAsText(file, 'UTF-8');
+        }
+
+        function displayPaginatedChannels() {
+            const totalPages = Math.ceil(displayedChannels.length / rowsPerPage);
+            currentPage = Math.max(1, Math.min(currentPage, totalPages));
+
+            const startIndex = (currentPage - 1) * rowsPerPage;
+            const endIndex = startIndex + rowsPerPage;
+            const pagedChannels = displayedChannels.slice(startIndex, endIndex);
+
+            renderTable(pagedChannels, startIndex);
+            setupPaginationControls(totalPages);
+            updateBulkActionsUI();
+        }
+
+        function renderTable(channels, startIndex) {
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML = '';
+            if (channelsData.length === 0) {
+                resultsDiv.innerHTML = '<p>القائمة فارغة. أضف قناة أو قم بتحميل ملف.</p>';
+                return;
+            }
+             if (channels.length === 0) {
+                resultsDiv.innerHTML = '<p>لا توجد نتائج مطابقة للبحث.</p>';
+                return;
+            }
+            const table = document.createElement('table');
+            const tbody = document.createElement('tbody');
+            table.innerHTML = `<thead><tr>
+                <th>رقم</th><th>الصورة</th><th class="channel-name">اسم القناة</th>
+                <th>المجموعة</th><th>إدارة</th>
+            </tr></thead>`;
+
+            channels.forEach((channel, index) => {
+                const originalIndex = channelsData.indexOf(channel);
+                const row = tbody.insertRow();
+                row.setAttribute('draggable', 'true');
+                row.dataset.index = originalIndex;
+
+                if (selectedIndices.has(originalIndex)) {
+                    row.classList.add('selected');
+                }
+
+                row.innerHTML = `
+                    <td>${startIndex + index + 1}</td>
+                    <td class="logo">${channel.logo ? `<img src="${channel.logo}" alt="Logo" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">` : ''}<span class="placeholder" style="${channel.logo ? 'display:none;' : ''}">📺</span></td>
+                    <td class="channel-name">${channel.name || ''}</td>
+                    <td>${channel.group || 'غير مصنفة'}</td>
+                    <td class="actions">
+                        <button class="action-button-icon edit-btn" data-index="${originalIndex}" title="تحرير">&#9998;</button>
+                        <button class="action-button-icon delete-btn-icon" data-index="${originalIndex}" title="حذف">&#128465;</button>
+                    </td>
+                `;
+                
+                row.addEventListener('click', handleRowClick);
+                row.addEventListener('dragstart', handleDragStart);
+                row.addEventListener('dragenter', handleDragEnter);
+                row.addEventListener('dragleave', handleDragLeave);
+                row.addEventListener('dragover', handleDragOver);
+                row.addEventListener('drop', handleDrop);
+            });
+            table.appendChild(tbody);
+            resultsDiv.appendChild(table);
+        }
+
+        function setupPaginationControls(totalPages) {
+            const container = document.getElementById('paginationControls');
+            container.innerHTML = '';
+            if (totalPages <= 1) return;
+
+            container.innerHTML = `
+                <button id="prevPage" onclick="changePage(-1)" ${currentPage === 1 ? 'disabled' : ''}>السابق</button>
+                <span id="pageInfo">صفحة ${currentPage} من ${totalPages}</span>
+                <button id="nextPage" onclick="changePage(1)" ${currentPage === totalPages ? 'disabled' : ''}>التالي</button>
+            `;
+        }
+
+        function changePage(direction) {
+            currentPage += direction;
+            displayPaginatedChannels();
+        }
+
+        function searchChannels() {
+            const term = document.getElementById('searchInput').value.toLowerCase();
+            if (!term) {
+                displayedChannels = [...channelsData];
+            } else {
+                displayedChannels = channelsData.filter(ch => (ch.name || '').toLowerCase().includes(term) || (ch.group || '').toLowerCase().includes(term));
+            }
+            currentPage = 1;
+            displayPaginatedChannels();
         }
         
         function parsePlaylist(content) {
             const lines = content.split('\n');
             const channels = [];
             let currentInfo = '';
-
             for (const line of lines) {
                 const trimmedLine = line.trim();
-                if (trimmedLine.startsWith('#EXTINF')) {
-                    currentInfo = trimmedLine;
-                } else if (currentInfo && !trimmedLine.startsWith('#') && trimmedLine.length > 0) {
+                if (trimmedLine.startsWith('#EXTINF')) { currentInfo = trimmedLine; }
+                else if (currentInfo && !trimmedLine.startsWith('#') && trimmedLine.length > 0) {
                     const name = currentInfo.match(/,([^,]*)$/)?.[1].trim() || 'قناة غير معروفة';
                     const group = currentInfo.match(/group-title="([^"]*)"/i)?.[1] || '';
                     const logo = currentInfo.match(/tvg-logo="([^"]*)"/i)?.[1] || '';
                     const chno = parseInt(currentInfo.match(/tvg-chno="([^"]*)"/i)?.[1]) || 0;
-                    
                     channels.push({ name, group, logo, chno, url: trimmedLine, originalExtinf: currentInfo });
                     currentInfo = '';
                 }
@@ -501,18 +601,15 @@
             if (!files.length) return;
             closeModal('mergeModal');
             document.getElementById('loadingIndicator').style.display = 'block';
-            
             const newChannels = await Promise.all(Array.from(files).map(file => file.text().then(parsePlaylist))).then(results => results.flat());
             channelsData.push(...newChannels);
-            
             const duplicatesRemoved = removeDuplicates('name-url');
             updateTvgChnoInAllChannels();
-            displayChannels(channelsData);
-            showPlaylistControls();
+            searchChannels();
             document.getElementById('loadingIndicator').style.display = 'none';
             event.target.value = '';
             isMerged = true; isSorted = false;
-            alert(`تم دمج القوائم وإزالة ${duplicatesRemoved} قناة مكررة.`);
+            showToast(`تم دمج القوائم وإزالة ${duplicatesRemoved} قناة مكررة.`, 'success');
         }
 
         function removeDuplicates(criteria = 'name') {
@@ -526,17 +623,14 @@
                 if (criteria === 'name-url') key = `${name}-${url}`;
                 else if (criteria === 'name') key = name;
                 else if (criteria === 'name-url-group') key = `${name}-${url}-${group}`;
-                if (key && !seen.has(key)) {
-                    seen.add(key);
-                    return true;
-                }
+                if (key && !seen.has(key)) { seen.add(key); return true; }
                 return false;
             });
             return originalLength - channelsData.length;
         }
 
         function removeDuplicatesManually() {
-            if (channelsData.length === 0) return displayError("لا توجد قنوات.");
+            if (channelsData.length === 0) return showToast("لا توجد قنوات.", 'error');
             document.getElementById('removeDuplicatesModal').style.display = 'block';
         }
 
@@ -544,89 +638,56 @@
             const criteria = document.querySelector('input[name="duplicateCriteria"]:checked').value;
             const duplicatesRemoved = removeDuplicates(criteria);
             updateTvgChnoInAllChannels();
-            displayChannels(channelsData);
+            searchChannels();
             closeModal('removeDuplicatesModal');
-            alert(`تم إزالة ${duplicatesRemoved} قناة مكررة. عدد القنوات الحالي: ${channelsData.length}.`);
+            showToast(`تم إزالة ${duplicatesRemoved} قناة مكررة.`, 'success');
         }
-
+        
         function fetchPlaylistFromUrl() {
             const url = document.getElementById('urlInput').value;
-            if (!url) return displayError("يرجى إدخال رابط صالح.");
-
+            if (!url) return showToast("يرجى إدخال رابط صالح.", "error");
             document.getElementById('loadingIndicator').style.display = 'block';
             fetch(url)
                 .then(response => { if (!response.ok) throw new Error('فشل تحميل الملف.'); return response.text(); })
                 .then(content => {
                     const newChannels = parsePlaylist(content);
-                    if (newChannels.length === 0) return displayError("الرابط لا يحتوي على قنوات.");
+                    if (newChannels.length === 0) return showToast("الرابط لا يحتوي على قنوات.", "error");
                     channelsData = newChannels;
                     isMerged = false; isSorted = false;
                     updateTvgChnoInAllChannels();
-                    displayChannels(channelsData);
+                    searchChannels();
                     showPlaylistControls();
                 })
-                .catch(error => displayError(`خطأ: ${error.message}`))
+                .catch(error => showToast(`خطأ: ${error.message}`, 'error'))
                 .finally(() => document.getElementById('loadingIndicator').style.display = 'none');
         }
 
         function createNewPlaylist() {
-            channelsData = [];
-            displayChannels([]);
-            showPlaylistControls();
-            isMerged = false; isSorted = false;
+            showConfirm('إنشاء قائمة جديدة', 'هل أنت متأكد؟ سيتم حذف جميع القنوات الحالية.', () => {
+                channelsData = [];
+                displayedChannels = [];
+                selectedIndices.clear();
+                showPlaylistControls();
+                displayPaginatedChannels();
+                showToast('تم إنشاء قائمة جديدة فارغة.', 'info');
+            });
         }
-
-        function openSortModal() {
-            if (channelsData.length === 0) return displayError("لا توجد قنوات لفرزها.");
-            document.getElementById('sortModal').style.display = 'block';
-        }
-
-        function handleSortCriteriaChange() {
-            const criteria = document.querySelector('input[name="sortCriteria"]:checked').value;
-            document.getElementById('sortByNameInputContainer').style.display = criteria === 'name' ? 'block' : 'none';
-            document.getElementById('sortByGroupInputContainer').style.display = criteria === 'group' ? 'block' : 'none';
-        }
-
+        
         function executeSort() {
             const criteria = document.querySelector('input[name="sortCriteria"]:checked').value;
-            const sortFunction = (a, b) => a.name.localeCompare(b.name, 'ar');
-
-            if (criteria === 'alphabetical') {
-                channelsData.sort(sortFunction);
-            } else if (criteria === 'name') {
+            const sortFunction = (a, b) => (a.name || '').localeCompare(b.name || '', 'ar');
+            if (criteria === 'alphabetical') { channelsData.sort(sortFunction); }
+            else if (criteria === 'name') {
                 const term = document.getElementById('sortByNameField').value.toLowerCase().trim();
                 if (term) channelsData.sort((a, b) => (b.name.toLowerCase().includes(term) - a.name.toLowerCase().includes(term)) || sortFunction(a, b));
             } else if (criteria === 'group') {
                 const term = document.getElementById('sortByGroupField').value.toLowerCase().trim();
                 if (term) channelsData.sort((a, b) => (((b.group || '').toLowerCase() === term) - ((a.group || '').toLowerCase() === term)) || sortFunction(a, b));
             }
-            
             isSorted = true; isMerged = false;
             updateTvgChnoInAllChannels();
-            displayChannels(channelsData);
+            searchChannels();
             closeModal('sortModal');
-        }
-
-        function openManageGroupsModal() {
-            if (channelsData.length === 0) return displayError("لا توجد قنوات لإدارة مجموعاتها.");
-            const groupSelector = document.getElementById('groupSelector');
-            groupSelector.innerHTML = '';
-            
-            const groups = new Set(channelsData.map(ch => ch.group || 'غير مصنفة'));
-            Array.from(groups).sort((a, b) => a.localeCompare(b, 'ar')).forEach(group => {
-                const option = document.createElement('option');
-                option.value = group;
-                option.textContent = group;
-                groupSelector.appendChild(option);
-            });
-            
-            handleGroupActionChange();
-            document.getElementById('manageGroupsModal').style.display = 'block';
-        }
-        
-        function handleGroupActionChange() {
-            const action = document.querySelector('input[name="groupAction"]:checked').value;
-            document.getElementById('renameGroupInputContainer').style.display = action === 'rename' ? 'block' : 'none';
         }
         
         function executeGroupAction() {
@@ -634,131 +695,73 @@
             const action = document.querySelector('input[name="groupAction"]:checked').value;
             const isUncategorized = selectedGroup === 'غير مصنفة';
 
-            if (action === 'rename') {
-                const newGroupName = document.getElementById('newGroupNameField').value.trim();
-                if (newGroupName === null) return;
-                channelsData.forEach(channel => {
-                    if ((isUncategorized && !channel.group) || channel.group === selectedGroup) {
-                        channel.group = newGroupName;
-                    }
+            if (action === 'delete') {
+                showConfirm('حذف المجموعة', `هل أنت متأكد من حذف كل قنوات المجموعة "${selectedGroup}"؟`, () => {
+                    const originalCount = channelsData.length;
+                    channelsData = channelsData.filter(channel => !((isUncategorized && !channel.group) || channel.group === selectedGroup));
+                    const removedCount = originalCount - channelsData.length;
+                    showToast(`تم حذف ${removedCount} قناة من المجموعة.`, 'success');
+                    updateTvgChnoInAllChannels();
+                    searchChannels();
+                    closeModal('manageGroupsModal');
                 });
-                alert(`تم إعادة تسمية المجموعة "${selectedGroup}" إلى "${newGroupName || 'بدون اسم'}".`);
-            } 
-            else if (action === 'delete') {
-                if (!confirm(`هل أنت متأكد من حذف كل قنوات المجموعة "${selectedGroup}"؟`)) return;
-                const originalCount = channelsData.length;
-                channelsData = channelsData.filter(channel => !((isUncategorized && !channel.group) || channel.group === selectedGroup));
-                const removedCount = originalCount - channelsData.length;
-                alert(`تم حذف ${removedCount} قناة من المجموعة "${selectedGroup}".`);
-            } 
-            else if (action === 'split') {
-                const groupChannels = channelsData.filter(channel => (isUncategorized && !channel.group) || channel.group === selectedGroup);
-                if (groupChannels.length > 0) {
-                    const content = '#EXTM3U\n' + groupChannels.map(ch => `${buildUpdatedExtinf(ch.originalExtinf, ch.group, ch.logo, ch.name, ch.chno)}\n${ch.url}`).join('\n\n');
-                    const fileName = `Group_${selectedGroup.replace(/[\/\\?%*:|"<>]/g, '-')}.m3u`;
-                    downloadFile(content, fileName, 'text/plain;charset=utf-8');
-                } else {
-                    alert('لم يتم العثور على قنوات في هذه المجموعة.');
+            } else {
+                if (action === 'rename') {
+                    const newGroupName = document.getElementById('newGroupNameField').value.trim();
+                    channelsData.forEach(channel => {
+                        if ((isUncategorized && !channel.group) || channel.group === selectedGroup) { channel.group = newGroupName; }
+                    });
+                    showToast(`تم إعادة تسمية المجموعة.`, 'success');
+                } else if (action === 'split') {
+                    const groupChannels = channelsData.filter(channel => (isUncategorized && !channel.group) || channel.group === selectedGroup);
+                    if (groupChannels.length > 0) {
+                        const content = '#EXTM3U\n' + groupChannels.map(ch => `${buildUpdatedExtinf(ch.originalExtinf, ch.group, ch.logo, ch.name, ch.chno)}\n${ch.url}`).join('\n\n');
+                        const fileName = `Group_${selectedGroup.replace(/[\/\\?%*:|"<>]/g, '-')}.m3u`;
+                        downloadFile(content, fileName, 'text/plain;charset=utf-8');
+                    } else { showToast('لم يتم العثور على قنوات في هذه المجموعة.', 'info'); }
+                    closeModal('manageGroupsModal');
+                    return;
                 }
+                updateTvgChnoInAllChannels();
+                searchChannels();
                 closeModal('manageGroupsModal');
-                return; 
             }
-
-            updateTvgChnoInAllChannels();
-            displayChannels(channelsData);
-            closeModal('manageGroupsModal');
         }
-
-        // --- MERGE MODAL FUNCTIONS (DROPDOWN) ---
-        function openMergeModal() {
-            if (channelsData.length === 0) return displayError("يجب تحميل قائمة تشغيل أولاً للدمج معها.");
-            document.getElementById('mergeUrlInput').value = '';
-            document.getElementById('mergeOptionSelector').value = 'file'; // Set default
-            handleMergeOptionChange(); // Show correct initial view
-            document.getElementById('mergeModal').style.display = 'block';
-        }
-
-        function handleMergeOptionChange() {
-            const selectedOption = document.getElementById('mergeOptionSelector').value;
-            document.getElementById('mergeFileOption').style.display = (selectedOption === 'file') ? 'block' : 'none';
-            document.getElementById('mergeUrlOption').style.display = (selectedOption === 'url') ? 'block' : 'none';
-        }
-
+        
         function executeMerge() {
             const url = document.getElementById('mergeUrlInput').value;
-            if (!url) return alert("يرجى إدخال رابط للدمج.");
-            
+            if (!url) return showToast("يرجى إدخال رابط للدمج.", 'error');
             closeModal('mergeModal');
             document.getElementById('loadingIndicator').style.display = 'block';
-
             fetch(url)
                 .then(response => { if (!response.ok) throw new Error('فشل تحميل الملف.'); return response.text(); })
                 .then(content => {
                     const newChannels = parsePlaylist(content);
-                    if (newChannels.length === 0) return displayError("الرابط لا يحتوي على قنوات.");
-                    
+                    if (newChannels.length === 0) return showToast("الرابط لا يحتوي على قنوات.", 'error');
                     channelsData.push(...newChannels);
                     const duplicatesRemoved = removeDuplicates('name-url');
-                    alert(`تم دمج القائمة وإزالة ${duplicatesRemoved} قناة مكررة.`);
+                    showToast(`تم دمج القائمة وإزالة ${duplicatesRemoved} قناة مكررة.`, 'success');
                     isMerged = true; isSorted = false;
-                    
                     updateTvgChnoInAllChannels();
-                    displayChannels(channelsData);
+                    searchChannels();
                 })
-                .catch(error => displayError(`خطأ: ${error.message}`))
+                .catch(error => showToast(`خطأ: ${error.message}`, 'error'))
                 .finally(() => document.getElementById('loadingIndicator').style.display = 'none');
         }
 
-        function displayChannels(channels) {
-            const resultsDiv = document.getElementById('results');
-            resultsDiv.innerHTML = '';
-            if (channels.length === 0) {
-                resultsDiv.innerHTML = '<p>لا توجد قنوات لعرضها.</p>';
-                return;
-            }
-            const table = document.createElement('table');
-            table.innerHTML = `<thead><tr><th>رقم</th><th>الصورة</th><th class="channel-name">اسم القناة</th><th>المجموعة</th><th>إدارة</th></tr></thead><tbody>${channels.map((channel, index) => `<tr><td>${index + 1}</td><td class="logo">${channel.logo ? `<img src="${channel.logo}" alt="Logo" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">` : ''}<span class="placeholder" style="${channel.logo ? 'display:none;' : ''}">📺</span></td><td class="channel-name">${channel.name || ''}</td><td>${channel.group || 'غير مصنفة'}</td><td class="actions"><button class="action-button edit-btn" data-index="${index}" title="تحرير">&#9998;</button><button class="action-button delete-btn" data-index="${index}" title="حذف">&#128465;</button></td></tr>`).join('')}</tbody>`;
-            resultsDiv.appendChild(table);
-        }
-
-        function searchChannels() {
-            const term = document.getElementById('searchInput').value.toLowerCase();
-            if (!term) return displayChannels(channelsData);
-            displayChannels(channelsData.filter(ch => ch.name.toLowerCase().includes(term) || (ch.group || '').toLowerCase().includes(term)));
-        }
-
         function deleteChannel(index) {
-            if (confirm(`هل أنت متأكد من حذف: ${channelsData[index].name}؟`)) {
+            showConfirm('تأكيد الحذف', `هل أنت متأكد من حذف: ${channelsData[index].name}؟`, () => {
                 channelsData.splice(index, 1);
                 updateTvgChnoInAllChannels();
-                displayChannels(channelsData);
-            }
+                searchChannels();
+                showToast('تم حذف القناة بنجاح.', 'success');
+            });
         }
-
-        function openEditModal(index) {
-            const channel = channelsData[index];
-            document.getElementById('editIndexField').value = index + 1;
-            document.getElementById('editName').value = channel.name || '';
-            document.getElementById('editGroup').value = channel.group || '';
-            document.getElementById('editLogo').value = channel.logo || '';
-            document.getElementById('editUrl').value = channel.url || '';
-            document.getElementById('editOriginalIndex').value = index;
-            updateLogoPreview('previewImage', channel.logo);
-            document.getElementById('editModal').style.display = 'block';
-        }
-
-        function openAddModal() {
-            document.getElementById('addIndexField').value = channelsData.length + 1;
-            ['addName', 'addGroup', 'addLogo', 'addUrl'].forEach(id => document.getElementById(id).value = '');
-            updateLogoPreview('addPreviewImage', '');
-            document.getElementById('addModal').style.display = 'block';
-        }
-
+        
         function saveEdit() {
             const originalIndex = parseInt(document.getElementById('editOriginalIndex').value);
             let newIndex = parseInt(document.getElementById('editIndexField').value) - 1;
-            if (!document.getElementById('editName').value || !document.getElementById('editUrl').value) return displayError("الاسم والرابط مطلوبان.");
-            
+            if (!document.getElementById('editName').value || !document.getElementById('editUrl').value) return showToast("الاسم والرابط مطلوبان.", 'error');
             const channel = {
                 name: document.getElementById('editName').value,
                 group: document.getElementById('editGroup').value,
@@ -766,135 +769,72 @@
                 url: document.getElementById('editUrl').value,
                 originalExtinf: channelsData[originalIndex].originalExtinf
             };
-
             if (newIndex !== originalIndex && newIndex >= 0 && newIndex < channelsData.length) {
                 channelsData.splice(originalIndex, 1);
                 channelsData.splice(newIndex, 0, channel);
-            } else {
-                channelsData[originalIndex] = channel;
-            }
-            
+            } else { channelsData[originalIndex] = channel; }
             updateTvgChnoInAllChannels();
             closeModal('editModal');
-            displayChannels(channelsData);
+            searchChannels();
         }
 
         function saveNewChannel() {
-            if (!document.getElementById('addName').value || !document.getElementById('addUrl').value) return displayError("الاسم والرابط مطلوبان.");
+            if (!document.getElementById('addName').value || !document.getElementById('addUrl').value) return showToast("الاسم والرابط مطلوبان.", 'error');
             let newIndex = parseInt(document.getElementById('addIndexField').value) - 1;
-            
             const newChannel = {
                 name: document.getElementById('addName').value,
                 group: document.getElementById('addGroup').value,
                 logo: document.getElementById('addLogo').value,
                 url: document.getElementById('addUrl').value
             };
-
-            if (newIndex >= 0 && newIndex <= channelsData.length) {
-                channelsData.splice(newIndex, 0, newChannel);
-            } else {
-                channelsData.push(newChannel);
-            }
+            if (newIndex >= 0 && newIndex <= channelsData.length) { channelsData.splice(newIndex, 0, newChannel); }
+            else { channelsData.push(newChannel); }
             updateTvgChnoInAllChannels();
             closeModal('addModal');
-            displayChannels(channelsData);
+            searchChannels();
+            showToast('تمت إضافة القناة بنجاح.', 'success');
         }
 
-        function showPlaylistControls() {
-            // Hide initial view
-            document.getElementById('uploadArea').style.display = 'none';
-            document.getElementById('urlLoadContainer').style.display = 'none';
-
-            // Show playlist editing view
-            document.getElementById('saveAddRow').style.display = 'flex';
-            document.getElementById('toolsMergeRow').style.display = 'flex';
-            document.getElementById('searchContainer').style.display = 'block';
-
-            // Make individual buttons visible inside the rows
-             ['openExportModalButton', 'addChannelButton', 'openSortModalButton', 'manageGroupsButton', 'openMergeModalButton', 'removeDuplicatesButton'].forEach(id => {
-                const button = document.getElementById(id);
-                if (button) button.style.display = 'inline-block';
-            });
+        function handleDragStart(e) { e.currentTarget.style.cursor = 'grabbing'; draggedIndex = parseInt(e.currentTarget.dataset.index); }
+        function handleDragEnter(e) { e.preventDefault(); const targetRow = e.currentTarget; if (parseInt(targetRow.dataset.index) !== draggedIndex) { targetRow.classList.add('drag-over-indicator'); } }
+        function handleDragLeave(e) { e.currentTarget.classList.remove('drag-over-indicator'); }
+        function handleDragOver(e) { e.preventDefault(); }
+        function handleDrop(e) {
+            e.preventDefault();
+            e.currentTarget.classList.remove('drag-over-indicator');
+            const dropIndex = parseInt(e.currentTarget.dataset.index);
+            if (draggedIndex !== null && draggedIndex !== dropIndex) {
+                const draggedItem = channelsData.splice(draggedIndex, 1)[0];
+                channelsData.splice(dropIndex, 0, draggedItem);
+                updateTvgChnoInAllChannels();
+                searchChannels();
+            }
+            draggedIndex = null;
         }
 
+        function openAddModal() { document.getElementById('addIndexField').value = channelsData.length + 1; ['addName', 'addGroup', 'addLogo', 'addUrl'].forEach(id => document.getElementById(id).value = ''); updateLogoPreview('addPreviewImage', ''); document.getElementById('addModal').style.display = 'block'; }
+        function openEditModal(index) { const channel = channelsData[index]; document.getElementById('editIndexField').value = index + 1; document.getElementById('editName').value = channel.name || ''; document.getElementById('editGroup').value = channel.group || ''; document.getElementById('editLogo').value = channel.logo || ''; document.getElementById('editUrl').value = channel.url || ''; document.getElementById('editOriginalIndex').value = index; updateLogoPreview('previewImage', channel.logo); document.getElementById('editModal').style.display = 'block'; }
+        function openSortModal() { if (channelsData.length === 0) return showToast("لا توجد قنوات لفرزها.", "error"); document.getElementById('sortModal').style.display = 'block'; }
+        function handleSortCriteriaChange() { const criteria = document.querySelector('input[name="sortCriteria"]:checked').value; document.getElementById('sortByNameInputContainer').style.display = criteria === 'name' ? 'block' : 'none'; document.getElementById('sortByGroupInputContainer').style.display = criteria === 'group' ? 'block' : 'none'; }
+        function openManageGroupsModal() { if (channelsData.length === 0) return showToast("لا توجد قنوات لإدارة مجموعاتها.", "error"); const groupSelector = document.getElementById('groupSelector'); groupSelector.innerHTML = ''; const groups = new Set(channelsData.map(ch => ch.group || 'غير مصنفة')); Array.from(groups).sort((a, b) => a.localeCompare(b, 'ar')).forEach(group => { const option = document.createElement('option'); option.value = group; option.textContent = group; groupSelector.appendChild(option); }); handleGroupActionChange(); document.getElementById('manageGroupsModal').style.display = 'block'; }
+        function handleGroupActionChange() { const action = document.querySelector('input[name="groupAction"]:checked').value; document.getElementById('renameGroupInputContainer').style.display = action === 'rename' ? 'block' : 'none'; }
+        function openMergeModal() { if (channelsData.length === 0) return showToast("يجب تحميل قائمة تشغيل أولاً للدمج معها.", "error"); document.getElementById('mergeUrlInput').value = ''; document.getElementById('mergeOptionSelector').value = 'file'; handleMergeOptionChange(); document.getElementById('mergeModal').style.display = 'block'; }
+        function handleMergeOptionChange() { const selectedOption = document.getElementById('mergeOptionSelector').value; document.getElementById('mergeFileOption').style.display = (selectedOption === 'file') ? 'block' : 'none'; document.getElementById('mergeUrlOption').style.display = (selectedOption === 'url') ? 'block' : 'none'; }
+        function showPlaylistControls() { document.getElementById('uploadArea').style.display = 'none'; document.getElementById('urlLoadContainer').style.display = 'none'; document.getElementById('saveAddRow').style.display = 'flex'; document.getElementById('toolsMergeRow').style.display = 'flex'; document.getElementById('searchContainer').style.display = 'block'; ['openExportModalButton', 'addChannelButton', 'openSortModalButton', 'manageGroupsButton', 'openMergeModalButton', 'removeDuplicatesButton'].forEach(id => { const button = document.getElementById(id); if (button) button.style.display = 'inline-block'; }); }
         function closeModal(modalId) { document.getElementById(modalId).style.display = 'none'; }
-        
-        function updateLogoPreview(imgId, url) {
-            const preview = document.getElementById(imgId);
-            preview.style.display = url ? 'block' : 'none';
-            if(url) preview.src = url;
-            preview.onerror = () => preview.style.display = 'none';
-        }
+        function updateLogoPreview(imgId, url) { const preview = document.getElementById(imgId); preview.style.display = url ? 'block' : 'none'; if(url) preview.src = url; preview.onerror = () => preview.style.display = 'none'; }
         document.getElementById('editLogo').addEventListener('input', e => updateLogoPreview('previewImage', e.target.value));
         document.getElementById('addLogo').addEventListener('input', e => updateLogoPreview('addPreviewImage', e.target.value));
-        
-        function buildUpdatedExtinf(originalExtinf, group, logo, name, chno) {
-            let line = originalExtinf ? originalExtinf.replace(/,.*$/, '').split(/\s+/).filter(p => !p.toLowerCase().startsWith('group-title=') && !p.toLowerCase().startsWith('tvg-logo=') && !p.toLowerCase().startsWith('tvg-chno=')).join(' ') : '#EXTINF:-1';
-            if (chno) line += ` tvg-chno="${chno}"`;
-            if (logo) line += ` tvg-logo="${logo}"`;
-            if (group) line += ` group-title="${group}"`;
-            return `${line},${name}`;
-        }
-        
-        function updateTvgChnoInAllChannels() {
-            channelsData.forEach((channel, index) => {
-                channel.chno = index + 1;
-                channel.originalExtinf = buildUpdatedExtinf(channel.originalExtinf, channel.group, channel.logo, channel.name, channel.chno);
-            });
-        }
-
-        function openExportModal() {
-            if (channelsData.length === 0) return displayError("لا توجد قنوات لتصديرها.");
-            document.getElementById('exportModal').style.display = 'block';
-        }
-
-        function executeExport() {
-            const format = document.querySelector('input[name="exportFormat"]:checked').value;
-            if (format === 'm3u') savePlaylist();
-            else if (format === 'm3u8') savePlaylistAsM3u8();
-            else if (format === 'pls') savePlaylistAsPls();
-            closeModal('exportModal');
-        }
-
-        const createPlaylistContent = (type) => {
-            if (channelsData.length === 0) { displayError("لا يوجد قنوات للحفظ."); return null; }
-            if (type === 'pls') {
-                return '[playlist]\nNumberOfEntries=' + channelsData.length + '\nVersion=2\n' + channelsData.map((ch, i) => `File${i+1}=${ch.url}\nTitle${i+1}=${ch.name}\nLength${i+1}=-1`).join('\n');
-            }
-            return '#EXTM3U\n' + channelsData.map(ch => `${ch.originalExtinf}\n${ch.url}`).join('\n\n');
-        }
-        
+        function buildUpdatedExtinf(originalExtinf, group, logo, name, chno) { let line = originalExtinf ? originalExtinf.replace(/,.*$/, '').split(/\s+/).filter(p => !p.toLowerCase().startsWith('group-title=') && !p.toLowerCase().startsWith('tvg-logo=') && !p.toLowerCase().startsWith('tvg-chno=')).join(' ') : '#EXTINF:-1'; if (chno) line += ` tvg-chno="${chno}"`; if (logo) line += ` tvg-logo="${logo}"`; if (group) line += ` group-title="${group}"`; return `${line},${name}`; }
+        function updateTvgChnoInAllChannels() { channelsData.forEach((channel, index) => { channel.chno = index + 1; channel.originalExtinf = buildUpdatedExtinf(channel.originalExtinf, channel.group, channel.logo, channel.name, channel.chno); }); }
+        function openExportModal() { if (channelsData.length === 0) return showToast("لا توجد قنوات لتصديرها.", "error"); document.getElementById('exportModal').style.display = 'block'; }
+        function executeExport() { const format = document.querySelector('input[name="exportFormat"]:checked').value; if (format === 'm3u') savePlaylist(); else if (format === 'm3u8') savePlaylistAsM3u8(); else if (format === 'pls') savePlaylistAsPls(); closeModal('exportModal'); }
+        const createPlaylistContent = (type) => { if (channelsData.length === 0) { showToast("لا يوجد قنوات للحفظ.", "error"); return null; } if (type === 'pls') { return '[playlist]\nNumberOfEntries=' + channelsData.length + '\nVersion=2\n' + channelsData.map((ch, i) => `File${i+1}=${ch.url}\nTitle${i+1}=${ch.name}\nLength${i+1}=-1`).join('\n'); } return '#EXTM3U\n' + channelsData.map(ch => `${ch.originalExtinf}\n${ch.url}`).join('\n\n'); }
         function savePlaylist() { const c = createPlaylistContent('m3u'); if(c) downloadFile(c, 'playlist.m3u', 'text/plain;charset=utf-8'); }
-        function savePlaylistAsM3u8() { const c = createPlaylistContent('m3u8'); if(c) downloadFile(c, 'application/x-mpegurl;charset=utf-8'); }
+        function savePlaylistAsM3u8() { const c = createPlaylistContent('m3u8'); if(c) downloadFile(c, 'playlist.m3u8', 'application/x-mpegurl;charset=utf-8'); }
         function savePlaylistAsPls() { const c = createPlaylistContent('pls'); if(c) downloadFile(c, 'playlist.pls', 'text/plain;charset=utf-8'); }
-
-        function downloadFile(content, fileName, mimeType) {
-            const blob = new Blob([content], { type: mimeType });
-            const a = document.createElement('a');
-            a.href = URL.createObjectURL(blob);
-            const prefix = isMerged ? 'merged_' : isSorted ? 'sorted_' : '';
-            a.download = prefix + fileName;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(a.href);
-        }
-
-        function displayError(message) {
-            const resultsDiv = document.getElementById('results');
-            resultsDiv.innerHTML = `<p class="error-message">${message}</p>`;
-            setTimeout(() => { 
-                if (resultsDiv.querySelector('.error-message')) {
-                    resultsDiv.innerHTML = '';
-                    if (channelsData.length > 0) displayChannels(channelsData);
-                }
-             }, 5000);
-        }
-
-        document.addEventListener('click', e => {
-            if (e.target.classList.contains('edit-btn')) openEditModal(parseInt(e.target.dataset.index));
-            if (e.target.classList.contains('delete-btn')) deleteChannel(parseInt(e.target.dataset.index));
-        });
+        function downloadFile(content, fileName, mimeType) { const blob = new Blob([content], { type: mimeType }); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); const prefix = isMerged ? 'merged_' : isSorted ? 'sorted_' : ''; a.download = prefix + fileName; document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(a.href); }
+        document.addEventListener('click', e => { if (e.target.classList.contains('edit-btn')) openEditModal(parseInt(e.target.dataset.index)); if (e.target.classList.contains('delete-btn-icon')) deleteChannel(parseInt(e.target.dataset.index)); });
         window.onclick = e => document.querySelectorAll('.modal').forEach(m => { if (e.target === m) closeModal(m.id); });
     </script>
 </body>
