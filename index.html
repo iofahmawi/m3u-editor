@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>محرر قائمة تشغيل M3U/M3U8</title>
     <style>
-        /* All CSS is here */
+        /* All CSS is here (unchanged from previous version) */
         body {
             font-family: 'Arial', sans-serif;
             background-color: #f4f4f9;
@@ -282,13 +282,11 @@
          }
          .merge-option-container button:hover { background-color: #0056b3; opacity: 1; }
 
-        /* MODIFIED/NEW: Responsive styles for mobile screens */
         @media (max-width: 600px) {
             .container { padding: 15px; margin: 10px auto; }
             table { font-size: 14px; }
             th, td { padding: 6px 3px; }
             table th:nth-child(2), table td:nth-child(2) { display: none; }
-            
             #bulkActionsContainer {
                 flex-direction: column;
                 gap: 15px;
@@ -306,10 +304,10 @@
             }
             #bulkActionsButtons .action-btn:nth-child(1),
             #bulkActionsButtons .action-btn:nth-child(2) {
-                width: calc(50% - 5px); /* Two buttons per row */
+                width: calc(50% - 5px);
             }
             #bulkActionsButtons .action-btn:nth-child(3) {
-                width: 100%; /* Full width for the delete button on its own row */
+                width: 100%;
             }
         }
     </style>
@@ -388,14 +386,80 @@
     <div id="toastContainer"></div>
 
     <script>
-        // All JavaScript is here (unchanged from previous version)
         let channelsData = [];
         let displayedChannels = [];
-        let isMerged = false, isSorted = false, draggedIndex = null;
+        let isMerged = false, isSorted = false;
+        let draggedIndices = []; 
         let selectedIndices = new Set();
         let currentPage = 1;
         const rowsPerPage = 100;
 
+        function handleDragStart(e) {
+            e.currentTarget.style.cursor = 'grabbing';
+            const startIndex = parseInt(e.currentTarget.dataset.index);
+
+            if (selectedIndices.has(startIndex)) {
+                draggedIndices = Array.from(selectedIndices).sort((a, b) => a - b);
+            } else {
+                selectedIndices.clear();
+                selectedIndices.add(startIndex);
+                draggedIndices = [startIndex];
+                document.querySelectorAll('tr.selected').forEach(row => row.classList.remove('selected'));
+                e.currentTarget.classList.add('selected');
+                updateBulkActionsUI();
+            }
+        }
+
+        function handleDragEnter(e) {
+            e.preventDefault();
+            const targetRow = e.currentTarget;
+            const targetIndex = parseInt(targetRow.dataset.index);
+            if (!draggedIndices.includes(targetIndex)) {
+                targetRow.classList.add('drag-over-indicator');
+            }
+        }
+
+        function handleDragLeave(e) {
+            e.currentTarget.classList.remove('drag-over-indicator');
+        }
+
+        function handleDragOver(e) {
+            e.preventDefault();
+        }
+
+        // MODIFIED: handleDrop function to reset selection state
+        function handleDrop(e) {
+            e.preventDefault();
+            e.currentTarget.classList.remove('drag-over-indicator');
+            const dropIndex = parseInt(e.currentTarget.dataset.index);
+
+            if (draggedIndices.length === 0 || draggedIndices.includes(dropIndex)) {
+                draggedIndices = [];
+                return;
+            }
+
+            const draggedItems = draggedIndices.map(index => channelsData[index]);
+
+            for (let i = draggedIndices.length - 1; i >= 0; i--) {
+                channelsData.splice(draggedIndices[i], 1);
+            }
+
+            const itemsBeforeDrop = draggedIndices.filter(index => index < dropIndex).length;
+            const newDropIndex = dropIndex - itemsBeforeDrop;
+
+            channelsData.splice(newDropIndex, 0, ...draggedItems);
+
+            draggedIndices = [];
+            // --- NEW: Reset selection state after move ---
+            selectedIndices.clear();
+            updateBulkActionsUI(); 
+            // ---------------------------------------------
+            updateTvgChnoInAllChannels();
+            searchChannels();
+            showToast(`تم نقل ${draggedItems.length} قناة بنجاح`, 'success');
+        }
+        
+        // All other JS functions are here (unchanged)
         document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('uploadArea').style.display = 'block';
             document.getElementById('urlLoadContainer').style.display = 'block';
@@ -482,19 +546,6 @@
                 showToast(`تم حذف ${count} قناة بنجاح`, 'success');
             });
         }
-        
-        function handleDragOverFile(event) { event.preventDefault(); event.currentTarget.classList.add('dragging'); }
-        function handleDropFile(event) {
-            event.preventDefault();
-            event.currentTarget.classList.remove('dragging');
-            const files = event.dataTransfer.files;
-            if (files.length > 0) {
-                document.getElementById('fileInput').files = files;
-                handleFileSelect({ target: { files } });
-            }
-        }
-        document.getElementById('uploadArea').addEventListener('dragenter', (e) => { e.preventDefault(); e.currentTarget.classList.add('dragging'); });
-        document.getElementById('uploadArea').addEventListener('dragleave', (e) => { e.preventDefault(); e.currentTarget.classList.remove('dragging'); });
 
         function handleFileSelect(event) {
             const file = event.target.files[0];
@@ -825,23 +876,6 @@
             closeModal('addModal');
             searchChannels();
             showToast('تمت إضافة القناة بنجاح', 'success');
-        }
-
-        function handleDragStart(e) { e.currentTarget.style.cursor = 'grabbing'; draggedIndex = parseInt(e.currentTarget.dataset.index); }
-        function handleDragEnter(e) { e.preventDefault(); const targetRow = e.currentTarget; if (parseInt(targetRow.dataset.index) !== draggedIndex) { targetRow.classList.add('drag-over-indicator'); } }
-        function handleDragLeave(e) { e.currentTarget.classList.remove('drag-over-indicator'); }
-        function handleDragOver(e) { e.preventDefault(); }
-        function handleDrop(e) {
-            e.preventDefault();
-            e.currentTarget.classList.remove('drag-over-indicator');
-            const dropIndex = parseInt(e.currentTarget.dataset.index);
-            if (draggedIndex !== null && draggedIndex !== dropIndex) {
-                const draggedItem = channelsData.splice(draggedIndex, 1)[0];
-                channelsData.splice(dropIndex, 0, draggedItem);
-                updateTvgChnoInAllChannels();
-                searchChannels();
-            }
-            draggedIndex = null;
         }
 
         function openAddModal() { document.getElementById('addIndexField').value = channelsData.length + 1; ['addName', 'addGroup', 'addLogo', 'addUrl'].forEach(id => document.getElementById(id).value = ''); updateLogoPreview('addPreviewImage', ''); document.getElementById('addModal').style.display = 'block'; }
