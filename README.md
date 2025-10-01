@@ -5,11 +5,9 @@
 <br>
 
 <p align="center">
-  <strong>
-    <a href="https://iofahmawi.github.io/m3u-editor" target="_blank">
-      <h2>🚀 اضغط هنا لتجربة المحرر مباشرة 🚀</h2>
-    </a>
-  </strong>
+  <a href="https://iofahmawi.github.io/m3u-editor" target="_blank">
+    <h2>🚀 اضغط هنا لتجربة المحرر مباشرة 🚀</h2>
+  </a>
 </p>
 
 <br>
