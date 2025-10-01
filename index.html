@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>محرر قائمة تشغيل M3U/M3U8</title>
     <style>
-        /* All CSS is here (unchanged from previous version) */
+        /* All CSS is here */
         body {
             font-family: 'Arial', sans-serif;
             background-color: #f4f4f9;
@@ -287,6 +287,14 @@
             table { font-size: 14px; }
             th, td { padding: 6px 3px; }
             table th:nth-child(2), table td:nth-child(2) { display: none; }
+            
+            .modal-content {
+                width: 91%; /* تم التعديل من 95% إلى 91% */
+                padding: 15px;
+                margin: 10% auto;
+                max-height: 80vh;
+            }
+
             #bulkActionsContainer {
                 flex-direction: column;
                 gap: 15px;
@@ -313,6 +321,7 @@
     </style>
 </head>
 <body>
+    <!-- محتوى HTML لم يتغير -->
     <div class="container">
         <h1>محرر قائمة تشغيل M3U/M3U8</h1>
         
@@ -386,6 +395,7 @@
     <div id="toastContainer"></div>
 
     <script>
+        // محتوى JavaScript لم يتغير
         let channelsData = [];
         let displayedChannels = [];
         let isMerged = false, isSorted = false;
@@ -427,7 +437,6 @@
             e.preventDefault();
         }
 
-        // MODIFIED: handleDrop function to reset selection state
         function handleDrop(e) {
             e.preventDefault();
             e.currentTarget.classList.remove('drag-over-indicator');
@@ -450,16 +459,13 @@
             channelsData.splice(newDropIndex, 0, ...draggedItems);
 
             draggedIndices = [];
-            // --- NEW: Reset selection state after move ---
             selectedIndices.clear();
             updateBulkActionsUI(); 
-            // ---------------------------------------------
             updateTvgChnoInAllChannels();
             searchChannels();
             showToast(`تم نقل ${draggedItems.length} قناة بنجاح`, 'success');
         }
         
-        // All other JS functions are here (unchanged)
         document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('uploadArea').style.display = 'block';
             document.getElementById('urlLoadContainer').style.display = 'block';
