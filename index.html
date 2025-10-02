@@ -69,13 +69,7 @@
             text-align: center;
         }
         #urlInput {
-            padding: 10px;
-            width: 100%;
-            max-width: 100%;
-            margin: 0 0 10px 0;
-            border-radius: 4px;
-            border: 1px solid #ccc;
-            box-sizing: border-box;
+            display: none; 
         }
         .action-btn {
             background-color: #007bff;
@@ -120,7 +114,6 @@
             #mainControls button { width: 45%; margin: 5px 0; }
              #initialButtonsRow { flex-direction: column; }
              #initialButtonsRow button { width: 100%; }
-            #urlInput { width: 100%; max-width: 100%; margin: 5px auto; }
         }
         @media (min-width: 769px) {
             #mainControls button { width: auto; min-width: 150px; }
@@ -248,6 +241,23 @@
             border-radius: 10px; position: relative; box-sizing: border-box;
             overflow-y: auto; min-height: 200px;
         }
+        /* *** MODIFIED ***: Centered textarea horizontally */
+        .modal-content textarea {
+            width: 95%;
+            min-height: 150px;
+            padding: 8px;
+            margin: 10px auto; /* This centers the element */
+            display: block; /* Required for auto margin to work */
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+            resize: vertical;
+        }
+        /* *** ADDED ***: Specific style for URL textarea to be LTR */
+        #multiUrlTextarea {
+            direction: ltr;
+            text-align: left;
+        }
         .close {
             color: #aaa; float: left; font-size: 28px; font-weight: bold;
         }
@@ -321,14 +331,13 @@
     </style>
 </head>
 <body>
-    <!-- HTML content remains unchanged -->
     <div class="container">
         <h1>محرر قائمة تشغيل M3U/M3U8</h1>
         
         <div id="loadingIndicator" style="display: none;"><p>جارٍ التحميل...</p></div>
         
         <div id="mainControls">
-            <label for="fileInput" id="uploadArea" class="upload-area" ondrop="handleDropFile(event)" ondragover="handleDragOverFile(event)">
+            <label for="fileInput" id="uploadArea" class="upload-area">
                 <p style="font-size: 1.1em; font-weight: bold;">اضغط لرفع ملف قائمة التشغيل</p>
                 <span class="upload-label">اختيار ملف M3U أو M3U8</span>
             </label>
@@ -336,7 +345,7 @@
             <div id="urlLoadContainer">
                  <input type="url" id="urlInput" placeholder="أدخل رابط ملف M3U/M3U8">
                  <div class="button-row" id="initialButtonsRow">
-                    <button class="action-btn" id="loadUrlButton" onclick="fetchPlaylistFromUrl()">تحميل من رابط</button>
+                    <button class="action-btn" id="loadUrlButton" onclick="openMultiUrlModal()">تحميل من روابط</button>
                     <button class="action-btn" id="createNewPlaylistButton" onclick="createNewPlaylist()">إنشاء قائمة جديدة</button>
                  </div>
             </div>
@@ -372,6 +381,19 @@
     </div>
 
     <!-- Modals -->
+    <div id="multiUrlModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('multiUrlModal')">&times;</span>
+            <h2>تحميل من عدة روابط</h2>
+            <p>ألصق الروابط هنا، كل رابط في سطر جديد. سيتم دمجها بالترتيب.</p>
+            <textarea id="multiUrlTextarea" placeholder="https://example.com/playlist1.m3u&#10;https://example.com/playlist2.m3u8"></textarea>
+            <div class="modal-buttons">
+                <button onclick="processMultiUrlLoad()">تحميل ودمج</button>
+                <button onclick="closeModal('multiUrlModal')" class="cancel">إلغاء</button>
+            </div>
+        </div>
+    </div>
+
     <div id="bulkEditGroupModal" class="modal">
         <div class="modal-content">
             <span class="close" onclick="closeModal('bulkEditGroupModal')">&times;</span>
@@ -395,6 +417,7 @@
     <div id="toastContainer"></div>
 
     <script>
+        // JavaScript code remains unchanged from the previous version
         let channelsData = [];
         let displayedChannels = [];
         let isMerged = false, isSorted = false;
@@ -731,24 +754,55 @@
             showToast(`تم إزالة ${duplicatesRemoved} قناة مكررة`, 'success');
         }
         
-        function fetchPlaylistFromUrl() {
-            const url = document.getElementById('urlInput').value;
-            if (!url) return showToast("يرجى إدخال رابط صالح", "error");
+        function openMultiUrlModal() {
+            document.getElementById('multiUrlTextarea').value = '';
+            document.getElementById('multiUrlModal').style.display = 'block';
+        }
+
+        async function processMultiUrlLoad() {
+            const urlsText = document.getElementById('multiUrlTextarea').value;
+            const urls = urlsText.split('\n').map(u => u.trim()).filter(u => u);
+
+            if (urls.length === 0) {
+                return showToast("يرجى إدخال رابط واحد على الأقل", "error");
+            }
+
+            closeModal('multiUrlModal');
             document.getElementById('loadingIndicator').style.display = 'block';
-            fetch(url)
-                .then(response => { if (!response.ok) throw new Error('فشل تحميل الملف'); return response.text(); })
-                .then(content => {
-                    const newChannels = parsePlaylist(content);
-                    if (newChannels.length === 0) return showToast("الرابط لا يحتوي على قنوات", "error");
-                    channelsData = newChannels;
-                    showToast(`تم تحميل ${channelsData.length} قناة بنجاح من الرابط`, 'success');
-                    isMerged = false; isSorted = false;
-                    updateTvgChnoInAllChannels();
-                    searchChannels();
-                    showPlaylistControls();
-                })
-                .catch(error => showToast(`خطأ: ${error.message}`, 'error'))
-                .finally(() => document.getElementById('loadingIndicator').style.display = 'none');
+
+            let allNewChannels = [];
+            let failedCount = 0;
+
+            for (const url of urls) {
+                try {
+                    const response = await fetch(url);
+                    if (!response.ok) throw new Error(`فشل تحميل الرابط (الحالة: ${response.status})`);
+                    const content = await response.text();
+                    const channelsFromUrl = parsePlaylist(content);
+                    allNewChannels.push(...channelsFromUrl);
+                } catch (error) {
+                    failedCount++;
+                    console.error(`خطأ في تحميل الرابط ${url}:`, error);
+                }
+            }
+
+            document.getElementById('loadingIndicator').style.display = 'none';
+
+            if (allNewChannels.length > 0) {
+                channelsData = allNewChannels;
+                isMerged = urls.length > 1;
+                isSorted = false;
+                updateTvgChnoInAllChannels();
+                searchChannels();
+                showPlaylistControls();
+                let successMessage = `تم تحميل ${channelsData.length} قناة بنجاح من ${urls.length - failedCount} رابط.`;
+                if (failedCount > 0) {
+                    successMessage += ` فشل تحميل ${failedCount} رابط.`;
+                }
+                showToast(successMessage, 'success');
+            } else {
+                showToast("فشل تحميل أي قنوات من الروابط المقدمة", "error");
+            }
         }
 
         function createNewPlaylist() {
@@ -783,7 +837,6 @@
             closeModal('sortModal');
         }
         
-        // *** THIS ENTIRE FUNCTION IS UPDATED ***
         function executeGroupAction() {
             const action = document.querySelector('input[name="groupAction"]:checked').value;
             if (action === 'removeAll') {
@@ -1009,7 +1062,7 @@
         }
 
         function savePlaylist() { const c = createPlaylistContent('m3u'); if(c) downloadFile(c, 'playlist.m3u', 'text/plain;charset=utf-8'); }
-        function savePlaylistAsM3u8() { const c = createPlaylistContent('m3u8'); if(c) downloadFile(c, 'playlist.m3u8', 'application/x-mpegurl;charset=utf-8'); }
+        function savePlaylistAsM3u8() { const c = createPlaylistContent('m3u8'); if(c) downloadFile(c, 'application/x-mpegurl;charset=utf-8'); }
         function savePlaylistAsPls() { const c = createPlaylistContent('pls'); if(c) downloadFile(c, 'playlist.pls', 'text/plain;charset=utf-8'); }
         function downloadFile(content, fileName, mimeType) { const blob = new Blob([content], { type: mimeType }); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); const prefix = isMerged ? 'merged_' : isSorted ? 'sorted_' : ''; a.download = prefix + fileName; document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(a.href); }
         document.addEventListener('click', e => { if (e.target.classList.contains('edit-btn')) openEditModal(parseInt(e.target.dataset.index)); if (e.target.classList.contains('delete-btn-icon')) deleteChannel(parseInt(e.target.dataset.index)); });
