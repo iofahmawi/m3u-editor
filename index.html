@@ -241,19 +241,17 @@
             border-radius: 10px; position: relative; box-sizing: border-box;
             overflow-y: auto; min-height: 200px;
         }
-        /* *** MODIFIED ***: Centered textarea horizontally */
         .modal-content textarea {
             width: 95%;
             min-height: 150px;
             padding: 8px;
-            margin: 10px auto; /* This centers the element */
-            display: block; /* Required for auto margin to work */
+            margin: 10px auto;
+            display: block;
             border: 1px solid #ccc;
             border-radius: 4px;
             box-sizing: border-box;
             resize: vertical;
         }
-        /* *** ADDED ***: Specific style for URL textarea to be LTR */
         #multiUrlTextarea {
             direction: ltr;
             text-align: left;
@@ -417,7 +415,6 @@
     <div id="toastContainer"></div>
 
     <script>
-        // JavaScript code remains unchanged from the previous version
         let channelsData = [];
         let displayedChannels = [];
         let isMerged = false, isSorted = false;
@@ -804,16 +801,15 @@
                 showToast("فشل تحميل أي قنوات من الروابط المقدمة", "error");
             }
         }
-
+        
+        // *** MODIFIED ***: Removed the confirmation dialog
         function createNewPlaylist() {
-            showConfirm('إنشاء قائمة جديدة', 'هل أنت متأكد؟ سيتم حذف جميع القنوات الحالية.', () => {
-                channelsData = [];
-                displayedChannels = [];
-                selectedIndices.clear();
-                showPlaylistControls();
-                displayPaginatedChannels();
-                showToast('تم إنشاء قائمة جديدة فارغة', 'info');
-            });
+            channelsData = [];
+            displayedChannels = [];
+            selectedIndices.clear();
+            showPlaylistControls();
+            displayPaginatedChannels();
+            showToast('تم إنشاء قائمة جديدة فارغة', 'info');
         }
         
         function executeSort() {
@@ -1062,7 +1058,7 @@
         }
 
         function savePlaylist() { const c = createPlaylistContent('m3u'); if(c) downloadFile(c, 'playlist.m3u', 'text/plain;charset=utf-8'); }
-        function savePlaylistAsM3u8() { const c = createPlaylistContent('m3u8'); if(c) downloadFile(c, 'application/x-mpegurl;charset=utf-8'); }
+        function savePlaylistAsM3u8() { const c = createPlaylistContent('m3u8'); if(c) downloadFile(c, 'playlist.m3u8', 'application/x-mpegurl;charset=utf-8'); }
         function savePlaylistAsPls() { const c = createPlaylistContent('pls'); if(c) downloadFile(c, 'playlist.pls', 'text/plain;charset=utf-8'); }
         function downloadFile(content, fileName, mimeType) { const blob = new Blob([content], { type: mimeType }); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); const prefix = isMerged ? 'merged_' : isSorted ? 'sorted_' : ''; a.download = prefix + fileName; document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(a.href); }
         document.addEventListener('click', e => { if (e.target.classList.contains('edit-btn')) openEditModal(parseInt(e.target.dataset.index)); if (e.target.classList.contains('delete-btn-icon')) deleteChannel(parseInt(e.target.dataset.index)); });
