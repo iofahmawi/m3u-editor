@@ -393,12 +393,81 @@
         function buildUpdatedExtinf(originalExtinf, groups, logo, name, chno) { let line = originalExtinf ? originalExtinf.replace(/,.*$/, '').split(/\s+/).filter(p => !p.toLowerCase().startsWith('group-title=') && !p.toLowerCase().startsWith('tvg-logo=') && !p.toLowerCase().startsWith('tvg-chno=')).join(' ') : '#EXTINF:-1'; if (chno) line += ` tvg-chno="${chno}"`; if (logo) line += ` tvg-logo="${logo}"`; if (groups && groups.length > 0) line += ` group-title="${groups.join(';')}"`; return `${line},${name}`; }
         function updateTvgChnoInAllChannels() { channelsData.forEach((channel, index) => { channel.chno = index + 1; channel.originalExtinf = buildUpdatedExtinf(channel.originalExtinf, channel.groups, channel.logo, channel.name, channel.chno); }); }
         function openExportModal() { if (channelsData.length === 0) return showToast("لا توجد قنوات لتصديرها", "error"); openModal('exportModal'); }
-        function executeExport() { const format = document.querySelector('input[name="exportFormat"]:checked').value; if (format === 'm3u') savePlaylist(); else if (format === 'm3u8') savePlaylistAsM3u8(); else if (format === 'pls') savePlaylistAsPls(); else if (format === 'enigma2') saveEnigma2Bouquets(); closeModal('exportModal'); }
+        
+        // *** MODIFIED FUNCTION ***
+        function executeExport() {
+            const format = document.querySelector('input[name="exportFormat"]:checked').value;
+            const isFiltered = displayedChannels.length < channelsData.length && channelsData.length > 0;
+
+            const exportFunction = (channels) => {
+                if (format === 'm3u') savePlaylist(channels);
+                else if (format === 'm3u8') savePlaylistAsM3u8(channels);
+                else if (format === 'pls') savePlaylistAsPls(channels);
+                else if (format === 'enigma2') saveEnigma2Bouquets(channels);
+            };
+
+            closeModal('exportModal'); // Close the format selection modal
+
+            if (isFiltered) {
+                showConfirm(
+                    'تصدير القنوات المصفاة',
+                    'سيتم تصدير فقط القنوات التي ظهرت بالبحث والتصفية. هل تريد المتابعة؟',
+                    () => { exportFunction(displayedChannels); }
+                );
+            } else {
+                exportFunction(channelsData);
+            }
+        }
+
         const createPlaylistContent = (type, channelsToExport = channelsData) => { if (channelsToExport.length === 0) { showToast("لا يوجد قنوات للحفظ", "error"); return null; } if (type === 'pls') { return '[playlist]\nNumberOfEntries=' + channelsToExport.length + '\nVersion=2\n' + channelsToExport.map((ch, i) => `File${i+1}=${ch.url}\nTitle${i+1}=${ch.name}\nLength${i+1}=-1`).join('\n'); } return '#EXTM3U\n' + channelsToExport.map(ch => `${buildUpdatedExtinf(ch.originalExtinf, ch.groups, ch.logo, ch.name, ch.chno)}\n${ch.url}`).join('\n\n'); }
-        function savePlaylist() { const c = createPlaylistContent('m3u'); if(c) downloadFile(c, 'playlist.m3u', 'text/plain;charset=utf-8'); }
-        function savePlaylistAsM3u8() { const c = createPlaylistContent('m3u8'); if(c) downloadFile(c, 'application/x-mpegurl;charset=utf-8'); }
-        function savePlaylistAsPls() { const c = createPlaylistContent('pls'); if(c) downloadFile(c, 'playlist.pls', 'text/plain;charset=utf-8'); }
-        async function saveEnigma2Bouquets() { if (channelsData.length === 0) { showToast("لا يوجد قنوات للحفظ", "error"); return; } const zip = new JSZip(); const allGroups = new Set(channelsData.flatMap(ch => (ch.groups && ch.groups.length) ? ch.groups : [])); const bouquets = []; for (const group of allGroups) { const groupChannels = channelsData.filter(ch => ch.groups.includes(group)); if (groupChannels.length === 0) continue; const sanitizedGroupName = group.replace(/[^a-zA-Z0-9]/g, '_').toLowerCase(); const bouquetFileName = `userbouquet.${sanitizedGroupName}.tv`; bouquets.push(bouquetFileName); let bouquetContent = `#NAME ${group}\n`; groupChannels.forEach(ch => { const encodedUrl = encodeURIComponent(ch.url).replace(/:/g, '%3a'); bouquetContent += `#SERVICE 4097:0:1:0:0:0:0:0:0:0:${encodedUrl}:${ch.name}\n`; }); zip.file(bouquetFileName, bouquetContent); } let bouquetsTvContent = '#NAME Bouquets (TV)\n'; bouquets.forEach(b => { bouquetsTvContent += `#SERVICE 1:7:1:0:0:0:0:0:0:0:FROM BOUQUET "${b}" ORDER BY bouquet\n`; }); zip.file('bouquets.tv', bouquetsTvContent); try { const content = await zip.generateAsync({type:"blob"}); const a = document.createElement('a'); a.href = URL.createObjectURL(content); a.download = 'enigma2_bouquets.zip'; document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(a.href); } catch(e) { showToast("حدث خطأ أثناء إنشاء ملف ZIP.", "error"); } }
+        
+        // *** MODIFIED FUNCTION ***
+        function savePlaylist(channelsToExport = channelsData) { const c = createPlaylistContent('m3u', channelsToExport); if(c) downloadFile(c, 'playlist.m3u', 'text/plain;charset=utf-8'); }
+        
+        // *** MODIFIED FUNCTION ***
+        function savePlaylistAsM3u8(channelsToExport = channelsData) { const c = createPlaylistContent('m3u8', channelsToExport); if(c) downloadFile(c, 'playlist.m3u8', 'application/x-mpegurl;charset=utf-8'); }
+        
+        // *** MODIFIED FUNCTION ***
+        function savePlaylistAsPls(channelsToExport = channelsData) { const c = createPlaylistContent('pls', channelsToExport); if(c) downloadFile(c, 'playlist.pls', 'text/plain;charset=utf-8'); }
+        
+        // *** MODIFIED FUNCTION ***
+        async function saveEnigma2Bouquets(channelsToExport = channelsData) {
+            if (channelsToExport.length === 0) { showToast("لا يوجد قنوات للحفظ", "error"); return; }
+            const zip = new JSZip();
+            const allGroups = new Set(channelsToExport.flatMap(ch => (ch.groups && ch.groups.length) ? ch.groups : []));
+            const bouquets = [];
+            for (const group of allGroups) {
+                const groupChannels = channelsToExport.filter(ch => ch.groups && ch.groups.includes(group));
+                if (groupChannels.length === 0) continue;
+                const sanitizedGroupName = group.replace(/[^a-zA-Z0-9]/g, '_').toLowerCase();
+                const bouquetFileName = `userbouquet.${sanitizedGroupName}.tv`;
+                bouquets.push(bouquetFileName);
+                let bouquetContent = `#NAME ${group}\n`;
+                groupChannels.forEach(ch => {
+                    const encodedUrl = encodeURIComponent(ch.url).replace(/:/g, '%3a');
+                    bouquetContent += `#SERVICE 4097:0:1:0:0:0:0:0:0:0:${encodedUrl}:${ch.name}\n`;
+                });
+                zip.file(bouquetFileName, bouquetContent);
+            }
+            let bouquetsTvContent = '#NAME Bouquets (TV)\n';
+            bouquets.forEach(b => {
+                bouquetsTvContent += `#SERVICE 1:7:1:0:0:0:0:0:0:0:FROM BOUQUET "${b}" ORDER BY bouquet\n`;
+            });
+            zip.file('bouquets.tv', bouquetsTvContent);
+            try {
+                const content = await zip.generateAsync({type:"blob"});
+                const a = document.createElement('a');
+                a.href = URL.createObjectURL(content);
+                a.download = 'enigma2_bouquets.zip';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(a.href);
+            } catch(e) {
+                showToast("حدث خطأ أثناء إنشاء ملف ZIP.", "error");
+            }
+        }
+
         function downloadFile(content, fileName, mimeType) { const blob = new Blob([content], { type: mimeType }); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); const prefix = isMerged ? 'merged_' : isSorted ? 'sorted_' : ''; a.download = prefix + fileName; document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(a.href); }
         document.addEventListener('click', e => { if (e.target.classList.contains('edit-btn')) openEditModal(parseInt(e.target.dataset.index)); if (e.target.classList.contains('delete-btn-icon')) deleteChannel(parseInt(e.target.dataset.index)); });
         window.onclick = e => document.querySelectorAll('.modal').forEach(m => { if (e.target === m) closeModal(m.id); });
