@@ -14,8 +14,10 @@
             --primary-hover: #d35400;
             --secondary-color: #34495e; /* Wet Asphalt Blue */
             --secondary-hover: #2c3e50;
-            --delete-color: #546e7a; /* Neutral dark grey for delete */
-            --delete-hover: #455a64;
+            --delete-color: #c0392b; /* Pomegranate Red for delete actions */
+            --delete-hover: #a93226;
+            --button-delete-color: #546e7a; /* Neutral dark grey for delete buttons */
+            --button-delete-hover: #455a64;
             --background-color: #fdfcfb; /* Very Light Beige */
             --container-bg-color: #ffffff;
             --text-color: #5D4037; /* Warm Dark Brown */
@@ -73,8 +75,8 @@
             white-space: nowrap;
         }
         .action-btn:hover:not(:disabled) { background-color: var(--secondary-hover); }
-        .action-btn.delete-btn { background-color: var(--delete-color); }
-        .action-btn.delete-btn:hover { background-color: var(--delete-hover); }
+        .action-btn.delete-btn { background-color: var(--button-delete-color); }
+        .action-btn.delete-btn:hover { background-color: var(--button-delete-hover); }
         .action-btn.export-btn { background-color: var(--primary-color); }
         .action-btn.export-btn:hover { background-color: var(--primary-hover); }
 
@@ -121,14 +123,79 @@
 
         .action-button-icon { background: none; border: none; cursor: pointer; font-size: 1.2em; margin: 0 1px; padding: 5px 3px; display: inline-block; text-align: center; color: var(--secondary-color); font-weight: bold; transition: color 0.3s; }
         .action-button-icon:hover { color: var(--secondary-hover); }
-        .delete-btn-icon { color: var(--delete-color); }
-        .delete-btn-icon:hover { color: var(--delete-hover); }
+        .delete-btn-icon { color: var(--button-delete-color); }
+        .delete-btn-icon:hover { color: var(--button-delete-hover); }
 
         .modal-content { background-color: var(--container-bg-color); }
+        
+        /* === START: NEW TOAST NOTIFICATION CODE === */
+        #toastContainer {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 2000;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            direction: ltr;
+        }
+
+        /* The new wrapper is responsible ONLY for the animation */
+        .toast-wrapper {
+            opacity: 0;
+            transform: translateX(-120%);
+            transition: all 0.5s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+        }
+
+        .toast-wrapper.show {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        /* The inner toast is responsible ONLY for layout and design */
+        .toast {
+            display: grid;
+            grid-template-columns: 1fr auto;
+            align-items: center;
+            gap: 10px;
+            min-width: 300px;
+            background-color: #fff;
+            color: #333;
+            padding: 12px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            border-left: 5px solid #ccc;
+            box-sizing: border-box;
+        }
+
         .toast.success { border-left-color: var(--primary-color); }
         .toast.error { border-left-color: var(--delete-color); }
         .toast.info { border-left-color: var(--secondary-color); }
-        .error-message { color: red; font-weight: bold; margin-top: 15px; text-align: center; } #toastContainer { position: fixed; top: 20px; left: 20px; z-index: 2000; display: flex; flex-direction: column; gap: 10px; direction: ltr; } .toast { display: flex; align-items: center; background-color: #fff; color: #333; padding: 12px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); min-width: 300px; opacity: 0; transform: translateX(-120%); transition: all 0.5s cubic-bezier(0.68, -0.55, 0.27, 1.55); border-left: 5px solid #ccc; } .toast.show { opacity: 1; transform: translateX(0); } .toast-content { flex-grow: 1; margin: 0 10px; text-align: right; } .toast-close { background: none; border: none; color: #aaa; font-size: 20px; cursor: pointer; padding: 0 5px; } .toast-close:hover { color: #333; } #paginationControls { display: flex; justify-content: center; align-items: center; margin-top: 20px; gap: 10px; } #paginationControls button { background-color: #f0f0f0; border: 1px solid var(--border-color); padding: 8px 16px; border-radius: 4px; cursor: pointer; } #paginationControls button:disabled { background-color: #e9ecef; cursor: not-allowed; } #pageInfo { font-weight: bold; } #confirmModal .modal-content { max-width: 400px; text-align: center; } #confirmMessage { margin: 20px 0; font-size: 1.1em; } .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.4); align-items: center; justify-content: center; } .modal:not(#addModal, #editModal, #manageGroupsModal, #findReplaceModal) { align-items: flex-start; padding-top: 15vh; } .modal-content { padding: 20px; border: 1px solid var(--border-color); width: auto; max-width: 500px; border-radius: 10px; position: relative; box-sizing: border-box; overflow-y: auto; min-height: 200px; margin: 0; } .modal-content textarea { width: 95%; min-height: 150px; padding: 8px; margin: 10px auto; display: block; border: 1px solid var(--border-color); border-radius: 4px; box-sizing: border-box; resize: vertical; } #multiUrlTextarea { direction: ltr; text-align: left; } .close { color: #aaa; float: left; font-size: 28px; font-weight: bold; } .close:hover, .close:focus { color: #000; text-decoration: none; cursor: pointer; } .modal-content input[type="text"], .modal-content input[type="url"], .modal-content input[type="number"], .modal-content select { width: 95%; padding: 8px; margin: 10px 0; display: inline-block; border: 1px solid var(--border-color); border-radius: 4px; box-sizing: border-box; } 
+
+        .toast-content {
+            text-align: right;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .toast-close {
+            background: none;
+            border: none;
+            color: #aaa;
+            font-size: 20px;
+            cursor: pointer;
+            padding: 0 5px;
+        }
+
+        .toast-close:hover {
+            color: #333;
+        }
+        /* === END: NEW TOAST NOTIFICATION CODE === */
+        
+        #paginationControls { display: flex; justify-content: center; align-items: center; margin-top: 20px; gap: 10px; } 
+        #paginationControls button { background-color: #f0f0f0; border: 1px solid var(--border-color); padding: 7.5px 16px; border-radius: 4px; cursor: pointer; } /* FIX: Button Height */
+        #paginationControls button:disabled { background-color: #e9ecef; cursor: not-allowed; } #pageInfo { font-weight: bold; } #confirmModal .modal-content { max-width: 400px; text-align: center; } #confirmMessage { margin: 20px 0; font-size: 1.1em; } .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.4); align-items: center; justify-content: center; } .modal:not(#addModal, #editModal, #manageGroupsModal, #findReplaceModal) { align-items: flex-start; padding-top: 15vh; } .modal-content { padding: 20px; border: 1px solid var(--border-color); width: auto; max-width: 500px; border-radius: 10px; position: relative; box-sizing: border-box; overflow-y: auto; min-height: 200px; margin: 0; } .modal-content textarea { width: 95%; min-height: 150px; padding: 8px; margin: 10px auto; display: block; border: 1px solid var(--border-color); border-radius: 4px; box-sizing: border-box; resize: vertical; } #multiUrlTextarea { direction: ltr; text-align: left; } .close { color: #aaa; float: left; font-size: 28px; font-weight: bold; } .close:hover, .close:focus { color: #000; text-decoration: none; cursor: pointer; } .modal-content input[type="text"], .modal-content input[type="url"], .modal-content input[type="number"], .modal-content select { width: 95%; padding: 8px; margin: 10px 0; display: inline-block; border: 1px solid var(--border-color); border-radius: 4px; box-sizing: border-box; } 
         .modal-content input[type="radio"], .modal-content input[type="checkbox"] { 
             margin: 10px 5px;
             accent-color: var(--primary-color);
@@ -136,7 +203,7 @@
         .modal-content button { 
             background-color: var(--primary-color); 
             color: white; border: none; 
-            padding: 8px 12px; 
+            padding: 7.5px 12px; /* FIX: Button Height */
             border-radius: 4px; 
             cursor: pointer; 
             margin-left: 3px; 
@@ -144,12 +211,13 @@
             min-width: 80px;
             font-weight: 600;
         } 
-        .modal-content button.cancel { background-color: var(--delete-color); } 
+        .modal-content button.cancel { background-color: var(--button-delete-color); } 
         .modal-content button:hover { opacity: 0.8; } 
         .modal-row { display: flex; align-items: center; margin-bottom: 10px; } 
         .modal-row label { margin-left: 5px; cursor: pointer; } 
         .modal-buttons { display: flex; justify-content: center; align-items: center; margin-top: 25px; flex-wrap: wrap; gap: 10px; width: 100%; }
         
+        /* *** FIX: Restored correct layout for Bulk Actions modal as requested *** */
         #bulkActionsModal .modal-buttons {
             display: flex;
             flex-wrap: wrap;
@@ -157,7 +225,7 @@
             gap: 15px;
         }
         #bulkActionsModal .modal-buttons .action-btn {
-            padding: 12px;
+            padding: 7.5px 12px; /* FIX: Button Height */
             margin: 0;
         }
         #bulkActionsModal .modal-buttons .action-btn:nth-child(1),
@@ -168,10 +236,72 @@
             width: 100%;
         }
 
+        /* DROPDOWN STYLES */
+        .dropdown-container {
+            position: relative;
+            display: inline-block;
+            width: 100%;
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 1px solid var(--border-color);
+        }
+        #channelCheckerModal .dropdown-btn {
+            width: 100%;
+            background-color: var(--secondary-color) !important;
+            color: white;
+            padding: 7.5px 10px; /* FIX: Button Height */
+            font-size: 1em;
+            font-weight: bold;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            text-align: center;
+            transition: background-color 0.3s;
+        }
+        #channelCheckerModal .dropdown-btn:hover {
+            background-color: var(--secondary-hover) !important;
+        }
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            background-color: #f9f9f9;
+            min-width: 100%;
+            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+            z-index: 1;
+            border-radius: 6px;
+            overflow: hidden;
+            bottom: 100%;
+            margin-bottom: 5px;
+        }
+        .dropdown-content a {
+            color: black;
+            padding: 12px 16px;
+            text-decoration: none;
+            display: block;
+            text-align: right;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .dropdown-content a:last-child {
+            border-bottom: none;
+        }
+        .dropdown-content a:hover {
+            background-color: #f1f1f1;
+        }
+        .dropdown-content a.delete-option {
+            color: var(--delete-color);
+            font-weight: bold;
+        }
+        .dropdown-content a.delete-option:hover {
+            background-color: #f5c2bf;
+        }
+        .show {
+            display: block;
+        }
+
         #loadingIndicator { font-weight: bold; color: var(--primary-color); text-align: center; margin: 20px; } #logoPreview img, #addPreviewImage { max-width: 50px; max-height: 50px; display: none; } #mergeModal .modal-content-body { padding: 15px; text-align: center; } #mergeOptionSelector { width: 100%; padding: 10px; font-size: 1em; margin-bottom: 20px; } .merge-option-container { padding: 10px; } .merge-option-container p { margin-bottom: 20px; color: #666; } 
-        .merge-option-container button { background-color: var(--primary-color); color: white; padding: 10px 25px; font-size: 1em; border: none; border-radius: 6px; cursor: pointer; } 
+        .merge-option-container button { background-color: var(--primary-color); color: white; padding: 7.5px 25px; font-size: 1em; border: none; border-radius: 6px; cursor: pointer; } /* FIX: Button Height */
         .merge-option-container button:hover { background-color: var(--primary-hover); } 
-        .status-dot { height: 10px; width: 10px; border-radius: 50%; display: none; margin-left: 5px; } body.show-status-dots .status-dot { display: inline-block; } .status-dot.unchecked { background-color: #bbb; } .status-dot.checking { background-color: #f0ad4e; animation: blinker 1s linear infinite; } .status-dot.checked-ok { background-color: #5cb85c; } .status-dot.checked-fail { background-color: #d9534f; } @keyframes blinker { 50% { opacity: 0.5; } } #checker-progress-bar-container { width: 100%; background-color: #f3f3f3; border-radius: 5px; margin: 15px 0; } #checker-progress-bar { width: 0%; height: 20px; background-color: var(--primary-color); border-radius: 5px; text-align: center; line-height: 20px; color: white; transition: width 0.3s; } .find-replace-options div { margin-bottom: 5px; } @media (max-width: 600px) { .container { padding: 15px; margin: 10px auto; } table { font-size: 14px; } th, td { padding: 6px 3px; } table th:nth-child(2), table td:nth-child(2) { display: none; } .modal-content { width: 91%; padding: 15px; margin: 0; max-height: 80vh; } }
+        .status-dot { height: 10px; width: 10px; border-radius: 50%; display: none; margin-left: 5px; } body.show-status-dots .status-dot { display: inline-block; } .status-dot.unchecked { background-color: #bbb; } .status-dot.checking { background-color: #f0ad4e; animation: blinker 1s linear infinite; } .status-dot.checked-ok { background-color: #5cb85c; } .status-dot.checked-fail { background-color: var(--delete-color); } @keyframes blinker { 50% { opacity: 0.5; } } #checker-progress-bar-container { width: 100%; background-color: #f3f3f3; border-radius: 5px; margin: 15px 0; } #checker-progress-bar { width: 0%; height: 20px; background-color: var(--primary-color); border-radius: 5px; text-align: center; line-height: 20px; color: white; transition: width 0.3s; } .find-replace-options div { margin-bottom: 5px; } @media (max-width: 600px) { .container { padding: 15px; margin: 10px auto; } table { font-size: 14px; } th, td { padding: 6px 3px; } table th:nth-child(2), table td:nth-child(2) { display: none; } .modal-content { width: 91%; padding: 15px; margin: 0; max-height: 80vh; } }
     </style>
 </head>
 <body>
@@ -210,7 +340,6 @@
             </div>
         </div>
 
-        <!-- *** MODIFIED ***: 'multiple' attribute added -->
         <input type="file" id="fileInput" accept=".m3u,.m3u8,.pls" multiple style="display: none;">
         <input type="file" id="mergeFileInput" accept=".m3u,.m3u8,.pls" multiple style="display: none;">
         <div id="results"></div>
@@ -222,7 +351,8 @@
     
     <div id="bulkActionsModal" class="modal"><div class="modal-content"><span class="close" onclick="closeModal('bulkActionsModal')">&times;</span><h2>إجراءات على القنوات المحددة</h2><div class="modal-buttons"><button class="action-btn" onclick="openBulkEditGroupModal(); closeModal('bulkActionsModal');">تعديل المجموعة</button><button class="action-btn export-btn" onclick="exportSelected(); closeModal('bulkActionsModal');">تصدير المحدد</button><button class="action-btn delete-btn" onclick="deleteSelected(); closeModal('bulkActionsModal');">حذف المحدد</button></div></div></div>
     
-    <div id="channelCheckerModal" class="modal"><div class="modal-content"><span class="close" onclick="closeModal('channelCheckerModal')">&times;</span><h2>مدقق حالة القنوات</h2><p>سيقوم هذا الإجراء بالتحقق من كل قناة لتحديد ما إذا كانت تعمل. قد يستغرق هذا بعض الوقت للقوائم الكبيرة.</p><div id="checker-progress-container"><p id="checker-progress-text">اضغط على زر 'بدء الفحص' للتحقق من حالة القنوات.</p><div id="checker-progress-bar-container"><div id="checker-progress-bar">0%</div></div></div><p id="checker-summary-text" style="font-weight: bold;"></p><div class="modal-buttons"><button id="start-check-btn" onclick="executeChannelCheck()">بدء الفحص</button><button id="stop-check-btn" onclick="stopChannelCheck()" class="cancel" style="display:none;">إيقاف الفحص</button><button id="checker-cancel-btn" onclick="closeModal('channelCheckerModal')" class="cancel">إلغاء</button></div></div></div>
+    <div id="channelCheckerModal" class="modal"><div class="modal-content"><span class="close" onclick="closeModal('channelCheckerModal')">&times;</span><h2>مدقق حالة القنوات</h2><p>سيقوم هذا الإجراء بالتحقق من كل قناة لتحديد ما إذا كانت تعمل. قد يستغرق هذا بعض الوقت للقوائم الكبيرة.</p><div id="checker-progress-container"><p id="checker-progress-text">اضغط على زر 'بدء الفحص' للتحقق من حالة القنوات.</p><div id="checker-progress-bar-container"><div id="checker-progress-bar">0%</div></div></div><p id="checker-summary-text" style="font-weight: bold;"></p><div class="modal-buttons"><button id="start-check-btn" onclick="executeChannelCheck()">بدء الفحص</button><button id="stop-check-btn" onclick="stopChannelCheck()" class="cancel" style="display:none;">إيقاف الفحص</button><button id="checker-cancel-btn" onclick="closeModal('channelCheckerModal')" class="cancel">إغلاق</button></div><div class="dropdown-container" id="checker-actions-container" style="display: none;"><button onclick="toggleCheckerActions()" class="dropdown-btn">إجراءات &#9662;</button><div id="checker-actions-dropdown" class="dropdown-content"><a href="#" id="export-working-btn" onclick="exportWorkingChannels()">تصدير القنوات التي تعمل</a><a href="#" id="select-failed-btn" onclick="selectFailedChannels()">تحديد القنوات التي لا تعمل</a><a href="#" id="delete-failed-btn" class="delete-option" onclick="deleteFailedChannels()">حذف القنوات التي لا تعمل</a></div></div></div></div>
+
     <div id="findReplaceModal" class="modal"><div class="modal-content"><span class="close" onclick="closeModal('findReplaceModal')">&times;</span><h2>بحث واستبدال</h2><label for="find-text">بحث عن:</label><input type="text" id="find-text"><label for="replace-text">استبدال بـ:</label><input type="text" id="replace-text"><div class="find-replace-options"><p style="margin-bottom: 5px;"><strong>بحث في:</strong></p><div><input type="checkbox" id="find-in-name" checked> <label for="find-in-name">اسم القناة</label></div><div><input type="checkbox" id="find-in-group"> <label for="find-in-group">المجموعة</label></div><div><input type="checkbox" id="find-in-url"> <label for="find-in-url">رابط التشغيل</label></div></div><div class="find-replace-options" style="margin-top: 15px;"><p style="margin-bottom: 5px;"><strong>النطاق:</strong></p><div><input type="radio" id="replace-scope-all" name="replace-scope" value="all" checked> <label for="replace-scope-all">كل القنوات</label></div><div><input type="radio" id="replace-scope-selected" name="replace-scope" value="selected"> <label for="replace-scope-selected">القنوات المحددة فقط</label></div></div><div class="modal-buttons"><button onclick="executeFindAndReplace()">تنفيذ الاستبدال</button><button onclick="closeModal('findReplaceModal')" class="cancel">إلغاء</button></div></div></div>
     <div id="multiUrlModal" class="modal"><div class="modal-content"><span class="close" onclick="closeModal('multiUrlModal')">&times;</span><h2>تحميل من عدة روابط</h2><p>ألصق الروابط هنا، كل رابط في سطر جديد. سيتم دمجها بالترتيب.</p><textarea id="multiUrlTextarea" placeholder="https://example.com/playlist1.m3u&#10;https://example.com/playlist2.m3u8"></textarea><div class="modal-buttons"><button onclick="processMultiUrlLoad()">تحميل ودمج</button><button onclick="closeModal('multiUrlModal')" class="cancel">إلغاء</button></div></div></div>
     <div id="bulkEditGroupModal" class="modal"><div class="modal-content"><span class="close" onclick="closeModal('bulkEditGroupModal')">&times;</span><h2>تعديل مجموعة القنوات المحددة</h2><label for="bulkNewGroupName">اسم المجموعة الجديد (افصل بين المجموعات بـ ;):</label><input type="text" id="bulkNewGroupName" placeholder="أدخل الاسم الجديد للمجموعة"><div class="modal-buttons"><button onclick="executeBulkEditGroup()">تطبيق</button><button onclick="closeModal('bulkEditGroupModal')" class="cancel">إلغاء</button></div></div></div>
@@ -248,7 +378,41 @@
         document.addEventListener('DOMContentLoaded', () => { document.getElementById('uploadArea').style.display = 'block'; document.getElementById('urlLoadContainer').style.display = 'block'; document.getElementById('saveAddRow').style.display = 'none'; document.getElementById('toolsMergeRow').style.display = 'none'; ['openExportModalButton', 'addChannelButton', 'openSortModalButton', 'manageGroupsButton', 'openMergeModalButton', 'removeDuplicatesButton', 'bulkActionsButton'].forEach(id => { const button = document.getElementById(id); if (button) button.style.display = 'none'; }); document.getElementById('results').innerHTML = ''; });
         document.getElementById('fileInput').addEventListener('change', handleFileSelect);
         document.getElementById('mergeFileInput').addEventListener('change', mergePlaylists);
-        function showToast(message, type = 'info', duration = 4000) { const container = document.getElementById('toastContainer'); const toast = document.createElement('div'); toast.className = `toast ${type}`; const cleanMessage = message.trim().replace(/\.$/, ''); toast.innerHTML = `<div class="toast-content">${cleanMessage}</div><button class="toast-close">&times;</button>`; container.appendChild(toast); const closeButton = toast.querySelector('.toast-close'); const removeToast = () => { toast.classList.remove('show'); setTimeout(() => { if (container.contains(toast)) container.removeChild(toast); }, 500); }; closeButton.onclick = removeToast; setTimeout(() => toast.classList.add('show'), 10); setTimeout(removeToast, duration); }
+        
+        // === START: NEW showToast FUNCTION ===
+        function showToast(message, type = 'info', duration = 4000) {
+            const container = document.getElementById('toastContainer');
+            
+            // 1. Create the outer wrapper for the animation
+            const toastWrapper = document.createElement('div');
+            toastWrapper.className = 'toast-wrapper';
+
+            // 2. Create the inner toast for styling and content
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            const cleanMessage = message.trim().replace(/\.$/, '');
+            toast.innerHTML = `<div class="toast-content">${cleanMessage}</div><button class="toast-close">&times;</button>`;
+            
+            // 3. Append the inner toast to the wrapper, and the wrapper to the container
+            toastWrapper.appendChild(toast);
+            container.appendChild(toastWrapper);
+
+            const closeButton = toast.querySelector('.toast-close');
+            const removeToast = () => {
+                // 4. Apply the animation to the outer wrapper
+                toastWrapper.classList.remove('show');
+                setTimeout(() => {
+                    if (container.contains(toastWrapper)) container.removeChild(toastWrapper);
+                }, 500);
+            };
+            closeButton.onclick = removeToast;
+            
+            // 5. Start the animation on the outer wrapper
+            setTimeout(() => toastWrapper.classList.add('show'), 10);
+            setTimeout(removeToast, duration);
+        }
+        // === END: NEW showToast FUNCTION ===
+
         function showConfirm(title, message, onConfirm) { document.getElementById('confirmTitle').textContent = title; document.getElementById('confirmMessage').textContent = message; const confirmBtn = document.getElementById('confirmBtn'); const newConfirmBtn = confirmBtn.cloneNode(true); confirmBtn.parentNode.replaceChild(newConfirmBtn, confirmBtn); newConfirmBtn.onclick = () => { onConfirm(); closeModal('confirmModal'); }; openModal('confirmModal'); }
         function handleRowClick(event) { const row = event.currentTarget; if (event.target.closest('.action-button-icon')) return; const index = parseInt(row.dataset.index); if (selectedIndices.has(index)) { selectedIndices.delete(index); row.classList.remove('selected'); } else { selectedIndices.add(index); row.classList.add('selected'); } updateBulkActionsUI(); }
         
@@ -305,7 +469,7 @@
         function renderTable(channels, startIndex) { const resultsDiv = document.getElementById('results'); resultsDiv.innerHTML = ''; if (channelsData.length === 0) { resultsDiv.innerHTML = '<p>القائمة فارغة. أضف قناة أو قم بتحميل ملف.</p>'; return; } if (channels.length === 0) { resultsDiv.innerHTML = '<p>لا توجد نتائج مطابقة للبحث.</p>'; return; } const table = document.createElement('table'); const tbody = document.createElement('tbody'); table.innerHTML = `<thead><tr><th>رقم</th><th>الصورة</th><th>اسم القناة</th><th>المجموعة</th><th>إدارة</th></tr></thead>`; channels.forEach((channel, index) => { const originalIndex = channelsData.indexOf(channel); const row = tbody.insertRow(); row.setAttribute('draggable', 'true'); row.dataset.index = originalIndex; if (selectedIndices.has(originalIndex)) { row.classList.add('selected'); } const groupsDisplay = channel.groups && channel.groups.length > 0 ? channel.groups.join(', ') : 'غير مصنفة'; row.innerHTML = `<td><span class="status-dot ${channel.status || 'unchecked'}" data-index="${originalIndex}"></span>${startIndex + index + 1}</td><td class="logo">${channel.logo ? `<img src="${channel.logo}" alt="Logo" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">` : ''}<span class="placeholder" style="${channel.logo ? 'display:none;' : ''}">📺</span></td><td class="channel-name">${channel.name || ''}</td><td class="channel-group">${groupsDisplay}</td><td class="actions"><button class="action-button-icon edit-btn" data-index="${originalIndex}" title="تحرير">&#9998;</button><button class="action-button-icon delete-btn-icon" data-index="${originalIndex}" title="حذف">&#128465;</button></td>`; row.addEventListener('click', handleRowClick); row.addEventListener('dragstart', handleDragStart); row.addEventListener('dragenter', handleDragEnter); row.addEventListener('dragleave', handleDragLeave); row.addEventListener('dragover', handleDragOver); row.addEventListener('drop', handleDrop); }); table.appendChild(tbody); resultsDiv.appendChild(table); }
         function setupPaginationControls(totalPages) { const container = document.getElementById('paginationControls'); container.innerHTML = ''; if (totalPages <= 1) return; container.innerHTML = `<button id="prevPage" onclick="changePage(-1)" ${currentPage === 1 ? 'disabled' : ''}>السابق</button><span id="pageInfo">صفحة ${currentPage} من ${totalPages}</span><button id="nextPage" onclick="changePage(1)" ${currentPage === totalPages ? 'disabled' : ''}>التالي</button>`; }
         function changePage(direction) { currentPage += direction; displayPaginatedChannels(); }
-        function searchChannels() { const searchTerm = document.getElementById('searchInput').value.toLowerCase(); const selectedGroup = document.getElementById('groupFilter').value; let tempChannels = channelsData; if (selectedGroup !== 'all') { tempChannels = channelsData.filter(ch => { if (selectedGroup === 'uncategorized') { return !ch.groups || ch.groups.length === 0; } return ch.groups && ch.groups.includes(selectedGroup); }); } if (searchTerm) { displayedChannels = tempChannels.filter(ch => (ch.name || '').toLowerCase().includes(searchTerm) || (ch.groups && ch.groups.join(' ').toLowerCase().includes(searchTerm))); } else { displayedChannels = tempChannels; } currentPage = 1; displayPaginatedChannels(); }
+        function searchChannels() { const searchTerm = document.getElementById('searchInput').value.toLowerCase(); const selectedGroup = document.getElementById('groupFilter').value; let tempChannels = channelsData; if (selectedGroup !== 'all') { tempChannels = channelsData.filter(ch => { if (selectedGroup === 'uncategorized') { return !ch.groups || ch.groups.length === 0; } return ch.groups && ch.groups.includes(selectedGroup); }); } if (searchTerm) { displayedChannels = tempChannels.filter(ch => (ch.name || '').toLowerCase().includes(searchTerm) || (ch.groups && ch.groups.join(' ').toLowerCase().includes(searchTerm))); } else { displayedChannels = [...tempChannels]; } currentPage = 1; displayPaginatedChannels(); }
         function populateGroupFilter() { const groupFilter = document.getElementById('groupFilter'); const savedValue = groupFilter.value; groupFilter.innerHTML = '<option value="all">كل المجموعات</option>'; const allGroups = channelsData.flatMap(ch => (ch.groups && ch.groups.length) ? ch.groups : []); const hasUncategorized = channelsData.some(ch => !ch.groups || ch.groups.length === 0); const uniqueGroups = [...new Set(allGroups)]; uniqueGroups.sort((a, b) => a.localeCompare(b, 'ar')).forEach(group => { const option = document.createElement('option'); option.value = group; option.textContent = group; groupFilter.appendChild(option); }); if (hasUncategorized) { const option = document.createElement('option'); option.value = 'uncategorized'; option.textContent = 'غير مصنفة'; groupFilter.appendChild(option); } groupFilter.value = savedValue; }
 
         function parseM3uPlaylist(content) { const lines = content.split('\n'); const channels = []; let currentInfo = ''; for (const line of lines) { const trimmedLine = line.trim(); if (trimmedLine.startsWith('#EXTINF')) { currentInfo = trimmedLine; } else if (currentInfo && !trimmedLine.startsWith('#') && trimmedLine.length > 0) { const name = currentInfo.match(/,([^,]*)$/)?.[1].trim() || 'قناة غير معروفة'; const logo = currentInfo.match(/tvg-logo="([^"]*)"/i)?.[1] || ''; const chno = parseInt(currentInfo.match(/tvg-chno="([^"]*)"/i)?.[1]) || 0; const groupString = currentInfo.match(/group-title="([^"]*)"/i)?.[1] || ''; const groups = groupString ? groupString.split(';').map(g => g.trim()).filter(g => g) : []; channels.push({ name, groups, logo, chno, url: trimmedLine, originalExtinf: currentInfo, status: 'unchecked' }); currentInfo = ''; } } return channels; }
@@ -385,7 +549,7 @@
                 const button = document.getElementById(id);
                 if (button) button.style.display = 'inline-block';
             });
-            updateBulkActionsUI(); // Initially disable the button
+            updateBulkActionsUI();
         }
         
         function updateLogoPreview(imgId, url) { const preview = document.getElementById(imgId); preview.style.display = url ? 'block' : 'none'; if(url) preview.src = url; preview.onerror = () => preview.style.display = 'none'; }
@@ -394,7 +558,6 @@
         function updateTvgChnoInAllChannels() { channelsData.forEach((channel, index) => { channel.chno = index + 1; channel.originalExtinf = buildUpdatedExtinf(channel.originalExtinf, channel.groups, channel.logo, channel.name, channel.chno); }); }
         function openExportModal() { if (channelsData.length === 0) return showToast("لا توجد قنوات لتصديرها", "error"); openModal('exportModal'); }
         
-        // *** MODIFIED FUNCTION ***
         function executeExport() {
             const format = document.querySelector('input[name="exportFormat"]:checked').value;
             const isFiltered = displayedChannels.length < channelsData.length && channelsData.length > 0;
@@ -406,12 +569,12 @@
                 else if (format === 'enigma2') saveEnigma2Bouquets(channels);
             };
 
-            closeModal('exportModal'); // Close the format selection modal
+            closeModal('exportModal'); 
 
             if (isFiltered) {
                 showConfirm(
                     'تصدير القنوات المصفاة',
-                    'سيتم تصدير فقط القنوات التي ظهرت بالبحث والتصفية. هل تريد المتابعة؟',
+                    `سيتم تصدير فقط القنوات التي ظهرت بالبحث والتصفية (${displayedChannels.length} قناة). هل تريد المتابعة؟`,
                     () => { exportFunction(displayedChannels); }
                 );
             } else {
@@ -420,17 +583,9 @@
         }
 
         const createPlaylistContent = (type, channelsToExport = channelsData) => { if (channelsToExport.length === 0) { showToast("لا يوجد قنوات للحفظ", "error"); return null; } if (type === 'pls') { return '[playlist]\nNumberOfEntries=' + channelsToExport.length + '\nVersion=2\n' + channelsToExport.map((ch, i) => `File${i+1}=${ch.url}\nTitle${i+1}=${ch.name}\nLength${i+1}=-1`).join('\n'); } return '#EXTM3U\n' + channelsToExport.map(ch => `${buildUpdatedExtinf(ch.originalExtinf, ch.groups, ch.logo, ch.name, ch.chno)}\n${ch.url}`).join('\n\n'); }
-        
-        // *** MODIFIED FUNCTION ***
         function savePlaylist(channelsToExport = channelsData) { const c = createPlaylistContent('m3u', channelsToExport); if(c) downloadFile(c, 'playlist.m3u', 'text/plain;charset=utf-8'); }
-        
-        // *** MODIFIED FUNCTION ***
         function savePlaylistAsM3u8(channelsToExport = channelsData) { const c = createPlaylistContent('m3u8', channelsToExport); if(c) downloadFile(c, 'playlist.m3u8', 'application/x-mpegurl;charset=utf-8'); }
-        
-        // *** MODIFIED FUNCTION ***
         function savePlaylistAsPls(channelsToExport = channelsData) { const c = createPlaylistContent('pls', channelsToExport); if(c) downloadFile(c, 'playlist.pls', 'text/plain;charset=utf-8'); }
-        
-        // *** MODIFIED FUNCTION ***
         async function saveEnigma2Bouquets(channelsToExport = channelsData) {
             if (channelsToExport.length === 0) { showToast("لا يوجد قنوات للحفظ", "error"); return; }
             const zip = new JSZip();
@@ -470,24 +625,165 @@
 
         function downloadFile(content, fileName, mimeType) { const blob = new Blob([content], { type: mimeType }); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); const prefix = isMerged ? 'merged_' : isSorted ? 'sorted_' : ''; a.download = prefix + fileName; document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(a.href); }
         document.addEventListener('click', e => { if (e.target.classList.contains('edit-btn')) openEditModal(parseInt(e.target.dataset.index)); if (e.target.classList.contains('delete-btn-icon')) deleteChannel(parseInt(e.target.dataset.index)); });
-        window.onclick = e => document.querySelectorAll('.modal').forEach(m => { if (e.target === m) closeModal(m.id); });
+        
         function openBulkEditGroupModal() { if (selectedIndices.size === 0) return; document.getElementById('bulkNewGroupName').value = ''; openModal('bulkEditGroupModal'); }
         function executeBulkEditGroup() { const newGroups = document.getElementById('bulkNewGroupName').value.split(';').map(g => g.trim()).filter(g => g); const count = selectedIndices.size; selectedIndices.forEach(index => { channelsData[index].groups = newGroups; }); updateTvgChnoInAllChannels(); selectedIndices.clear(); searchChannels(); populateGroupFilter(); closeModal('bulkEditGroupModal'); showToast(`تم تعديل مجموعة ${count} قناة بنجاح`, 'success'); }
         function exportSelected() { if (selectedIndices.size === 0) return; const selectedChannels = Array.from(selectedIndices).map(index => channelsData[index]); const content = createPlaylistContent('m3u', selectedChannels); if(content) { downloadFile(content, 'selected_channels.m3u', 'text/plain;charset=utf-8'); showToast(`تم تصدير ${selectedChannels.length} قناة بنجاح`, 'success'); selectedIndices.clear(); searchChannels(); } }
+        
         function openChannelCheckerModal() {
             if (channelsData.length === 0) return showToast("لا توجد قنوات لفحصها", "error");
+            
             document.getElementById('checker-progress-text').textContent = "اضغط على زر 'بدء الفحص' للتحقق من حالة القنوات.";
             const progressBar = document.getElementById('checker-progress-bar');
             progressBar.style.width = '0%';
             progressBar.textContent = '0%';
             document.getElementById('checker-summary-text').textContent = '';
+
+            document.querySelector('#channelCheckerModal .modal-buttons').style.display = 'flex';
             document.getElementById('start-check-btn').style.display = 'inline-block';
-            document.getElementById('stop-check-btn').style.display = 'none';
             document.getElementById('checker-cancel-btn').style.display = 'inline-block';
+            document.getElementById('stop-check-btn').style.display = 'none';
+            
+            const actionsContainer = document.getElementById('checker-actions-container');
+            actionsContainer.style.display = 'none';
+            actionsContainer.querySelector('.dropdown-btn').textContent = 'إجراءات ▼';
+
             openModal('channelCheckerModal');
         }
+
         function stopChannelCheck() { isChecking = false; showToast("تم إيقاف فحص القنوات.", "info"); }
-        async function executeChannelCheck() { isChecking = true; document.body.classList.add('show-status-dots'); displayPaginatedChannels(); document.getElementById('start-check-btn').style.display = 'none'; document.getElementById('stop-check-btn').style.display = 'inline-block'; document.getElementById('checker-cancel-btn').style.display = 'none'; const progressText = document.getElementById('checker-progress-text'); const progressBar = document.getElementById('checker-progress-bar'); const summaryText = document.getElementById('checker-summary-text'); let okCount = 0; let failCount = 0; const total = channelsData.length; for (let i = 0; i < total; i++) { if (!isChecking) break; const channel = channelsData[i]; channel.status = 'checking'; updateStatusDot(i, 'checking'); const progress = Math.round(((i + 1) / total) * 100); progressText.textContent = `جاري فحص القناة ${i + 1} من ${total}...`; progressBar.style.width = `${progress}%`; progressBar.textContent = `${progress}%`; const controller = new AbortController(); const timeoutId = setTimeout(() => controller.abort(), 5000); try { const response = await fetch(channel.url, { method: 'HEAD', signal: controller.signal, mode: 'no-cors' }); channel.status = 'checked-ok'; okCount++; } catch (error) { channel.status = 'checked-fail'; failCount++; } finally { clearTimeout(timeoutId); updateStatusDot(i, channel.status); } } isChecking = false; summaryText.textContent = `اكتمل الفحص: ${okCount} قناة تعمل, ${failCount} قناة لا تعمل.`; document.getElementById('start-check-btn').style.display = 'inline-block'; document.getElementById('stop-check-btn').style.display = 'none'; document.getElementById('checker-cancel-btn').style.display = 'inline-block'; }
+        
+        async function executeChannelCheck() {
+            isChecking = true;
+            document.body.classList.add('show-status-dots');
+            displayPaginatedChannels();
+
+            const topButtonRow = document.querySelector('#channelCheckerModal .modal-buttons');
+            topButtonRow.style.display = 'flex';
+            document.getElementById('start-check-btn').style.display = 'none';
+            document.getElementById('stop-check-btn').style.display = 'inline-block';
+            document.getElementById('checker-cancel-btn').style.display = 'none';
+            document.getElementById('checker-actions-container').style.display = 'none';
+
+            const progressText = document.getElementById('checker-progress-text');
+            const progressBar = document.getElementById('checker-progress-bar');
+            const summaryText = document.getElementById('checker-summary-text');
+            let okCount = 0;
+            let failCount = 0;
+            const total = channelsData.length;
+
+            for (let i = 0; i < total; i++) {
+                if (!isChecking) break;
+                const channel = channelsData[i];
+                channel.status = 'checking';
+                updateStatusDot(i, 'checking');
+                const progress = Math.round(((i + 1) / total) * 100);
+                progressText.textContent = `جاري فحص القناة ${i + 1} من ${total}...`;
+                progressBar.style.width = `${progress}%`;
+                progressBar.textContent = `${progress}%`;
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 5000);
+                try {
+                    const response = await fetch(channel.url, { method: 'HEAD', signal: controller.signal, mode: 'no-cors' });
+                    channel.status = 'checked-ok';
+                    okCount++;
+                } catch (error) {
+                    channel.status = 'checked-fail';
+                    failCount++;
+                } finally {
+                    clearTimeout(timeoutId);
+                    updateStatusDot(i, channel.status);
+                }
+            }
+            isChecking = false;
+            summaryText.textContent = `اكتمل الفحص: ${okCount} قناة تعمل, ${failCount} قناة لا تعمل.`;
+            
+            const actionsContainer = document.getElementById('checker-actions-container');
+
+            if (failCount > 0) {
+                topButtonRow.style.display = 'none';
+                
+                document.getElementById('delete-failed-btn').style.display = 'block';
+                document.getElementById('select-failed-btn').style.display = 'block';
+                document.getElementById('export-working-btn').style.display = okCount > 0 ? 'block' : 'none';
+                
+                actionsContainer.querySelector('.dropdown-btn').textContent = `إجراءات (${failCount} قناة لا تعمل)`;
+                actionsContainer.style.display = 'block';
+
+            } else {
+                // *** FIX: Hide "Start Scan" after successful scan with 0 failures ***
+                topButtonRow.style.display = 'flex';
+                document.getElementById('start-check-btn').style.display = 'none'; // HIDE
+                document.getElementById('stop-check-btn').style.display = 'none';
+                document.getElementById('checker-cancel-btn').style.display = 'inline-block'; // SHOW
+                actionsContainer.style.display = 'none';
+            }
+        }
+        
+        function toggleCheckerActions() {
+            document.getElementById("checker-actions-dropdown").classList.toggle("show");
+        }
+        window.onclick = function(event) {
+            if (!event.target.matches('.dropdown-btn')) {
+                document.querySelectorAll(".dropdown-content.show").forEach(openDropdown => {
+                    openDropdown.classList.remove('show');
+                });
+            }
+            document.querySelectorAll('.modal').forEach(m => {
+                if (event.target === m) closeModal(m.id);
+            });
+        };
+
+        function deleteFailedChannels() {
+            toggleCheckerActions();
+            const failedChannels = channelsData.filter(ch => ch.status === 'checked-fail');
+            if (failedChannels.length === 0) return showToast("لا توجد قنوات لا تعمل لحذفها.", "info");
+            
+            showConfirm(
+                'حذف القنوات التي لا تعمل',
+                `هل أنت متأكد من حذف ${failedChannels.length} قناة لا تعمل؟`,
+                () => {
+                    channelsData = channelsData.filter(ch => ch.status !== 'checked-fail');
+                    updateTvgChnoInAllChannels();
+                    searchChannels();
+                    closeModal('channelCheckerModal');
+                    showToast(`تم حذف ${failedChannels.length} قناة بنجاح.`, 'success');
+                }
+            );
+        }
+
+        function exportWorkingChannels() {
+            toggleCheckerActions();
+            const workingChannels = channelsData.filter(ch => ch.status === 'checked-ok');
+            if (workingChannels.length === 0) return showToast("لا توجد قنوات تعمل لتصديرها.", "info");
+            
+            const content = createPlaylistContent('m3u', workingChannels);
+            if (content) {
+                downloadFile(content, 'working_channels.m3u', 'text/plain;charset=utf-8');
+                showToast(`تم تجهيز ملف يحتوي على ${workingChannels.length} قناة تعمل.`, 'success');
+            }
+            closeModal('channelCheckerModal');
+        }
+
+        function selectFailedChannels() {
+            toggleCheckerActions();
+            const failedChannels = channelsData.filter(ch => ch.status === 'checked-fail');
+            if (failedChannels.length === 0) return showToast("لا توجد قنوات لا تعمل لتحديدها.", "info");
+            
+            displayedChannels = failedChannels;
+            
+            selectedIndices.clear();
+            failedChannels.forEach(channel => {
+                const originalIndex = channelsData.indexOf(channel);
+                if (originalIndex !== -1) selectedIndices.add(originalIndex);
+            });
+
+            currentPage = 1;
+            displayPaginatedChannels();
+            closeModal('channelCheckerModal');
+            showToast(`تم عرض وتحديد ${failedChannels.length} قناة لا تعمل.`, 'info');
+        }
+
         function updateStatusDot(originalIndex, status) { const dot = document.querySelector(`.status-dot[data-index="${originalIndex}"]`); if (dot) { dot.className = `status-dot ${status}`; } }
         function openFindReplaceModal() { if (channelsData.length === 0) return showToast("لا توجد قنوات للبحث فيها", "error"); document.getElementById('find-text').value = ''; document.getElementById('replace-text').value = ''; document.getElementById('replace-scope-all').checked = true; document.getElementById('replace-scope-selected').disabled = selectedIndices.size === 0; if (selectedIndices.size > 0) { document.getElementById('replace-scope-selected').checked = true; } openModal('findReplaceModal'); }
         function executeFindAndReplace() { const findText = document.getElementById('find-text').value; const replaceText = document.getElementById('replace-text').value; if (!findText) { return showToast("حقل 'بحث عن' لا يمكن أن يكون فارغًا.", "error"); } const findInName = document.getElementById('find-in-name').checked; const findInGroup = document.getElementById('find-in-group').checked; const findInUrl = document.getElementById('find-in-url').checked; if (!findInName && !findInGroup && !findInUrl) { return showToast("الرجاء تحديد حقل واحد على الأقل للبحث فيه.", "error"); } const scope = document.querySelector('input[name="replace-scope"]:checked').value; const targetIndices = (scope === 'selected') ? Array.from(selectedIndices) : channelsData.map((_, i) => i); let replacedCount = 0; let affectedChannels = 0; targetIndices.forEach(index => { const channel = channelsData[index]; let channelModified = false; if (findInName && channel.name && channel.name.includes(findText)) { const original = channel.name; channel.name = channel.name.replaceAll(findText, replaceText); replacedCount += (original.match(new RegExp(findText, "g")) || []).length; channelModified = true; } if (findInGroup && channel.groups && channel.groups.length > 0) { const originalGroups = [...channel.groups]; channel.groups = channel.groups.map(group => { if (group.includes(findText)) { replacedCount += (group.match(new RegExp(findText, "g")) || []).length; channelModified = true; return group.replaceAll(findText, replaceText); } return group; }); } if (findInUrl && channel.url && channel.url.includes(findText)) { const original = channel.url; channel.url = channel.url.replaceAll(findText, replaceText); replacedCount += (original.match(new RegExp(findText, "g")) || []).length; channelModified = true; } if (channelModified) { affectedChannels++; } }); updateTvgChnoInAllChannels(); searchChannels(); closeModal('findReplaceModal'); showToast(`تم استبدال النص ${replacedCount} مرة في ${affectedChannels} قناة.`, 'success'); }
