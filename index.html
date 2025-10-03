@@ -392,7 +392,6 @@
                 <input type="number" id="moveTargetIndex" min="1" placeholder="مثال: 1">
             </div>
         </div>
-        <!-- *** NEW FEATURE: Move Selected *** -->
         <div class="modal-row">
             <input type="radio" id="sort-move-selected" name="sortCriteria" value="moveSelected" onchange="handleSortCriteriaChange()">
             <label for="sort-move-selected">نقل المحدد إلى موضع</label>
@@ -403,7 +402,6 @@
                 <input type="number" id="moveSelectedTargetIndex" min="1" placeholder="مثال: 10">
             </div>
         </div>
-        <!-- *** END OF NEW FEATURE *** -->
         <div class="modal-buttons"><button onclick="executeSort()">تطبيق</button><button onclick="closeModal('sortModal')" class="cancel">إلغاء</button></div>
     </div></div>
     
@@ -709,7 +707,6 @@
         function openAddModal() { document.getElementById('addIndexField').value = channelsData.length + 1; ['addName', 'addGroup', 'addLogo', 'addUrl'].forEach(id => document.getElementById(id).value = ''); updateLogoPreview('addPreviewImage', ''); openModal('addModal'); }
         function openEditModal(index) { const channel = channelsData[index]; document.getElementById('editIndexField').value = index + 1; document.getElementById('editName').value = channel.name || ''; document.getElementById('editGroup').value = (channel.groups || []).join(';'); document.getElementById('editLogo').value = channel.logo || ''; document.getElementById('editUrl').value = channel.url || ''; document.getElementById('editOriginalIndex').value = index; updateLogoPreview('previewImage', channel.logo); openModal('editModal'); }
         
-        // *** MODIFIED: openSortModal to enable/disable the "Move Selected" option ***
         function openSortModal() {
             if (channelsData.length === 0) {
                 return showToast("لا توجد قنوات لفرزها", "error");
@@ -719,7 +716,6 @@
             
             moveSelectedRadio.disabled = !hasSelection;
             
-            // If the disabled option is selected, switch to the first available option
             if (!hasSelection && moveSelectedRadio.checked) {
                 document.getElementById('sort-alpha').checked = true;
             }
@@ -760,19 +756,41 @@
         function updateTvgChnoInAllChannels() { channelsData.forEach((channel, index) => { channel.chno = index + 1; channel.originalExtinf = buildUpdatedExtinf(channel.originalExtinf, channel.groups, channel.logo, channel.name, channel.chno); }); }
         function openExportModal() { if (channelsData.length === 0) return showToast("لا توجد قنوات لتصديرها", "error"); openModal('exportModal'); }
         
+        // *** MODIFIED: executeExport to handle selected channels first ***
         function executeExport() {
             const format = document.querySelector('input[name="exportFormat"]:checked').value;
-            const isFiltered = displayedChannels.length < channelsData.length && channelsData.length > 0;
+            const numSelected = selectedIndices.size;
 
             const exportFunction = (channels) => {
+                if (channels.length === 0) {
+                    return showToast("لا توجد قنوات مختارة للتصدير.", "error");
+                }
                 if (format === 'm3u') savePlaylist(channels);
                 else if (format === 'm3u8') savePlaylistAsM3u8(channels);
                 else if (format === 'pls') savePlaylistAsPls(channels);
                 else if (format === 'enigma2') saveEnigma2Bouquets(channels);
             };
 
-            closeModal('exportModal'); 
+            closeModal('exportModal');
 
+            // Priority 1: Export selected channels if any exist
+            if (numSelected > 0) {
+                showConfirm(
+                    'تصدير القنوات المحددة',
+                    `سيتم تصدير فقط القنوات المحددة (${numSelected} قناة). هل تريد المتابعة؟`,
+                    () => {
+                        const selectedChannels = Array.from(selectedIndices).map(index => channelsData[index]);
+                        exportFunction(selectedChannels);
+                        // Optional: Clear selection after export
+                        selectedIndices.clear();
+                        searchChannels();
+                    }
+                );
+                return; // Stop the function here
+            }
+
+            // Priority 2: If no selection, check for filters
+            const isFiltered = displayedChannels.length < channelsData.length && channelsData.length > 0;
             if (isFiltered) {
                 showConfirm(
                     'تصدير القنوات المصفاة',
@@ -780,6 +798,7 @@
                     () => { exportFunction(displayedChannels); }
                 );
             } else {
+                // Priority 3: If no selection and no filter, export all
                 exportFunction(channelsData);
             }
         }
