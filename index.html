@@ -189,6 +189,10 @@
             margin: 10px 5px;
             accent-color: var(--primary-color);
         } 
+        .modal-content input[type="radio"]:disabled + label {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
         .modal-content button { 
             background-color: var(--primary-color); 
             color: white; border: none; 
@@ -285,8 +289,7 @@
             display: block;
         }
         
-        /* Styles for new "Move Block" feature */
-        #moveBlockInputContainer {
+        #moveBlockInputContainer, #moveSelectedInputContainer {
             margin-right: 25px;
             padding: 10px;
             border: 1px solid var(--border-color);
@@ -368,14 +371,12 @@
     <div id="addModal" class="modal"><div class="modal-content"><span class="close" onclick="closeModal('addModal')">&times;</span><h2>إضافة قناة جديدة</h2><label for="addIndexField">رقم القناة:</label><input type="number" id="addIndexField" min="1"><label for="addName">اسم القناة:</label><input type="text" id="addName" required><label for="addGroup">المجموعة (لأكثر من مجموعة، افصل بينها بـ ;):</label><input type="text" id="addGroup"><label for="addLogo">رابط الصورة:</label><input type="url" id="addLogo"><div id="addLogoPreview"><img id="addPreviewImage"></div><label for="addUrl">رابط التشغيل:</label><input type="url" id="addUrl" required><div class="modal-buttons"><button onclick="saveNewChannel()">إضافة</button><button onclick="closeModal('addModal')" class="cancel">إلغاء</button></div></div></div>
     <div id="removeDuplicatesModal" class="modal"><div class="modal-content"><span class="close" onclick="closeModal('removeDuplicatesModal')">&times;</span><h2>إزالة التكرار</h2><label>اختر الشرط:</label><div class="modal-row"><input type="radio" id="crit-name" name="duplicateCriteria" value="name" checked><label for="crit-name">الاسم فقط</label></div><div class="modal-row"><input type="radio" id="crit-name-url" name="duplicateCriteria" value="name-url"><label for="crit-name-url">الاسم + الرابط</label></div><div class="modal-row"><input type="radio" id="crit-name-url-group" name="duplicateCriteria" value="name-url-group"><label for="crit-name-url-group">الاسم + الرابط + المجموعة</label></div><div class="modal-buttons"><button onclick="executeRemoveDuplicates()">إزالة</button><button onclick="closeModal('removeDuplicatesModal')" class="cancel">إلغاء</button></div></div></div>
     
-    <!-- *** MODIFIED: Sort Modal with new "Move Block" feature *** -->
     <div id="sortModal" class="modal"><div class="modal-content"><span class="close" onclick="closeModal('sortModal')">&times;</span><h2>فرز وترتيب القنوات</h2>
         <div class="modal-row"><input type="radio" id="sort-alpha" name="sortCriteria" value="alphabetical" checked onchange="handleSortCriteriaChange()"><label for="sort-alpha">أبجدي</label></div>
         <div class="modal-row"><input type="radio" id="sort-name" name="sortCriteria" value="name" onchange="handleSortCriteriaChange()"><label for="sort-name">حسب اسم القناة</label></div>
         <div id="sortByNameInputContainer" style="display: none; margin-right: 25px;"><input type="text" id="sortByNameField" placeholder="أدخل اسم القناة (مثال: mbc)"></div>
         <div class="modal-row"><input type="radio" id="sort-group" name="sortCriteria" value="group" onchange="handleSortCriteriaChange()"><label for="sort-group">حسب اسم المجموعة</label></div>
         <div id="sortByGroupInputContainer" style="display: none; margin-right: 25px;"><input type="text" id="sortByGroupField" placeholder="أدخل اسم المجموعة"></div>
-        <!-- New Feature: Move Block -->
         <div class="modal-row"><input type="radio" id="sort-move" name="sortCriteria" value="moveBlock" onchange="handleSortCriteriaChange()"><label for="sort-move">نقل مجموعة قنوات</label></div>
         <div id="moveBlockInputContainer">
             <div class="move-block-row">
@@ -391,7 +392,18 @@
                 <input type="number" id="moveTargetIndex" min="1" placeholder="مثال: 1">
             </div>
         </div>
-        <!-- End of New Feature -->
+        <!-- *** NEW FEATURE: Move Selected *** -->
+        <div class="modal-row">
+            <input type="radio" id="sort-move-selected" name="sortCriteria" value="moveSelected" onchange="handleSortCriteriaChange()">
+            <label for="sort-move-selected">نقل المحدد إلى موضع</label>
+        </div>
+        <div id="moveSelectedInputContainer">
+             <div class="move-block-row">
+                <label for="moveSelectedTargetIndex">إلى الموضع رقم:</label>
+                <input type="number" id="moveSelectedTargetIndex" min="1" placeholder="مثال: 10">
+            </div>
+        </div>
+        <!-- *** END OF NEW FEATURE *** -->
         <div class="modal-buttons"><button onclick="executeSort()">تطبيق</button><button onclick="closeModal('sortModal')" class="cancel">إلغاء</button></div>
     </div></div>
     
@@ -548,7 +560,6 @@
         async function processMultiUrlLoad() { document.body.classList.remove('show-status-dots'); const urlsText = document.getElementById('multiUrlTextarea').value; const urls = urlsText.split('\n').map(u => u.trim()).filter(u => u); if (urls.length === 0) { return showToast("يرجى إدخال رابط واحد على الأقل", "error"); } closeModal('multiUrlModal'); document.getElementById('loadingIndicator').style.display = 'block'; let allNewChannels = []; let failedCount = 0; for (const url of urls) { try { const response = await fetch(url); if (!response.ok) throw new Error(`فشل تحميل الرابط (الحالة: ${response.status})`); const content = await response.text(); const channelsFromUrl = parsePlaylist(content); allNewChannels.push(...channelsFromUrl); } catch (error) { failedCount++; console.error(`خطأ في تحميل الرابط ${url}:`, error); } } document.getElementById('loadingIndicator').style.display = 'none'; if (allNewChannels.length > 0) { channelsData = allNewChannels; isMerged = urls.length > 1; isSorted = false; updateTvgChnoInAllChannels(); searchChannels(); showPlaylistControls(); let successMessage = `تم تحميل ${channelsData.length} قناة بنجاح من ${urls.length - failedCount} رابط.`; if (failedCount > 0) { successMessage += ` فشل تحميل ${failedCount} رابط.`; } showToast(successMessage, 'success'); } else { showToast("فشل تحميل أي قنوات من الروابط المقدمة", "error"); } }
         function createNewPlaylist() { document.body.classList.remove('show-status-dots'); channelsData = []; displayedChannels = []; selectedIndices.clear(); showPlaylistControls(); displayPaginatedChannels(); showToast('تم إنشاء قائمة جديدة فارغة', 'info'); }
         
-        // *** MODIFIED: executeSort function with "Move Block" logic ***
         function executeSort() {
             const criteria = document.querySelector('input[name="sortCriteria"]:checked').value;
             const sortFunction = (a, b) => (a.name || '').localeCompare(b.name || '', 'ar');
@@ -566,24 +577,15 @@
                     return (bHasGroup - aHasGroup) || sortFunction(a, b);
                 });
             } else if (criteria === 'moveBlock') {
-                // Logic for the new "Move Block" feature
                 const from = parseInt(document.getElementById('moveFromIndex').value);
                 const to = parseInt(document.getElementById('moveToIndex').value);
                 const target = parseInt(document.getElementById('moveTargetIndex').value);
 
-                // Validation
-                if (isNaN(from) || isNaN(to) || isNaN(target)) {
-                    return showToast('يرجى ملء جميع حقول النقل بأرقام صحيحة', 'error');
-                }
-                if (from > to) {
-                    return showToast('رقم البداية "من" يجب أن يكون أصغر من أو يساوي رقم النهاية "إلى"', 'error');
-                }
+                if (isNaN(from) || isNaN(to) || isNaN(target)) { return showToast('يرجى ملء جميع حقول النقل بأرقام صحيحة', 'error'); }
+                if (from > to) { return showToast('رقم البداية "من" يجب أن يكون أصغر من أو يساوي رقم النهاية "إلى"', 'error'); }
                 const maxIndex = channelsData.length;
-                if (from < 1 || to > maxIndex || target < 1 || target > maxIndex + 1) {
-                    return showToast(`الأرقام المدخلة خارج نطاق القائمة (1 - ${maxIndex})`, 'error');
-                }
+                if (from < 1 || to > maxIndex || target < 1 || target > maxIndex + 1) { return showToast(`الأرقام المدخلة خارج نطاق القائمة (1 - ${maxIndex})`, 'error'); }
 
-                // Convert to 0-based index for array manipulation
                 const fromIndex = from - 1;
                 const toIndex = to - 1;
                 const targetIndex = target - 1;
@@ -592,6 +594,23 @@
                 const blockToMove = channelsData.splice(fromIndex, count);
                 channelsData.splice(targetIndex, 0, ...blockToMove);
                 showToast(`تم نقل ${count} قناة إلى الموضع ${target} بنجاح`, 'success');
+            } else if (criteria === 'moveSelected') {
+                const target = parseInt(document.getElementById('moveSelectedTargetIndex').value);
+                if (isNaN(target)) { return showToast('يرجى إدخال الموضع الهدف', 'error'); }
+                const maxIndex = channelsData.length;
+                if (target < 1 || target > maxIndex + 1) { return showToast(`الموضع الهدف خارج نطاق القائمة (1 - ${maxIndex})`, 'error'); }
+                
+                const targetIndex = target - 1;
+                
+                const sortedIndices = Array.from(selectedIndices).sort((a, b) => b - a);
+                const blockToMove = [];
+                sortedIndices.forEach(index => {
+                    blockToMove.unshift(channelsData.splice(index, 1)[0]);
+                });
+                
+                channelsData.splice(targetIndex, 0, ...blockToMove);
+                showToast(`تم نقل ${blockToMove.length} قناة محددة إلى الموضع ${target} بنجاح`, 'success');
+                selectedIndices.clear();
             }
 
             isSorted = true;
@@ -601,7 +620,6 @@
             closeModal('sortModal');
         }
 
-        // *** MODIFIED: executeGroupAction to handle empty rename field ***
         function executeGroupAction() {
             const action = document.querySelector('input[name="groupAction"]:checked').value;
             if (action === 'removeAll') {
@@ -629,9 +647,8 @@
             } else if (action === 'rename') {
                 const newGroupNameString = document.getElementById('newGroupNameField').value.trim();
                 
-                // NEW LOGIC: If the new name is empty, remove the group tag.
                 if (newGroupNameString === '') {
-                    if (isUncategorized) { // Can't remove a non-existent tag
+                    if (isUncategorized) {
                          closeModal('manageGroupsModal');
                          return;
                     }
@@ -646,7 +663,7 @@
                         showToast(`تم إزالة التصنيف من ${affectedChannels} قناة بنجاح`, 'success');
                         updateAndRefreshUI();
                     });
-                } else { // Original logic for actual renaming
+                } else {
                     const newGroups = newGroupNameString.split(';').map(g => g.trim()).filter(g => g);
                     channelsData.forEach(channel => {
                         const isTargeted = isUncategorized ? (!channel.groups || channel.groups.length === 0) : (channel.groups && channel.groups.includes(selectedGroup));
@@ -678,7 +695,6 @@
             }
         }
 
-        // Helper function to reduce repetition
         function updateAndRefreshUI() {
             updateTvgChnoInAllChannels();
             searchChannels();
@@ -692,14 +708,32 @@
         function saveNewChannel() { if (!document.getElementById('addName').value || !document.getElementById('addUrl').value) return showToast("الاسم والرابط مطلوبان", 'error'); let newIndex = parseInt(document.getElementById('addIndexField').value) - 1; const groups = document.getElementById('addGroup').value.split(';').map(g => g.trim()).filter(g => g); const newChannel = { name: document.getElementById('addName').value, groups: groups, logo: document.getElementById('addLogo').value, url: document.getElementById('addUrl').value, status: 'unchecked' }; if (newIndex >= 0 && newIndex <= channelsData.length) { channelsData.splice(newIndex, 0, newChannel); } else { channelsData.push(newChannel); } updateTvgChnoInAllChannels(); closeModal('addModal'); searchChannels(); populateGroupFilter(); showToast('تمت إضافة القناة بنجاح', 'success'); }
         function openAddModal() { document.getElementById('addIndexField').value = channelsData.length + 1; ['addName', 'addGroup', 'addLogo', 'addUrl'].forEach(id => document.getElementById(id).value = ''); updateLogoPreview('addPreviewImage', ''); openModal('addModal'); }
         function openEditModal(index) { const channel = channelsData[index]; document.getElementById('editIndexField').value = index + 1; document.getElementById('editName').value = channel.name || ''; document.getElementById('editGroup').value = (channel.groups || []).join(';'); document.getElementById('editLogo').value = channel.logo || ''; document.getElementById('editUrl').value = channel.url || ''; document.getElementById('editOriginalIndex').value = index; updateLogoPreview('previewImage', channel.logo); openModal('editModal'); }
-        function openSortModal() { if (channelsData.length === 0) return showToast("لا توجد قنوات لفرزها", "error"); openModal('sortModal'); }
         
-        // *** MODIFIED: handleSortCriteriaChange to show/hide the new container ***
+        // *** MODIFIED: openSortModal to enable/disable the "Move Selected" option ***
+        function openSortModal() {
+            if (channelsData.length === 0) {
+                return showToast("لا توجد قنوات لفرزها", "error");
+            }
+            const moveSelectedRadio = document.getElementById('sort-move-selected');
+            const hasSelection = selectedIndices.size > 0;
+            
+            moveSelectedRadio.disabled = !hasSelection;
+            
+            // If the disabled option is selected, switch to the first available option
+            if (!hasSelection && moveSelectedRadio.checked) {
+                document.getElementById('sort-alpha').checked = true;
+            }
+            
+            handleSortCriteriaChange();
+            openModal('sortModal');
+        }
+        
         function handleSortCriteriaChange() {
             const criteria = document.querySelector('input[name="sortCriteria"]:checked').value;
             document.getElementById('sortByNameInputContainer').style.display = criteria === 'name' ? 'block' : 'none';
             document.getElementById('sortByGroupInputContainer').style.display = criteria === 'group' ? 'block' : 'none';
             document.getElementById('moveBlockInputContainer').style.display = criteria === 'moveBlock' ? 'block' : 'none';
+            document.getElementById('moveSelectedInputContainer').style.display = criteria === 'moveSelected' ? 'block' : 'none';
         }
         
         function openManageGroupsModal() { if (channelsData.length === 0) return showToast("لا توجد قنوات لإدارة مجموعاتها", "error"); const groupSelector = document.getElementById('groupSelector'); groupSelector.innerHTML = ''; const allGroups = channelsData.flatMap(ch => (ch.groups && ch.groups.length) ? ch.groups : ['غير مصنفة']); const uniqueGroups = [...new Set(allGroups)]; uniqueGroups.sort((a, b) => a.localeCompare(b, 'ar')).forEach(group => { const option = document.createElement('option'); option.value = group; option.textContent = group; groupSelector.appendChild(option); }); handleGroupActionChange(); openModal('manageGroupsModal'); }
