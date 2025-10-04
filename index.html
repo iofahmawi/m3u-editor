@@ -35,6 +35,11 @@
             padding: 20px;
             direction: rtl;
         }
+
+        button, a, [onclick], .upload-area {
+            -webkit-tap-highlight-color: transparent;
+        }
+
         .container {
             max-width: 1100px; width: 100%; margin: 20px auto; min-height: 400px;
             background: var(--container-bg-color);
@@ -97,7 +102,7 @@
         #searchInput, #groupFilter {
             padding: 10px; border: 1px solid var(--border-color);
             border-radius: 4px; box-sizing: border-box; font-size: 16px;
-            outline: none; transition: border-color 0.3s, box-shadow 0.3s; /* Added box-shadow transition */
+            outline: none; transition: border-color 0.3s, box-shadow 0.3s;
             background-color: var(--container-bg-color); width: 100%; margin-bottom: 15px;
         }
         
@@ -224,22 +229,17 @@
         .modal-row label { margin-left: 5px; cursor: pointer; } 
         .modal-buttons { display: flex; justify-content: center; align-items: center; margin-top: 25px; flex-wrap: wrap; gap: 10px; width: 100%; }
         
-        #bulkActionsModal .modal-buttons {
+        #bulk-actions-list {
             display: flex;
-            flex-wrap: wrap;
-            justify-content: space-between;
+            flex-direction: column;
             gap: 15px;
+            padding: 10px 0;
         }
-        #bulkActionsModal .modal-buttons .action-btn {
-            padding: 7.5px 12px;
-            margin: 0;
-        }
-        #bulkActionsModal .modal-buttons .action-btn:nth-child(1),
-        #bulkActionsModal .modal-buttons .action-btn:nth-child(2) {
-            width: calc(50% - 7.5px);
-        }
-        #bulkActionsModal .modal-buttons .action-btn:nth-child(3) {
-            width: 100%;
+        #bulk-actions-list .modal-row {
+            margin-bottom: 0;
+            border: 1px solid var(--border-color);
+            padding: 10px;
+            border-radius: 6px;
         }
 
         .dropdown-container {
@@ -374,7 +374,38 @@
     <!-- All Modals -->
     <div id="searchFilterModal" class="modal"><div class="modal-content"><span class="close" onclick="closeModal('searchFilterModal')">&times;</span><h2>بحث وتصفية القنوات</h2><input type="text" id="searchInput" placeholder="ابحث عن قناة..." oninput="searchChannels()"><select id="groupFilter" onchange="searchChannels()"><option value="all">كل المجموعات</option></select><div class="modal-buttons"><button onclick="closeModal('searchFilterModal')" class="cancel">إغلاق</button></div></div></div>
     
-    <div id="bulkActionsModal" class="modal"><div class="modal-content"><span class="close" onclick="closeModal('bulkActionsModal')">&times;</span><h2>إجراءات على القنوات المحددة</h2><div class="modal-buttons"><button class="action-btn" onclick="openBulkEditGroupModal(); closeModal('bulkActionsModal');">تعديل المجموعة</button><button class="action-btn export-btn" onclick="exportSelected(); closeModal('bulkActionsModal');">تصدير المحدد</button><button class="action-btn delete-btn" onclick="deleteSelected(); closeModal('bulkActionsModal');">حذف المحدد</button></div></div></div>
+    <div id="bulkActionsModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('bulkActionsModal')">&times;</span>
+            <h2>إجراءات على القنوات المحددة</h2>
+            <div id="bulk-actions-list">
+                <div class="modal-row">
+                    <input type="radio" id="bulk-action-sort" name="bulkAction" value="sort" checked>
+                    <label for="bulk-action-sort">فرز المحدد أبجدياً</label>
+                </div>
+                <div class="modal-row">
+                    <input type="radio" id="bulk-action-group" name="bulkAction" value="group">
+                    <label for="bulk-action-group">تعديل المجموعة</label>
+                </div>
+                <div class="modal-row">
+                    <input type="radio" id="bulk-action-remove-group" name="bulkAction" value="removeGroup">
+                    <label for="bulk-action-remove-group">إزالة التصنيف عن المحدد</label>
+                </div>
+                <div class="modal-row">
+                    <input type="radio" id="bulk-action-delete" name="bulkAction" value="delete">
+                    <label for="bulk-action-delete">حذف المحدد</label>
+                </div>
+                <div class="modal-row">
+                    <input type="radio" id="bulk-action-export" name="bulkAction" value="export">
+                    <label for="bulk-action-export">تصدير المحدد</label>
+                </div>
+            </div>
+            <div class="modal-buttons">
+                <button onclick="executeBulkAction()">تنفيذ</button>
+                <button onclick="closeModal('bulkActionsModal')" class="cancel">إلغاء</button>
+            </div>
+        </div>
+    </div>
     
     <div id="channelCheckerModal" class="modal"><div class="modal-content"><span class="close" onclick="closeModal('channelCheckerModal')">&times;</span><h2>مدقق حالة القنوات</h2><p>سيقوم هذا الإجراء بالتحقق من كل قناة لتحديد ما إذا كانت تعمل. قد يستغرق هذا بعض الوقت للقوائم الكبيرة.</p><div id="checker-progress-container"><p id="checker-progress-text">اضغط على زر 'بدء الفحص' للتحقق من حالة القنوات.</p><div id="checker-progress-bar-container"><div id="checker-progress-bar">0%</div></div></div><p id="checker-summary-text" style="font-weight: bold;"></p><div class="modal-buttons"><button id="start-check-btn" onclick="executeChannelCheck()">بدء الفحص</button><button id="stop-check-btn" onclick="stopChannelCheck()" class="cancel" style="display:none;">إيقاف الفحص</button><button id="checker-cancel-btn" onclick="closeModal('channelCheckerModal')" class="cancel">إغلاق</button></div><div class="dropdown-container" id="checker-actions-container" style="display: none;"><button onclick="toggleCheckerActions()" class="dropdown-btn">إجراءات &#9662;</button><div id="checker-actions-dropdown" class="dropdown-content"><a href="#" id="export-working-btn" onclick="exportWorkingChannels()">تصدير القنوات التي تعمل</a><a href="#" id="select-failed-btn" onclick="selectFailedChannels()">تحديد القنوات التي لا تعمل</a><a href="#" id="delete-failed-btn" class="delete-option" onclick="deleteFailedChannels()">حذف القنوات التي لا تعمل</a></div></div></div></div>
 
@@ -421,7 +452,6 @@
     
     <div id="manageGroupsModal" class="modal"><div class="modal-content"><span class="close" onclick="closeModal('manageGroupsModal')">&times;</span><h2>إدارة المجموعات</h2><label for="groupSelector">اختر المجموعة:</label><select id="groupSelector"></select><label>اختر الإجراء:</label><div class="modal-row"><input type="radio" id="action-rename" name="groupAction" value="rename" checked onchange="handleGroupActionChange()"><label for="action-rename">إعادة تسمية</label></div><div id="renameGroupInputContainer" style="margin-right: 25px;"><input type="text" id="newGroupNameField" placeholder="أدخل اسما جديدا أو اتركه فارغا للإزالة"></div><div class="modal-row"><input type="radio" id="action-delete" name="groupAction" value="delete" onchange="handleGroupActionChange()"><label for="action-delete">حذف المجموعة</label></div><div class="modal-row"><input type="radio" id="action-remove-all-groups" name="groupAction" value="removeAll" onchange="handleGroupActionChange()"><label for="action-remove-all-groups">إزالة كل التصنيفات</label></div><div class="modal-row"><input type="radio" id="action-split" name="groupAction" value="split" onchange="handleGroupActionChange()"><label for="action-split">فصل أو استخراج المجموعة</label></div><div class="modal-buttons"><button onclick="executeGroupAction()">تنفيذ</button><button onclick="closeModal('manageGroupsModal')" class="cancel">إلغاء</button></div></div></div>
     
-    <!-- *** MODIFIED: Merge Modal for multiple URLs *** -->
     <div id="mergeModal" class="modal"><div class="modal-content"><span class="close" onclick="closeModal('mergeModal')">&times;</span><h2>خيارات الدمج</h2>
         <div class="modal-content-body">
             <label for="mergeOptionSelector" style="display:block; margin-bottom: 5px; text-align: right;">اختر طريقة الدمج:</label>
@@ -435,7 +465,7 @@
             </div>
             <div id="mergeUrlOption" class="merge-option-container" style="display: none;">
                 <p>ألصق الروابط هنا، كل رابط في سطر جديد.</p>
-                <textarea id="mergeUrlTextarea" placeholder="https://example.com/playlist1.m3u&#10;https://example.com/playlist2.m3u8" style="width: 100%; min-height: 120px; margin-bottom: 20px; direction: ltr; text-align: left;"></textarea>
+                <textarea id="mergeUrlTextarea" placeholder="https://example.com/playlist.m3u" style="width: 100%; min-height: 120px; margin-bottom: 20px; direction: ltr; text-align: left;"></textarea>
                 <button onclick="executeMerge()">دمج الروابط</button>
             </div>
         </div>
@@ -734,7 +764,6 @@
             closeModal('manageGroupsModal');
         }
 
-        // *** MODIFIED: executeMerge for multiple URLs ***
         async function executeMerge() {
             const urlsText = document.getElementById('mergeUrlTextarea').value;
             const urls = urlsText.split('\n').map(u => u.trim()).filter(u => u);
@@ -751,7 +780,7 @@
             for (const url of urls) {
                 try {
                     const response = await fetch(url);
-                    if (!response.ok) throw new Error(`فشل تحميل الرابط (الحالة: ${response.status})`);
+                    if (!response.ok) throw new Error(`Failed to fetch`);
                     const content = await response.text();
                     const channelsFromUrl = parsePlaylist(content);
                     if (channelsFromUrl.length > 0) {
@@ -760,7 +789,7 @@
                     }
                 } catch (error) {
                     failedCount++;
-                    console.error(`خطأ في تحميل الرابط ${url}:`, error);
+                    console.error(`Error fetching/parsing URL ${url}:`, error);
                 }
             }
 
@@ -934,9 +963,52 @@
         function downloadFile(content, fileName, mimeType) { const blob = new Blob([content], { type: mimeType }); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); const prefix = isMerged ? 'merged_' : isSorted ? 'sorted_' : ''; a.download = prefix + fileName; document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(a.href); }
         document.addEventListener('click', e => { if (e.target.classList.contains('edit-btn')) openEditModal(parseInt(e.target.dataset.index)); if (e.target.classList.contains('delete-btn-icon')) deleteChannel(parseInt(e.target.dataset.index)); });
         
+        function executeBulkAction() {
+            const selectedAction = document.querySelector('input[name="bulkAction"]:checked').value;
+            closeModal('bulkActionsModal');
+
+            switch(selectedAction) {
+                case 'sort':
+                    const indices = Array.from(selectedIndices).sort((a, b) => a - b);
+                    const channelsToSort = indices.map(index => channelsData[index]);
+                    channelsToSort.sort((a, b) => (a.name || '').localeCompare(b.name || '', 'ar'));
+                    indices.forEach((originalIndex, i) => {
+                        channelsData[originalIndex] = channelsToSort[i];
+                    });
+                    
+                    selectedIndices.clear();
+                    updateTvgChnoInAllChannels();
+                    searchChannels();
+                    showToast(`تم فرز ${indices.length} قناة محددة أبجدياً في أماكنها`, 'success');
+                    break;
+                case 'group':
+                    openBulkEditGroupModal();
+                    break;
+                case 'removeGroup':
+                    showConfirm('إزالة التصنيف', `هل أنت متأكد من إزالة التصنيف من ${selectedIndices.size} قناة محددة؟`, () => {
+                        const count = selectedIndices.size;
+                        selectedIndices.forEach(index => {
+                            channelsData[index].groups = [];
+                        });
+                        selectedIndices.clear();
+                        updateTvgChnoInAllChannels();
+                        searchChannels();
+                        populateGroupFilter();
+                        showToast(`تم إزالة التصنيف من ${count} قناة بنجاح`, 'success');
+                    });
+                    break;
+                case 'export':
+                    exportSelected();
+                    break;
+                case 'delete':
+                    deleteSelected();
+                    break;
+            }
+        }
+
         function openBulkEditGroupModal() { if (selectedIndices.size === 0) return; document.getElementById('bulkNewGroupName').value = ''; openModal('bulkEditGroupModal'); }
         function executeBulkEditGroup() { const newGroups = document.getElementById('bulkNewGroupName').value.split(';').map(g => g.trim()).filter(g => g); const count = selectedIndices.size; selectedIndices.forEach(index => { channelsData[index].groups = newGroups; }); updateTvgChnoInAllChannels(); selectedIndices.clear(); searchChannels(); populateGroupFilter(); closeModal('bulkEditGroupModal'); showToast(`تم تعديل مجموعة ${count} قناة بنجاح`, 'success'); }
-        function exportSelected() { if (selectedIndices.size === 0) return; const selectedChannels = Array.from(selectedIndices).map(index => channelsData[index]); const content = createPlaylistContent('m3u', selectedChannels); if(content) { downloadFile(content, 'selected_channels.m3u', 'text/plain;charset=utf-8'); showToast(`تم تصدير ${selectedChannels.length} قناة بنجاح`, 'success'); selectedIndices.clear(); searchChannels(); } }
+        function exportSelected() { if (selectedIndices.size === 0) return; openModal('exportModal'); }
         
         function openChannelCheckerModal() {
             if (channelsData.length === 0) return showToast("لا توجد قنوات لفحصها", "error");
