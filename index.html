@@ -27,6 +27,10 @@
             --selected-row-color: #fdebd0; /* Light Orange */
         }
 
+        html {
+            height: 100%;
+        }
+
         body {
             font-family: 'Arial', sans-serif;
             background-color: var(--background-color);
@@ -34,6 +38,10 @@
             margin: 0;
             padding: 20px;
             direction: rtl;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            box-sizing: border-box;
         }
 
         button, a, [onclick], .upload-area {
@@ -41,7 +49,7 @@
         }
 
         .container {
-            max-width: 1100px; width: 100%; margin: 20px auto; min-height: 400px;
+            max-width: 1100px; width: 100%; margin: 20px auto;
             background: var(--container-bg-color);
             padding: 30px; border-radius: 12px;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
@@ -49,6 +57,12 @@
             border: 1px solid var(--border-color);
         }
         h1 { color: var(--primary-color); text-align: center; margin-bottom: 20px; }
+        .page-title a {
+            color: inherit;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
         .upload-area {
             text-align: center; padding: 20px;
             border: 2px dashed var(--border-color);
@@ -202,7 +216,6 @@
         #paginationControls button:disabled { background-color: #e9ecef; cursor: not-allowed; } #pageInfo { font-weight: bold; } #confirmModal .modal-content { max-width: 400px; text-align: center; } #confirmMessage { margin: 20px 0; font-size: 1.1em; } 
         .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.4); align-items: center; justify-content: center; } 
         
-        /* *** MODIFIED: Centered the Bulk Actions Modal *** */
         .modal:not(#addModal, #editModal, #manageGroupsModal, #findReplaceModal, #bulkActionsModal) { 
             align-items: flex-start; 
             padding-top: 15vh; 
@@ -344,11 +357,28 @@
         .merge-option-container button { background-color: var(--primary-color); color: white; padding: 7.5px 25px; font-size: 1em; border: none; border-radius: 6px; cursor: pointer; }
         .merge-option-container button:hover { background-color: var(--primary-hover); } 
         .status-dot { height: 10px; width: 10px; border-radius: 50%; display: none; margin-left: 5px; } body.show-status-dots .status-dot { display: inline-block; } .status-dot.unchecked { background-color: #bbb; } .status-dot.checking { background-color: #f0ad4e; animation: blinker 1s linear infinite; } .status-dot.checked-ok { background-color: #5cb85c; } .status-dot.checked-fail { background-color: var(--delete-color); } @keyframes blinker { 50% { opacity: 0.5; } } #checker-progress-bar-container { width: 100%; background-color: #f3f3f3; border-radius: 5px; margin: 15px 0; } #checker-progress-bar { width: 0%; height: 20px; background-color: var(--primary-color); border-radius: 5px; text-align: center; line-height: 20px; color: white; transition: width 0.3s; } .find-replace-options div { margin-bottom: 5px; } @media (max-width: 600px) { .container { padding: 15px; margin: 10px auto; } table { font-size: 14px; } th, td { padding: 6px 3px; } table th:nth-child(2), table td:nth-child(2) { display: none; } .modal-content { width: 91%; padding: 15px; margin: 0; max-height: 80vh; } }
+        
+        .site-footer {
+            text-align: center;
+            padding: 20px 20px 30px 20px; /* Reverted to 30px bottom padding as requested */
+            margin-top: auto;
+            color: #888;
+            font-size: 0.9em;
+            flex-shrink: 0;
+        }
+        .site-footer a {
+            color: var(--button-delete-color);
+            text-decoration: none;
+            font-weight: bold;
+        }
+        .site-footer a:hover {
+            text-decoration: underline;
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>محرر قائمة تشغيل M3U/M3U8</h1>
+        <h1 class="page-title"><a href="">محرر قائمة تشغيل M3U/M3U8</a></h1>
         
         <div id="loadingIndicator" style="display: none;"><p>جارٍ التحميل...</p></div>
         
@@ -489,6 +519,10 @@
     <div id="exportModal" class="modal"><div class="modal-content"><span class="close" onclick="closeModal('exportModal')">&times;</span><h2>تصدير قائمة التشغيل</h2><p>اختر الصيغة المطلوبة للحفظ:</p><div class="modal-row"><input type="radio" id="export-m3u" name="exportFormat" value="m3u" checked><label for="export-m3u">M3U</label></div><div class="modal-row"><input type="radio" id="export-m3u8" name="exportFormat" value="m3u8"><label for="export-m3u8">M3U8</label></div><div class="modal-row"><input type="radio" id="export-pls" name="exportFormat" value="pls"><label for="export-pls">PLS</label></div><div class="modal-row"><input type="radio" id="export-enigma2" name="exportFormat" value="enigma2"><label for="export-enigma2">Enigma2</label></div><div class="modal-buttons"><button onclick="executeExport()">تصدير</button><button onclick="closeModal('exportModal')" class="cancel">إلغاء</button></div></div></div>
     <div id="confirmModal" class="modal"><div class="modal-content"><span class="close" onclick="closeModal('confirmModal')">&times;</span><h2 id="confirmTitle">تأكيد الإجراء</h2><p id="confirmMessage">هل أنت متأكد؟</p><div class="modal-buttons"><button id="confirmBtn" class="action-btn">تأكيد</button><button onclick="closeModal('confirmModal')" class="action-btn delete-btn">إلغاء</button></div></div></div>
     <div id="toastContainer"></div>
+    
+    <footer class="site-footer">
+        <p>تم التطوير بواسطة <a href="https://github.com/iofahmawi" target="_blank" rel="noopener noreferrer">iofahmawi</a></p>
+    </footer>
 
     <script>
         let channelsData = []; let displayedChannels = []; let isMerged = false, isSorted = false; let draggedIndices = []; let selectedIndices = new Set(); let currentPage = 1; const rowsPerPage = 100; let isChecking = false;
@@ -975,6 +1009,7 @@
                 const maxIndex = channelsData.length;
                 if (target < 1 || target > maxIndex + 1) { return showToast(`الموضع الهدف خارج نطاق القائمة (1 - ${maxIndex})`, 'error'); }
                 
+                closeModal('bulkActionsModal');
                 const targetIndex = target - 1;
                 const sortedIndices = Array.from(selectedIndices).sort((a, b) => b - a);
                 const blockToMove = [];
@@ -987,7 +1022,6 @@
                 selectedIndices.clear();
                 updateTvgChnoInAllChannels();
                 searchChannels();
-                closeModal('bulkActionsModal');
                 return;
             }
 
