@@ -356,7 +356,47 @@
         #loadingIndicator { font-weight: bold; color: var(--primary-color); text-align: center; margin: 20px; } #logoPreview img, #addPreviewImage { max-width: 50px; max-height: 50px; display: none; } #mergeModal .modal-content-body { padding: 15px; text-align: center; } #mergeOptionSelector { width: 100%; padding: 10px; font-size: 1em; margin-bottom: 20px; } .merge-option-container { padding: 10px; } .merge-option-container p { margin-bottom: 20px; color: #666; } 
         .merge-option-container button { background-color: var(--primary-color); color: white; padding: 7.5px 25px; font-size: 1em; border: none; border-radius: 6px; cursor: pointer; }
         .merge-option-container button:hover { background-color: var(--primary-hover); } 
-        .status-dot { height: 10px; width: 10px; border-radius: 50%; display: none; margin-left: 5px; } body.show-status-dots .status-dot { display: inline-block; } .status-dot.unchecked { background-color: #bbb; } .status-dot.checking { background-color: #f0ad4e; animation: blinker 1s linear infinite; } .status-dot.checked-ok { background-color: #5cb85c; } .status-dot.checked-fail { background-color: var(--delete-color); } @keyframes blinker { 50% { opacity: 0.5; } } #checker-progress-bar-container { width: 100%; background-color: #f3f3f3; border-radius: 5px; margin: 15px 0; } #checker-progress-bar { width: 0%; height: 20px; background-color: var(--primary-color); border-radius: 5px; text-align: center; line-height: 20px; color: white; transition: width 0.3s; } .find-replace-options div { margin-bottom: 5px; } @media (max-width: 600px) { .container { padding: 15px; margin: 10px auto; } table { font-size: 14px; } th, td { padding: 6px 3px; } table th:nth-child(2), table td:nth-child(2) { display: none; } .modal-content { width: 91%; padding: 15px; margin: 0; max-height: 80vh; } }
+        .status-dot { height: 10px; width: 10px; border-radius: 50%; display: none; margin-left: 5px; } body.show-status-dots .status-dot { display: inline-block; } .status-dot.unchecked { background-color: #bbb; } .status-dot.checking { background-color: #f0ad4e; animation: blinker 1s linear infinite; } .status-dot.checked-ok { background-color: #5cb85c; } .status-dot.checked-fail { background-color: var(--delete-color); } @keyframes blinker { 50% { opacity: 0.5; } } #checker-progress-bar-container { width: 100%; background-color: #f3f3f3; border-radius: 5px; margin: 15px 0; } #checker-progress-bar { width: 0%; height: 20px; background-color: var(--primary-color); border-radius: 5px; text-align: center; line-height: 20px; color: white; transition: width 0.3s; } .find-replace-options div { margin-bottom: 5px; } @media (max-width: 600px) {
+    .container {
+        padding: 15px;
+        margin: 10px auto;
+    }
+    table {
+        font-size: 14px;
+    }
+    th,
+    td {
+        padding: 6px 3px;
+    }
+    table th:nth-child(2),
+    table td:nth-child(2) {
+        display: none;
+    }
+    .modal-content {
+        width: 91%;
+        padding: 15px;
+        margin: 0;
+        max-height: 85vh; /* زدنا الارتفاع الأقصى قليلاً */
+    }
+    /* تقليل المسافات العمودية داخل النوافذ المنبثقة على الشاشات الصغيرة */
+    .modal-content input[type="text"],
+    .modal-content input[type="url"],
+    .modal-content input[type="number"] {
+        margin: 5px 0 10px 0; /* تقليل الهوامش العمودية للحقول */
+    }
+    .find-replace-options {
+        margin-top: 10px !important; /* تقليل المسافة العلوية */
+    }
+    .find-replace-options p {
+        margin-bottom: 2px; /* تقليل المسافة تحت العناوين الجانبية */
+    }
+    #bulk-actions-list {
+        gap: 8px; /* تقليل الفجوة بين الخيارات */
+    }
+    .modal-buttons {
+        margin-top: 15px; /* تقليل المسافة فوق الأزرار */
+    }
+}
         
         .site-footer {
             text-align: center;
