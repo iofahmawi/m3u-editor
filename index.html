@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>محرر قوائم تشغيل M3U/M3U8</title>
+    <title>محرر قائمة تشغيل M3U/M3U8</title>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     
@@ -265,7 +265,6 @@
             flex-wrap: wrap;
         }
         
-        /* --- NEW: تحسينات مقترحة لواجهة خيار النقل --- */
         #bulk-move-input-container {
             display: none;
             width: 100%;
@@ -287,7 +286,6 @@
             text-align: right;
             width: auto;
         }
-        /* --- END NEW --- */
 
         .dropdown-container {
             position: relative;
@@ -375,8 +373,11 @@
         .merge-option-container button:hover { background-color: var(--primary-hover); } 
         .status-dot { height: 10px; width: 10px; border-radius: 50%; display: none; margin-left: 5px; } body.show-status-dots .status-dot { display: inline-block; } .status-dot.unchecked { background-color: #bbb; } .status-dot.checking { background-color: #f0ad4e; animation: blinker 1s linear infinite; } .status-dot.checked-ok { background-color: #5cb85c; } .status-dot.checked-fail { background-color: var(--delete-color); } @keyframes blinker { 50% { opacity: 0.5; } } #checker-progress-bar-container { width: 100%; background-color: #f3f3f3; border-radius: 5px; margin: 15px 0; } #checker-progress-bar { width: 0%; height: 20px; background-color: var(--primary-color); border-radius: 5px; text-align: center; line-height: 20px; color: white; transition: width 0.3s; } .find-replace-options div { margin-bottom: 5px; }
         
-        /* --- MODIFIED: Media query for mobile responsiveness --- */
         @media (max-width: 600px) {
+            h1.page-title {
+                font-size: 1.9em;
+            }
+        
             .container {
                 padding: 15px;
                 margin: 10px auto;
@@ -396,31 +397,30 @@
                 width: 91%;
                 padding: 15px;
                 margin: 0;
-                max-height: 85vh; /* زيادة الارتفاع الأقصى قليلاً */
+                max-height: 85vh;
             }
-            /* تقليل المسافات العمودية داخل النوافذ المنبثقة على الشاشات الصغيرة */
             .modal-content input[type="text"],
             .modal-content input[type="url"],
             .modal-content input[type="number"] {
-                margin: 5px 0 10px 0; /* تقليل الهوامش العمودية للحقول */
+                margin: 5px 0 10px 0;
             }
             .find-replace-options {
-                margin-top: 10px !important; /* تقليل المسافة العلوية */
+                margin-top: 10px !important;
             }
             .find-replace-options p {
-                margin-bottom: 2px; /* تقليل المسافة تحت العناوين الجانبية */
+                margin-bottom: 2px;
             }
             #bulk-actions-list {
-                gap: 8px; /* تقليل الفجوة بين الخيارات */
+                gap: 8px;
             }
             .modal-buttons {
-                margin-top: 15px; /* تقليل المسافة فوق الأزرار */
+                margin-top: 15px;
             }
         }
         
         .site-footer {
             text-align: center;
-            padding: 20px 20px 30px 20px; /* Reverted to 30px bottom padding as requested */
+            padding: 20px 20px 30px 20px;
             margin-top: auto;
             color: #888;
             font-size: 0.9em;
@@ -493,7 +493,6 @@
                 <div class="modal-row">
                     <input type="radio" id="bulk-action-move" name="bulkAction" value="move">
                     <label for="bulk-action-move">نقل المحدد إلى موضع</label>
-                    <!-- MODIFIED: HTML for the move input container (removed inline styles) -->
                     <div id="bulk-move-input-container">
                         <label for="bulk-move-target-index">رقم:</label>
                         <input type="number" id="bulk-move-target-index" min="1" placeholder="مثال: 1">
@@ -1290,4 +1289,3 @@
     </script>
 </body>
 </html>
-
