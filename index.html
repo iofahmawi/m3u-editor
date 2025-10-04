@@ -199,7 +199,16 @@
         
         #paginationControls { display: flex; justify-content: center; align-items: center; margin-top: 20px; gap: 10px; } 
         #paginationControls button { background-color: #f0f0f0; border: 1px solid var(--border-color); padding: 7.5px 16px; border-radius: 4px; cursor: pointer; }
-        #paginationControls button:disabled { background-color: #e9ecef; cursor: not-allowed; } #pageInfo { font-weight: bold; } #confirmModal .modal-content { max-width: 400px; text-align: center; } #confirmMessage { margin: 20px 0; font-size: 1.1em; } .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.4); align-items: center; justify-content: center; } .modal:not(#addModal, #editModal, #manageGroupsModal, #findReplaceModal) { align-items: flex-start; padding-top: 15vh; } .modal-content { padding: 20px; border: 1px solid var(--border-color); width: auto; max-width: 500px; border-radius: 10px; position: relative; box-sizing: border-box; overflow-y: auto; min-height: 200px; margin: 0; } .modal-content textarea { width: 95%; min-height: 150px; padding: 8px; margin: 10px auto; display: block; border: 1px solid var(--border-color); border-radius: 4px; box-sizing: border-box; resize: vertical; } #multiUrlTextarea { direction: ltr; text-align: left; } .close { color: #aaa; float: left; font-size: 28px; font-weight: bold; } .close:hover, .close:focus { color: #000; text-decoration: none; cursor: pointer; } 
+        #paginationControls button:disabled { background-color: #e9ecef; cursor: not-allowed; } #pageInfo { font-weight: bold; } #confirmModal .modal-content { max-width: 400px; text-align: center; } #confirmMessage { margin: 20px 0; font-size: 1.1em; } 
+        .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.4); align-items: center; justify-content: center; } 
+        
+        /* *** MODIFIED: Centered the Bulk Actions Modal *** */
+        .modal:not(#addModal, #editModal, #manageGroupsModal, #findReplaceModal, #bulkActionsModal) { 
+            align-items: flex-start; 
+            padding-top: 15vh; 
+        } 
+
+        .modal-content { padding: 20px; border: 1px solid var(--border-color); width: auto; max-width: 500px; border-radius: 10px; position: relative; box-sizing: border-box; overflow-y: auto; min-height: 200px; margin: 0; } .modal-content textarea { width: 95%; min-height: 150px; padding: 8px; margin: 10px auto; display: block; border: 1px solid var(--border-color); border-radius: 4px; box-sizing: border-box; resize: vertical; } #multiUrlTextarea { direction: ltr; text-align: left; } .close { color: #aaa; float: left; font-size: 28px; font-weight: bold; } .close:hover, .close:focus { color: #000; text-decoration: none; cursor: pointer; } 
         .modal-content input[type="text"], .modal-content input[type="url"], .modal-content input[type="number"], .modal-content select { 
             width: 95%; padding: 8px; margin: 10px 0; display: inline-block; border: 1px solid var(--border-color); border-radius: 4px; box-sizing: border-box; 
             transition: border-color 0.3s, box-shadow 0.3s;
@@ -240,6 +249,14 @@
             border: 1px solid var(--border-color);
             padding: 10px;
             border-radius: 6px;
+            flex-wrap: wrap;
+        }
+        #bulk-move-input-container {
+            display: none;
+            width: 100%;
+            padding-top: 10px;
+            margin-top: 10px;
+            border-top: 1px solid var(--border-color);
         }
 
         .dropdown-container {
@@ -303,7 +320,7 @@
             display: block;
         }
         
-        #moveBlockInputContainer, #moveSelectedInputContainer {
+        #moveBlockInputContainer {
             margin-right: 25px;
             padding: 10px;
             border: 1px solid var(--border-color);
@@ -384,6 +401,14 @@
                     <label for="bulk-action-sort">فرز المحدد أبجدياً</label>
                 </div>
                 <div class="modal-row">
+                    <input type="radio" id="bulk-action-move" name="bulkAction" value="move">
+                    <label for="bulk-action-move">نقل المحدد إلى موضع</label>
+                    <div id="bulk-move-input-container">
+                        <label for="bulk-move-target-index" style="margin: 0 5px;">رقم:</label>
+                        <input type="number" id="bulk-move-target-index" min="1" placeholder="مثال: 1" style="width: 80px; margin: 0; padding: 5px;">
+                    </div>
+                </div>
+                <div class="modal-row">
                     <input type="radio" id="bulk-action-group" name="bulkAction" value="group">
                     <label for="bulk-action-group">تعديل المجموعة</label>
                 </div>
@@ -437,16 +462,6 @@
                 <input type="number" id="moveTargetIndex" min="1" placeholder="مثال: 1">
             </div>
         </div>
-        <div class="modal-row">
-            <input type="radio" id="sort-move-selected" name="sortCriteria" value="moveSelected" onchange="handleSortCriteriaChange()">
-            <label for="sort-move-selected">نقل المحدد إلى موضع</label>
-        </div>
-        <div id="moveSelectedInputContainer">
-             <div class="move-block-row">
-                <label for="moveSelectedTargetIndex">إلى الموضع رقم:</label>
-                <input type="number" id="moveSelectedTargetIndex" min="1" placeholder="مثال: 10">
-            </div>
-        </div>
         <div class="modal-buttons"><button onclick="executeSort()">تطبيق</button><button onclick="closeModal('sortModal')" class="cancel">إلغاء</button></div>
     </div></div>
     
@@ -477,7 +492,17 @@
 
     <script>
         let channelsData = []; let displayedChannels = []; let isMerged = false, isSorted = false; let draggedIndices = []; let selectedIndices = new Set(); let currentPage = 1; const rowsPerPage = 100; let isChecking = false;
-        function openModal(modalId) { const modal = document.getElementById(modalId); if(modal) modal.style.display = 'flex'; }
+        
+        function openModal(modalId) {
+            const modal = document.getElementById(modalId);
+            if(modal) modal.style.display = 'flex';
+            if (modalId === 'bulkActionsModal') {
+                document.querySelectorAll('input[name="bulkAction"]').forEach(radio => {
+                    radio.onchange = handleBulkActionChange;
+                });
+                handleBulkActionChange();
+            }
+        }
         function closeModal(modalId) { if(modalId === 'channelCheckerModal' && isChecking) { stopChannelCheck(); } const modal = document.getElementById(modalId); if(modal) modal.style.display = 'none'; }
         function handleDragStart(e) { e.currentTarget.style.cursor = 'grabbing'; const startIndex = parseInt(e.currentTarget.dataset.index); if (selectedIndices.has(startIndex)) { draggedIndices = Array.from(selectedIndices).sort((a, b) => a - b); } else { selectedIndices.clear(); selectedIndices.add(startIndex); document.querySelectorAll('tr.selected').forEach(row => row.classList.remove('selected')); e.currentTarget.classList.add('selected'); updateBulkActionsUI(); } }
         function handleDragEnter(e) { e.preventDefault(); const targetRow = e.currentTarget; const targetIndex = parseInt(targetRow.dataset.index); if (!draggedIndices.includes(targetIndex)) { targetRow.classList.add('drag-over-indicator'); } }
@@ -656,23 +681,6 @@
                 const blockToMove = channelsData.splice(fromIndex, count);
                 channelsData.splice(targetIndex, 0, ...blockToMove);
                 showToast(`تم نقل ${count} قناة إلى الموضع ${target} بنجاح`, 'success');
-            } else if (criteria === 'moveSelected') {
-                const target = parseInt(document.getElementById('moveSelectedTargetIndex').value);
-                if (isNaN(target)) { return showToast('يرجى إدخال الموضع الهدف', 'error'); }
-                const maxIndex = channelsData.length;
-                if (target < 1 || target > maxIndex + 1) { return showToast(`الموضع الهدف خارج نطاق القائمة (1 - ${maxIndex})`, 'error'); }
-                
-                const targetIndex = target - 1;
-                
-                const sortedIndices = Array.from(selectedIndices).sort((a, b) => b - a);
-                const blockToMove = [];
-                sortedIndices.forEach(index => {
-                    blockToMove.unshift(channelsData.splice(index, 1)[0]);
-                });
-                
-                channelsData.splice(targetIndex, 0, ...blockToMove);
-                showToast(`تم نقل ${blockToMove.length} قناة محددة إلى الموضع ${target} بنجاح`, 'success');
-                selectedIndices.clear();
             }
 
             isSorted = true;
@@ -822,15 +830,6 @@
             if (channelsData.length === 0) {
                 return showToast("لا توجد قنوات لفرزها", "error");
             }
-            const moveSelectedRadio = document.getElementById('sort-move-selected');
-            const hasSelection = selectedIndices.size > 0;
-            
-            moveSelectedRadio.disabled = !hasSelection;
-            
-            if (!hasSelection && moveSelectedRadio.checked) {
-                document.getElementById('sort-alpha').checked = true;
-            }
-            
             handleSortCriteriaChange();
             openModal('sortModal');
         }
@@ -840,7 +839,6 @@
             document.getElementById('sortByNameInputContainer').style.display = criteria === 'name' ? 'block' : 'none';
             document.getElementById('sortByGroupInputContainer').style.display = criteria === 'group' ? 'block' : 'none';
             document.getElementById('moveBlockInputContainer').style.display = criteria === 'moveBlock' ? 'block' : 'none';
-            document.getElementById('moveSelectedInputContainer').style.display = criteria === 'moveSelected' ? 'block' : 'none';
         }
         
         function openManageGroupsModal() { if (channelsData.length === 0) return showToast("لا توجد قنوات لإدارة مجموعاتها", "error"); const groupSelector = document.getElementById('groupSelector'); groupSelector.innerHTML = ''; const allGroups = channelsData.flatMap(ch => (ch.groups && ch.groups.length) ? ch.groups : ['غير مصنفة']); const uniqueGroups = [...new Set(allGroups)]; uniqueGroups.sort((a, b) => a.localeCompare(b, 'ar')).forEach(group => { const option = document.createElement('option'); option.value = group; option.textContent = group; groupSelector.appendChild(option); }); handleGroupActionChange(); openModal('manageGroupsModal'); }
@@ -963,8 +961,36 @@
         function downloadFile(content, fileName, mimeType) { const blob = new Blob([content], { type: mimeType }); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); const prefix = isMerged ? 'merged_' : isSorted ? 'sorted_' : ''; a.download = prefix + fileName; document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(a.href); }
         document.addEventListener('click', e => { if (e.target.classList.contains('edit-btn')) openEditModal(parseInt(e.target.dataset.index)); if (e.target.classList.contains('delete-btn-icon')) deleteChannel(parseInt(e.target.dataset.index)); });
         
+        function handleBulkActionChange() {
+            const selectedAction = document.querySelector('input[name="bulkAction"]:checked').value;
+            document.getElementById('bulk-move-input-container').style.display = (selectedAction === 'move') ? 'flex' : 'none';
+        }
+
         function executeBulkAction() {
             const selectedAction = document.querySelector('input[name="bulkAction"]:checked').value;
+            
+            if (selectedAction === 'move') {
+                const target = parseInt(document.getElementById('bulk-move-target-index').value);
+                if (isNaN(target)) { return showToast('يرجى إدخال الموضع الهدف', 'error'); }
+                const maxIndex = channelsData.length;
+                if (target < 1 || target > maxIndex + 1) { return showToast(`الموضع الهدف خارج نطاق القائمة (1 - ${maxIndex})`, 'error'); }
+                
+                const targetIndex = target - 1;
+                const sortedIndices = Array.from(selectedIndices).sort((a, b) => b - a);
+                const blockToMove = [];
+                sortedIndices.forEach(index => {
+                    blockToMove.unshift(channelsData.splice(index, 1)[0]);
+                });
+                
+                channelsData.splice(targetIndex, 0, ...blockToMove);
+                showToast(`تم نقل ${blockToMove.length} قناة محددة إلى الموضع ${target} بنجاح`, 'success');
+                selectedIndices.clear();
+                updateTvgChnoInAllChannels();
+                searchChannels();
+                closeModal('bulkActionsModal');
+                return;
+            }
+
             closeModal('bulkActionsModal');
 
             switch(selectedAction) {
