@@ -223,12 +223,12 @@
         #paginationControls button:disabled { background-color: #e9ecef; cursor: not-allowed; } #pageInfo { font-weight: bold; } #confirmModal .modal-content { max-width: 400px; text-align: center; } #confirmMessage { margin: 20px 0; font-size: 1.1em; } 
         .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.4); align-items: center; justify-content: center; } 
         
-        .modal:not(#addModal, #editModal, #manageGroupsModal, #findReplaceModal, #bulkActionsModal) { 
+        .modal:not(#addModal, #editModal, #manageGroupsModal, #findReplaceModal, #bulkActionsModal, #removeDuplicatesModal) { 
             align-items: flex-start; 
             padding-top: 15vh; 
         } 
 
-        .modal-content { padding: 20px; border: 1px solid var(--border-color); width: auto; max-width: 500px; border-radius: 10px; position: relative; box-sizing: border-box; overflow-y: auto; min-height: 200px; margin: 0; } .modal-content textarea { width: 95%; min-height: 150px; padding: 8px; margin: 10px auto; display: block; border: 1px solid var(--border-color); border-radius: 4px; box-sizing: border-box; resize: vertical; } #multiUrlTextarea { direction: ltr; text-align: left; } .close { color: #aaa; float: left; font-size: 28px; font-weight: bold; } .close:hover, .close:focus { color: #000; text-decoration: none; cursor: pointer; } 
+        .modal-content { padding: 20px; border: 1px solid var(--border-color); width: auto; max-width: 500px; border-radius: 10px; position: relative; box-sizing: border-box; overflow-y: auto; max-height: 80vh; margin: 0; } .modal-content textarea { width: 95%; min-height: 150px; padding: 8px; margin: 10px auto; display: block; border: 1px solid var(--border-color); border-radius: 4px; box-sizing: border-box; resize: vertical; } #multiUrlTextarea { direction: ltr; text-align: left; } .close { color: #aaa; float: left; font-size: 28px; font-weight: bold; } .close:hover, .close:focus { color: #000; text-decoration: none; cursor: pointer; } 
         .modal-content input[type="text"], .modal-content input[type="url"], .modal-content input[type="number"], .modal-content select { 
             width: 95%; padding: 8px; margin: 10px 0; display: inline-block; border: 1px solid var(--border-color); border-radius: 4px; box-sizing: border-box; 
             transition: border-color 0.3s, box-shadow 0.3s;
@@ -257,7 +257,18 @@
         .modal-row { display: flex; align-items: center; margin-bottom: 10px; } 
         .modal-row label { margin-left: 5px; cursor: pointer; } 
         .modal-buttons { display: flex; justify-content: center; align-items: center; margin-top: 25px; flex-wrap: wrap; gap: 10px; width: 100%; }
-        
+        #duplicate-results-list { margin-top: 15px; }
+        .duplicate-group { border: 1px solid var(--border-color); border-radius: 6px; margin-bottom: 10px; padding: 10px; }
+        .duplicate-group h4 { margin: 0 0 10px 0; font-size: 1.1em; color: var(--primary-color); }
+        .duplicate-channel-item { display: flex; align-items: center; }
+        .duplicate-channel-item label { display: flex; align-items: center; padding: 5px; border-radius: 4px; cursor: pointer; width: 100%; }
+        .duplicate-channel-item label:hover { background-color: var(--row-alt-color); }
+        .duplicate-channel-item input { margin-right: 8px; flex-shrink: 0; }
+        .duplicate-channel-item .dup-logo { width: 25px; height: 25px; object-fit: contain; margin-left: 8px; flex-shrink: 0; }
+        .duplicate-channel-item .dup-logo-placeholder { width: 25px; text-align: center; margin-left: 8px; flex-shrink: 0; }
+        .duplicate-channel-item .dup-info-icon { margin-right: auto; cursor: pointer; color: var(--secondary-color); font-size: 1.2em; padding: 5px; }
+
+
         #bulk-actions-list {
             display: flex;
             flex-direction: column;
@@ -546,11 +557,35 @@
         <div class="modal-buttons"><button onclick="executeFindAndReplace()">تنفيذ</button><button onclick="closeModal('findReplaceModal')" class="cancel">إلغاء</button></div>
     </div></div>
 
-    <div id="multiUrlModal" class="modal"><div class="modal-content"><span class="close" onclick="closeModal('multiUrlModal')">&times;</span><h2>تحميل من عدة روابط</h2><p>ألصق الروابط هنا، كل رابط في سطر جديد. سيتم دمجها بالترتيب.</p><textarea id="multiUrlTextarea" placeholder="https://example.com/playlist1.m3u&#10;https://example.com/playlist2.m3u8"></textarea><div class="modal-buttons"><button onclick="processMultiUrlLoad()">تحميل</button><button onclick="closeModal('multiUrlModal')" class="cancel">إلغاء</button></div></div></div>
+    <div id="multiUrlModal" class="modal"><div class="modal-content"><span class="close" onclick="closeModal('multiUrlModal')">&times;</span><h2>تحميل من عدة روابط</h2><p>ألصق الروابط هنا، كل رابط في سطر جديد. سيتم دمجها بالترتيب.</p><textarea id="multiUrlTextarea" placeholder="https://example.com/playlist1.m3u&#10;https://example.com/playlist2.m3u8"></textarea><div class="modal-buttons"><button onclick="processMultiUrlLoad()">تحميل ودمج</button><button onclick="closeModal('multiUrlModal')" class="cancel">إلغاء</button></div></div></div>
     <div id="bulkEditGroupModal" class="modal"><div class="modal-content"><span class="close" onclick="closeModal('bulkEditGroupModal')">&times;</span><h2>تعديل مجموعة القنوات المحددة</h2><label for="bulkNewGroupName">اسم المجموعة الجديد (افصل بين المجموعات بـ ;):</label><input type="text" id="bulkNewGroupName" placeholder="أدخل الاسم الجديد للمجموعة"><div class="modal-buttons"><button onclick="executeBulkEditGroup()">تطبيق</button><button onclick="closeModal('bulkEditGroupModal')" class="cancel">إلغاء</button></div></div></div>
     <div id="editModal" class="modal"><div class="modal-content"><span class="close" onclick="closeModal('editModal')">&times;</span><h2>تحرير القناة</h2><label for="editIndexField">رقم القناة الجديد:</label><input type="number" id="editIndexField" min="1"><label for="editName">اسم القناة:</label><input type="text" id="editName"><label for="editGroup">المجموعة:</label><input type="text" id="editGroup"><label for="editLogo">رابط الصورة:</label><input type="url" id="editLogo"><div id="logoPreview"><img id="previewImage"></div><label for="editUrl">رابط التشغيل:</label><input type="url" id="editUrl"><input type="hidden" id="editOriginalIndex"><div class="modal-buttons"><button onclick="saveEdit()">حفظ</button><button onclick="closeModal('editModal')" class="cancel">إلغاء</button></div></div></div>
     <div id="addModal" class="modal"><div class="modal-content"><span class="close" onclick="closeModal('addModal')">&times;</span><h2>إضافة قناة جديدة</h2><label for="addIndexField">رقم القناة:</label><input type="number" id="addIndexField" min="1"><label for="addName">اسم القناة:</label><input type="text" id="addName" required><label for="addGroup">المجموعة:</label><input type="text" id="addGroup"><label for="addLogo">رابط الصورة:</label><input type="url" id="addLogo"><div id="addLogoPreview"><img id="addPreviewImage"></div><label for="addUrl">رابط التشغيل:</label><input type="url" id="addUrl" required><div class="modal-buttons"><button onclick="saveNewChannel()">إضافة</button><button onclick="closeModal('addModal')" class="cancel">إلغاء</button></div></div></div>
-    <div id="removeDuplicatesModal" class="modal"><div class="modal-content"><span class="close" onclick="closeModal('removeDuplicatesModal')">&times;</span><h2>إزالة التكرار</h2><label>اختر الشرط:</label><div class="modal-row"><input type="radio" id="crit-name" name="duplicateCriteria" value="name" checked><label for="crit-name">الاسم فقط</label></div><div class="modal-row"><input type="radio" id="crit-name-url" name="duplicateCriteria" value="name-url"><label for="crit-name-url">الاسم + الرابط</label></div><div class="modal-row"><input type="radio" id="crit-name-url-group" name="duplicateCriteria" value="name-url-group"><label for="crit-name-url-group">الاسم + الرابط + المجموعة</label></div><div class="modal-buttons"><button onclick="executeRemoveDuplicates()">إزالة</button><button onclick="closeModal('removeDuplicatesModal')" class="cancel">إلغاء</button></div></div></div>
+    
+    <div id="removeDuplicatesModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('removeDuplicatesModal')">&times;</span>
+            <h2>إزالة التكرار</h2>
+            <div id="duplicate-criteria-step">
+                <label>اختر الشرط:</label>
+                <div class="modal-row"><input type="radio" id="crit-name" name="duplicateCriteria" value="name"><label for="crit-name">الاسم فقط</label></div>
+                <div class="modal-row"><input type="radio" id="crit-name-url" name="duplicateCriteria" value="name-url" checked><label for="crit-name-url">الاسم + الرابط</label></div>
+                <div class="modal-row"><input type="radio" id="crit-name-url-group" name="duplicateCriteria" value="name-url-group"><label for="crit-name-url-group">الاسم + الرابط + المجموعة</label></div>
+                <div class="modal-buttons">
+                    <button onclick="findDuplicates()">البحث عن التكرار</button>
+                    <button onclick="closeModal('removeDuplicatesModal')" class="cancel">إلغاء</button>
+                </div>
+            </div>
+            <div id="duplicate-results-step" style="display: none;">
+                 <p><strong>اختر النسخة التي تريد الإبقاء عليها:</strong></p>
+                <div id="duplicate-results-list"></div>
+                <div class="modal-buttons">
+                    <button onclick="executeDuplicateDeletion()">حذف التكرار</button>
+                    <button onclick="showDuplicateCriteriaStep()" class="cancel">رجوع</button>
+                </div>
+            </div>
+        </div>
+    </div>
     
     <div id="sortModal" class="modal"><div class="modal-content"><span class="close" onclick="closeModal('sortModal')">&times;</span><h2>فرز وترتيب القنوات</h2>
         <div id="sort-scope-container" style="display: none; margin-bottom: 15px;">
@@ -641,7 +676,10 @@
         
         function openModal(modalId) {
             const modal = document.getElementById(modalId);
-            if(modal) modal.style.display = 'flex';
+            if (modal) {
+                modal.style.zIndex = '1000'; // Reset z-index
+                modal.style.display = 'flex';
+            }
             
             if (modalId === 'searchFilterModal') {
                 setupSearchFilterModal();
@@ -650,9 +688,21 @@
                     radio.onchange = handleBulkActionChange;
                 });
                 handleBulkActionChange();
+            } else if (modalId === 'removeDuplicatesModal') {
+                showDuplicateCriteriaStep();
             }
         }
-        function closeModal(modalId) { if(modalId === 'channelCheckerModal' && isChecking) { stopChannelCheck(); } const modal = document.getElementById(modalId); if(modal) modal.style.display = 'none'; }
+
+        function closeModal(modalId) { 
+            if(modalId === 'channelCheckerModal' && isChecking) { stopChannelCheck(); } 
+            const modal = document.getElementById(modalId); 
+            if(modal) modal.style.display = 'none'; 
+            
+            // If we are closing the info modal, restore the z-index of the duplicates modal
+            if (modalId === 'editModal' && document.getElementById('removeDuplicatesModal').style.display === 'flex') {
+                document.getElementById('removeDuplicatesModal').style.zIndex = '1000';
+            }
+        }
         function handleDragStart(e) { e.currentTarget.style.cursor = 'grabbing'; const startIndex = parseInt(e.currentTarget.dataset.index); if (selectedIndices.has(startIndex)) { draggedIndices = Array.from(selectedIndices).sort((a, b) => a - b); } else { selectedIndices.clear(); selectedIndices.add(startIndex); document.querySelectorAll('tr.selected').forEach(row => row.classList.remove('selected')); e.currentTarget.classList.add('selected'); updateBulkActionsUI(); } draggedIndices = Array.from(selectedIndices).sort((a, b) => a - b); }
         function handleDragEnter(e) { e.preventDefault(); const targetRow = e.currentTarget; const targetIndex = parseInt(targetRow.dataset.index); if (!draggedIndices.includes(targetIndex)) { targetRow.classList.add('drag-over-indicator'); } }
         function handleDragLeave(e) { e.currentTarget.classList.remove('drag-over-indicator'); }
@@ -696,8 +746,9 @@
             toastWrapper.className = 'toast-wrapper';
             const toast = document.createElement('div');
             toast.className = `toast ${type}`;
-
-            let contentHTML = `<div class="toast-content">${message}</div>`;
+            const cleanMessage = message.trim().replace(/\.$/, '');
+            
+            let contentHTML = `<div class="toast-content">${cleanMessage}</div>`;
             if (action) {
                 const actionId = `toast-action-${Date.now()}`;
                 contentHTML += `<span id="${actionId}" class="toast-action">${action.text}</span>`;
@@ -864,25 +915,24 @@
             if (!isInitialLoad || newChannels.length > preMergeLength) {
                 const seen = new Set();
                 let uniqueCount = 0;
-                channelsData.forEach(channel => {
+                const tempChannels = isInitialLoad ? newChannels : channelsData;
+                tempChannels.forEach(channel => {
                     const key = `${(channel.name || '').trim()}-${(channel.url || '').trim()}`;
                     if (!seen.has(key)) {
                         seen.add(key);
                         uniqueCount++;
                     }
                 });
-                duplicatesFound = channelsData.length - seen.size;
+                duplicatesFound = tempChannels.length - seen.size;
             }
-
+            
             showToast(successMessage, 'success');
 
             if (duplicatesFound > 0) {
                 const action = {
                     text: 'إزالة التكرار الآن',
                     callback: () => {
-                        const duplicatesRemoved = removeDuplicates('name-url');
-                        updateAndRefreshUI();
-                        showToast(`تم إزالة ${duplicatesRemoved} قناة مكررة.`, 'success');
+                        findDuplicates('name-url', true); 
                     }
                 };
                 showToast(`وجدنا ${duplicatesFound} قناة مكررة.`, 'info', 8000, action);
@@ -890,19 +940,136 @@
 
             isMerged = !isInitialLoad;
             isSorted = false;
-            updateAndRefreshUI();
+            updateAndRefreshUI(false);
         }
-
+        
         async function mergePlaylists(event) { const files = event.target.files; if (!files.length) return; closeModal('mergeModal'); document.getElementById('loadingIndicator').style.display = 'block'; const newChannels = await Promise.all(Array.from(files).map(file => file.text().then(parsePlaylist))).then(results => results.flat()); if(newChannels.length > 0) { processNewChannels(newChannels, `تم دمج ${newChannels.length} قناة جديدة.`); } else { showToast("لم يتم العثور على قنوات في الملفات المختارة.", "info"); } document.getElementById('loadingIndicator').style.display = 'none'; event.target.value = ''; }
         function removeDuplicates(criteria = 'name-url') { const originalLength = channelsData.length; const seen = new Set(); channelsData = channelsData.filter(channel => { let key; const name = (channel.name || '').trim(); const url = (channel.url || '').trim(); const groupKey = (channel.groups || []).join(';'); if (criteria === 'name-url') key = `${name}-${url}`; else if (criteria === 'name') key = name; else if (criteria === 'name-url-group') key = `${name}-${url}-${groupKey}`; if (key && !seen.has(key)) { seen.add(key); return true; } return false; }); return originalLength - channelsData.length; }
         function removeDuplicatesManually() { if (channelsData.length === 0) return showToast("لا توجد قنوات", 'error'); openModal('removeDuplicatesModal'); }
         
-        function executeRemoveDuplicates() {
-            const criteria = document.querySelector('input[name="duplicateCriteria"]:checked').value;
-            const duplicatesRemoved = removeDuplicates(criteria);
+        function showDuplicateCriteriaStep() {
+            document.getElementById('duplicate-criteria-step').style.display = 'block';
+            document.getElementById('duplicate-results-step').style.display = 'none';
+        }
+
+        function findDuplicates(criteria, openFromToast = false) {
+            if (!criteria) {
+                criteria = document.querySelector('input[name="duplicateCriteria"]:checked').value;
+            }
+            const duplicatesMap = new Map();
+
+            channelsData.forEach((channel, index) => {
+                let key;
+                const name = (channel.name || '').trim();
+                const url = (channel.url || '').trim();
+                const groupKey = (channel.groups || []).join(';');
+                if (criteria === 'name-url') key = `${name}-${url}`;
+                else if (criteria === 'name') key = name;
+                else if (criteria === 'name-url-group') key = `${name}-${url}-${groupKey}`;
+
+                if (key && !duplicatesMap.has(key)) {
+                    duplicatesMap.set(key, []);
+                }
+                if(key) duplicatesMap.get(key).push({ channel, index });
+            });
+
+            const duplicateGroups = Array.from(duplicatesMap.values()).filter(group => group.length > 1);
+            
+            if (duplicateGroups.length === 0) {
+                showToast("لم يتم العثور على قنوات مكررة بناءً على هذا الشرط.", "info");
+                return;
+            }
+
+            const resultsList = document.getElementById('duplicate-results-list');
+            resultsList.innerHTML = '';
+            duplicateGroups.forEach((group, groupIndex) => {
+                const groupDiv = document.createElement('div');
+                groupDiv.className = 'duplicate-group';
+                
+                const groupTitle = document.createElement('h4');
+                groupTitle.textContent = `${group[0].channel.name}`;
+                groupDiv.appendChild(groupTitle);
+
+                group.forEach((item, itemIndex) => {
+                    const itemDiv = document.createElement('div');
+                    itemDiv.className = 'duplicate-channel-item';
+                    
+                    const radio = document.createElement('input');
+                    radio.type = 'radio';
+                    radio.name = `dup-group-${groupIndex}`;
+                    radio.value = item.index;
+                    radio.id = `dup-radio-${groupIndex}-${itemIndex}`;
+                    if (itemIndex === 0) { 
+                        radio.checked = true;
+                    }
+
+                    const label = document.createElement('label');
+                    label.htmlFor = `dup-radio-${groupIndex}-${itemIndex}`;
+                    
+                    let logoHTML;
+                    if (item.channel.logo) {
+                        logoHTML = `<img src="${item.channel.logo}" class="dup-logo" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-block';"><span class="dup-logo-placeholder" style="display:none;">📺</span>`;
+                    } else {
+                        logoHTML = '<span class="dup-logo-placeholder">📺</span>';
+                    }
+                    
+                    const infoIcon = `<span class="dup-info-icon" onclick="showDuplicateInfo(${item.index})">ⓘ</span>`;
+
+                    label.innerHTML = `${logoHTML} ${item.channel.name}`;
+                    
+                    itemDiv.appendChild(radio);
+                    itemDiv.appendChild(label);
+                    itemDiv.appendChild(document.createRange().createContextualFragment(infoIcon)); // Safer way to add icon
+                    groupDiv.appendChild(itemDiv);
+                });
+                resultsList.appendChild(groupDiv);
+            });
+            
+            if(openFromToast) openModal('removeDuplicatesModal');
+            document.getElementById('duplicate-criteria-step').style.display = 'none';
+            document.getElementById('duplicate-results-step').style.display = 'block';
+        }
+        
+        function showDuplicateInfo(index) {
+            document.getElementById('removeDuplicatesModal').style.zIndex = '999';
+            openEditModal(index, true); // Open in read-only mode
+            document.getElementById('editModal').style.zIndex = '1001';
+        }
+
+        function executeDuplicateDeletion() {
+            const radioGroups = document.querySelectorAll('#duplicate-results-list .duplicate-group');
+            const indicesToKeep = new Set();
+            radioGroups.forEach(group => {
+                const selectedRadio = group.querySelector('input[type="radio"]:checked');
+                if (selectedRadio) {
+                    indicesToKeep.add(parseInt(selectedRadio.value));
+                }
+            });
+
+            const indicesToRemove = new Set();
+            radioGroups.forEach(group => {
+                const allRadios = group.querySelectorAll('input[type="radio"]');
+                allRadios.forEach(radio => {
+                    const index = parseInt(radio.value);
+                    if (!indicesToKeep.has(index)) {
+                        indicesToRemove.add(index);
+                    }
+                });
+            });
+
+            if (indicesToRemove.size === 0) {
+                return showToast("لم يتم تحديد أي قنوات للحذف.", "info");
+            }
+            
+            const sortedIndicesToRemove = Array.from(indicesToRemove).sort((a,b) => b-a);
+
+            sortedIndicesToRemove.forEach(index => {
+                channelsData.splice(index, 1);
+            });
+            
             updateAndRefreshUI();
             closeModal('removeDuplicatesModal');
-            showToast(`تم إزالة ${duplicatesRemoved} قناة مكررة بنجاح`, 'success');
+            showToast(`تم حذف ${sortedIndicesToRemove.length} قناة مكررة بنجاح.`, 'success');
         }
 
         async function processMultiUrlLoad() { document.body.classList.remove('show-status-dots'); const urlsText = document.getElementById('multiUrlTextarea').value; const urls = urlsText.split('\n').map(u => u.trim()).filter(u => u); if (urls.length === 0) { return showToast("يرجى إدخال رابط واحد على الأقل", "error"); } closeModal('multiUrlModal'); document.getElementById('loadingIndicator').style.display = 'block'; let allNewChannels = []; let failedCount = 0; for (const url of urls) { try { const response = await fetch(url); if (!response.ok) throw new Error(`فشل تحميل الرابط (الحالة: ${response.status})`); const content = await response.text(); const channelsFromUrl = parsePlaylist(content); allNewChannels.push(...channelsFromUrl); } catch (error) { failedCount++; console.error(`خطأ في تحميل الرابط ${url}:`, error); } } document.getElementById('loadingIndicator').style.display = 'none'; if (allNewChannels.length > 0) { channelsData = []; processNewChannels(allNewChannels, `تم تحميل ${allNewChannels.length} قناة بنجاح.`); showPlaylistControls(); } else { showToast("فشل تحميل أي قنوات من الروابط المقدمة", "error"); } }
@@ -1077,11 +1244,14 @@
         }
 
 
-        function updateAndRefreshUI() {
+        function updateAndRefreshUI(closeModals = true) {
             updateTvgChnoInAllChannels();
             searchChannels();
-            populateGroupFilter('groupFilter');
-            closeModal('manageGroupsModal');
+            if (closeModals) {
+                 if (document.getElementById('manageGroupsModal').style.display === 'flex') {
+                    closeModal('manageGroupsModal');
+                 }
+            }
         }
 
         async function executeMerge() {
@@ -1122,7 +1292,34 @@
         function saveEdit() { const originalIndex = parseInt(document.getElementById('editOriginalIndex').value); let newIndex = parseInt(document.getElementById('editIndexField').value) - 1; if (!document.getElementById('editName').value || !document.getElementById('editUrl').value) return showToast("الاسم والرابط مطلوبان", 'error'); const groups = document.getElementById('editGroup').value.split(';').map(g => g.trim()).filter(g => g); const channel = { name: document.getElementById('editName').value, groups: groups, logo: document.getElementById('editLogo').value, url: document.getElementById('editUrl').value, originalExtinf: channelsData[originalIndex].originalExtinf, status: channelsData[originalIndex].status }; if (newIndex !== originalIndex && newIndex < channelsData.length) { channelsData.splice(originalIndex, 1); channelsData.splice(newIndex, 0, channel); } else { channelsData[originalIndex] = channel; } updateTvgChnoInAllChannels(); closeModal('editModal'); searchChannels(); populateGroupFilter(); }
         function saveNewChannel() { if (!document.getElementById('addName').value || !document.getElementById('addUrl').value) return showToast("الاسم والرابط مطلوبان", 'error'); let newIndex = parseInt(document.getElementById('addIndexField').value) - 1; const groups = document.getElementById('addGroup').value.split(';').map(g => g.trim()).filter(g => g); const newChannel = { name: document.getElementById('addName').value, groups: groups, logo: document.getElementById('addLogo').value, url: document.getElementById('addUrl').value, status: 'unchecked' }; if (newIndex >= 0 && newIndex <= channelsData.length) { channelsData.splice(newIndex, 0, newChannel); } else { channelsData.push(newChannel); } updateTvgChnoInAllChannels(); closeModal('addModal'); searchChannels(); populateGroupFilter(); showToast('تمت إضافة القناة بنجاح', 'success'); }
         function openAddModal() { document.getElementById('addIndexField').value = channelsData.length + 1; ['addName', 'addGroup', 'addLogo', 'addUrl'].forEach(id => document.getElementById(id).value = ''); updateLogoPreview('addPreviewImage', ''); openModal('addModal'); }
-        function openEditModal(index) { const channel = channelsData[index]; document.getElementById('editIndexField').value = index + 1; document.getElementById('editName').value = channel.name || ''; document.getElementById('editGroup').value = (channel.groups || []).join(';'); document.getElementById('editLogo').value = channel.logo || ''; document.getElementById('editUrl').value = channel.url || ''; document.getElementById('editOriginalIndex').value = index; updateLogoPreview('previewImage', channel.logo); openModal('editModal'); }
+        
+        function openEditModal(index, readOnly = false) {
+            const modal = document.getElementById('editModal');
+            const channel = channelsData[index];
+            if (!channel) return;
+            
+            document.getElementById('editIndexField').value = index + 1;
+            document.getElementById('editName').value = channel.name || '';
+            document.getElementById('editGroup').value = (channel.groups || []).join(';');
+            document.getElementById('editLogo').value = channel.logo || '';
+            document.getElementById('editUrl').value = channel.url || '';
+            document.getElementById('editOriginalIndex').value = index;
+            updateLogoPreview('previewImage', channel.logo);
+            
+            const fields = ['editIndexField', 'editName', 'editGroup', 'editLogo', 'editUrl'];
+            fields.forEach(id => {
+                document.getElementById(id).readOnly = readOnly;
+            });
+            
+            document.querySelector('#editModal .modal-buttons button[onclick="saveEdit()"]').style.display = readOnly ? 'none' : 'inline-block';
+            const cancelButton = document.querySelector('#editModal .modal-buttons button.cancel');
+            cancelButton.textContent = readOnly ? 'إغلاق' : 'إلغاء';
+            
+            if (readOnly) {
+                modal.style.zIndex = '1001';
+            }
+            openModal('editModal');
+        }
         
         function openSortModal() {
             if (channelsData.length === 0) return showToast("لا توجد قنوات لفرزها", "error");
