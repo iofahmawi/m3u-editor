@@ -552,10 +552,48 @@
                 <input type="number" id="moveTargetIndex" min="1" placeholder="مثال: 1">
             </div>
         </div>
+        <div id="sort-scope-container" style="border-top: 1px solid var(--border-color); margin-top: 15px; padding-top: 15px;">
+            <p style="margin-bottom: 5px;"><strong>النطاق:</strong></p>
+            <div>
+                <input type="radio" id="sort-scope-all" name="sort-scope" value="all" checked>
+                <label for="sort-scope-all">فرز كامل القائمة</label>
+            </div>
+            <div>
+                <input type="radio" id="sort-scope-filtered" name="sort-scope" value="filtered">
+                <label for="sort-scope-filtered">فرز نتائج البحث فقط (<span id="filtered-sort-count">0</span>)</label>
+            </div>
+        </div>
         <div class="modal-buttons"><button onclick="executeSort()">تطبيق</button><button onclick="closeModal('sortModal')" class="cancel">إلغاء</button></div>
     </div></div>
     
-    <div id="manageGroupsModal" class="modal"><div class="modal-content"><span class="close" onclick="closeModal('manageGroupsModal')">&times;</span><h2>إدارة المجموعات</h2><label for="groupSelector">اختر المجموعة:</label><select id="groupSelector"></select><label>اختر الإجراء:</label><div class="modal-row"><input type="radio" id="action-rename" name="groupAction" value="rename" checked onchange="handleGroupActionChange()"><label for="action-rename">إعادة تسمية</label></div><div id="renameGroupInputContainer" style="margin-right: 25px;"><input type="text" id="newGroupNameField" placeholder="أدخل اسمًا جديدًا أو اتركه فارغًا"></div><div class="modal-row"><input type="radio" id="action-delete" name="groupAction" value="delete" onchange="handleGroupActionChange()"><label for="action-delete">حذف المجموعة</label></div><div class="modal-row"><input type="radio" id="action-remove-all-groups" name="groupAction" value="removeAll" onchange="handleGroupActionChange()"><label for="action-remove-all-groups">إزالة كل التصنيفات</label></div><div class="modal-row"><input type="radio" id="action-split" name="groupAction" value="split" onchange="handleGroupActionChange()"><label for="action-split">فصل أو استخراج المجموعة</label></div><div class="modal-buttons"><button onclick="executeGroupAction()">تنفيذ</button><button onclick="closeModal('manageGroupsModal')" class="cancel">إلغاء</button></div></div></div>
+    <div id="manageGroupsModal" class="modal"><div class="modal-content"><span class="close" onclick="closeModal('manageGroupsModal')">&times;</span><h2>إدارة المجموعات</h2>
+        <label for="groupSelector">اختر المجموعة:</label>
+        <select id="groupSelector" onchange="handleGroupSelectorChange()"></select>
+        <label>اختر الإجراء:</label>
+        <div class="modal-row">
+            <input type="radio" id="action-rename" name="groupAction" value="rename" checked onchange="handleGroupActionChange()">
+            <label for="action-rename">إعادة تسمية</label>
+        </div>
+        <div id="renameGroupInputContainer" style="margin-right: 25px;">
+            <input type="text" id="newGroupNameField" placeholder="أدخل اسمًا جديدًا أو اتركه فارغًا">
+        </div>
+        <div class="modal-row">
+            <input type="radio" id="action-remove-all-groups" name="groupAction" value="removeAll" onchange="handleGroupActionChange()">
+            <label for="action-remove-all-groups">إزالة كل التصنيفات</label>
+        </div>
+        <div class="modal-row">
+            <input type="radio" id="action-delete" name="groupAction" value="delete" onchange="handleGroupActionChange()">
+            <label for="action-delete">حذف المجموعة</label>
+        </div>
+        <div class="modal-row">
+            <input type="radio" id="action-export-group" name="groupAction" value="exportGroup" onchange="handleGroupActionChange()">
+            <label for="action-export-group">تصدير قنوات المجموعة</label>
+        </div>
+        <div class="modal-buttons">
+            <button onclick="executeGroupAction()">تنفيذ</button>
+            <button onclick="closeModal('manageGroupsModal')" class="cancel">إلغاء</button>
+        </div>
+    </div></div>
     
     <div id="mergeModal" class="modal"><div class="modal-content"><span class="close" onclick="closeModal('mergeModal')">&times;</span><h2>خيارات الدمج</h2>
         <div class="modal-content-body">
@@ -598,11 +636,39 @@
             }
         }
         function closeModal(modalId) { if(modalId === 'channelCheckerModal' && isChecking) { stopChannelCheck(); } const modal = document.getElementById(modalId); if(modal) modal.style.display = 'none'; }
-        function handleDragStart(e) { e.currentTarget.style.cursor = 'grabbing'; const startIndex = parseInt(e.currentTarget.dataset.index); if (selectedIndices.has(startIndex)) { draggedIndices = Array.from(selectedIndices).sort((a, b) => a - b); } else { selectedIndices.clear(); selectedIndices.add(startIndex); document.querySelectorAll('tr.selected').forEach(row => row.classList.remove('selected')); e.currentTarget.classList.add('selected'); updateBulkActionsUI(); } }
+        function handleDragStart(e) { e.currentTarget.style.cursor = 'grabbing'; const startIndex = parseInt(e.currentTarget.dataset.index); if (selectedIndices.has(startIndex)) { draggedIndices = Array.from(selectedIndices).sort((a, b) => a - b); } else { selectedIndices.clear(); selectedIndices.add(startIndex); document.querySelectorAll('tr.selected').forEach(row => row.classList.remove('selected')); e.currentTarget.classList.add('selected'); updateBulkActionsUI(); } draggedIndices = Array.from(selectedIndices).sort((a, b) => a - b); }
         function handleDragEnter(e) { e.preventDefault(); const targetRow = e.currentTarget; const targetIndex = parseInt(targetRow.dataset.index); if (!draggedIndices.includes(targetIndex)) { targetRow.classList.add('drag-over-indicator'); } }
         function handleDragLeave(e) { e.currentTarget.classList.remove('drag-over-indicator'); }
         function handleDragOver(e) { e.preventDefault(); }
-        function handleDrop(e) { e.preventDefault(); e.currentTarget.classList.remove('drag-over-indicator'); const dropIndex = parseInt(e.currentTarget.dataset.index); if (draggedIndices.length === 0 || draggedIndices.includes(dropIndex)) { draggedIndices = []; return; } const draggedItems = draggedIndices.map(index => channelsData[index]); for (let i = draggedIndices.length - 1; i >= 0; i--) { channelsData.splice(draggedIndices[i], 1); } const itemsBeforeDrop = draggedIndices.filter(index => index < dropIndex).length; const newDropIndex = dropIndex - itemsBeforeDrop; channelsData.splice(newDropIndex, 0, ...draggedItems); draggedIndices = []; selectedIndices.clear(); updateBulkActionsUI(); updateTvgChnoInAllChannels(); searchChannels(); showToast(`تم نقل ${draggedItems.length} قناة بنجاح`, 'success'); }
+        
+        function handleDrop(e) {
+            e.preventDefault();
+            e.currentTarget.classList.remove('drag-over-indicator');
+            const dropIndex = parseInt(e.currentTarget.dataset.index);
+
+            if (draggedIndices.length === 0 || draggedIndices.includes(dropIndex)) {
+                draggedIndices = [];
+                return;
+            }
+            
+            const draggedItems = draggedIndices.map(index => channelsData[index]);
+            const remainingChannels = channelsData.filter((_, index) => !draggedIndices.includes(index));
+            
+            const itemsRemovedBeforeDropTarget = channelsData.slice(0, dropIndex).filter((_, index) => draggedIndices.includes(index)).length;
+            const newDropIndex = dropIndex - itemsRemovedBeforeDropTarget;
+
+            remainingChannels.splice(newDropIndex, 0, ...draggedItems);
+            
+            channelsData = remainingChannels;
+            
+            draggedIndices = [];
+            selectedIndices.clear(); 
+            updateBulkActionsUI();
+            updateTvgChnoInAllChannels();
+            searchChannels();
+            showToast(`تم نقل القنوات بنجاح`, 'success');
+        }
+
         document.addEventListener('DOMContentLoaded', () => { document.getElementById('uploadArea').style.display = 'block'; document.getElementById('urlLoadContainer').style.display = 'block'; document.getElementById('saveAddRow').style.display = 'none'; document.getElementById('toolsMergeRow').style.display = 'none'; ['openExportModalButton', 'addChannelButton', 'openSortModalButton', 'manageGroupsButton', 'openMergeModalButton', 'removeDuplicatesButton', 'bulkActionsButton'].forEach(id => { const button = document.getElementById(id); if (button) button.style.display = 'none'; }); document.getElementById('results').innerHTML = ''; });
         document.getElementById('fileInput').addEventListener('change', handleFileSelect);
         document.getElementById('mergeFileInput').addEventListener('change', mergePlaylists);
@@ -743,21 +809,8 @@
         
         function executeSort() {
             const criteria = document.querySelector('input[name="sortCriteria"]:checked').value;
-            const sortFunction = (a, b) => (a.name || '').localeCompare(b.name || '', 'ar');
             
-            if (criteria === 'alphabetical') {
-                channelsData.sort(sortFunction);
-            } else if (criteria === 'name') {
-                const term = document.getElementById('sortByNameField').value.toLowerCase().trim();
-                if (term) channelsData.sort((a, b) => (b.name.toLowerCase().includes(term) - a.name.toLowerCase().includes(term)) || sortFunction(a, b));
-            } else if (criteria === 'group') {
-                const term = document.getElementById('sortByGroupField').value.toLowerCase().trim();
-                if (term) channelsData.sort((a, b) => {
-                    const aHasGroup = a.groups && a.groups.some(g => g.toLowerCase().includes(term));
-                    const bHasGroup = b.groups && b.groups.some(g => g.toLowerCase().includes(term));
-                    return (bHasGroup - aHasGroup) || sortFunction(a, b);
-                });
-            } else if (criteria === 'moveBlock') {
+            if (criteria === 'moveBlock') {
                 const from = parseInt(document.getElementById('moveFromIndex').value);
                 const to = parseInt(document.getElementById('moveToIndex').value);
                 const target = parseInt(document.getElementById('moveTargetIndex').value);
@@ -775,6 +828,50 @@
                 const blockToMove = channelsData.splice(fromIndex, count);
                 channelsData.splice(targetIndex, 0, ...blockToMove);
                 showToast(`تم نقل ${count} قناة إلى الموضع ${target} بنجاح`, 'success');
+            } else {
+                const scope = document.querySelector('input[name="sort-scope"]:checked').value;
+                const isFiltered = displayedChannels.length < channelsData.length;
+                const sortFunction = (a, b) => (a.name || '').localeCompare(b.name || '', 'ar');
+
+                if (scope === 'filtered' && isFiltered) {
+                    const originalIndices = displayedChannels.map(ch => channelsData.indexOf(ch)).sort((a,b) => a - b);
+                    const channelsToSort = [...displayedChannels];
+
+                    if (criteria === 'alphabetical') {
+                        channelsToSort.sort(sortFunction);
+                    } else if (criteria === 'name') {
+                        const term = document.getElementById('sortByNameField').value.toLowerCase().trim();
+                        if (term) channelsToSort.sort((a, b) => (b.name.toLowerCase().includes(term) - a.name.toLowerCase().includes(term)) || sortFunction(a, b));
+                    } else if (criteria === 'group') {
+                        const term = document.getElementById('sortByGroupField').value.toLowerCase().trim();
+                        if (term) channelsToSort.sort((a, b) => {
+                            const aHasGroup = a.groups && a.groups.some(g => g.toLowerCase().includes(term));
+                            const bHasGroup = b.groups && b.groups.some(g => g.toLowerCase().includes(term));
+                            return (bHasGroup - aHasGroup) || sortFunction(a, b);
+                        });
+                    }
+                    
+                    originalIndices.forEach((originalIndex, i) => {
+                        channelsData[originalIndex] = channelsToSort[i];
+                    });
+                    showToast(`تم فرز ${channelsToSort.length} قناة مصفاة بنجاح`, 'success');
+
+                } else { // Full sort
+                    if (criteria === 'alphabetical') {
+                        channelsData.sort(sortFunction);
+                    } else if (criteria === 'name') {
+                        const term = document.getElementById('sortByNameField').value.toLowerCase().trim();
+                        if (term) channelsData.sort((a, b) => (b.name.toLowerCase().includes(term) - a.name.toLowerCase().includes(term)) || sortFunction(a, b));
+                    } else if (criteria === 'group') {
+                        const term = document.getElementById('sortByGroupField').value.toLowerCase().trim();
+                        if (term) channelsData.sort((a, b) => {
+                            const aHasGroup = a.groups && a.groups.some(g => g.toLowerCase().includes(term));
+                            const bHasGroup = b.groups && b.groups.some(g => g.toLowerCase().includes(term));
+                            return (bHasGroup - aHasGroup) || sortFunction(a, b);
+                        });
+                    }
+                    showToast('تم فرز القائمة بنجاح', 'success');
+                }
             }
 
             isSorted = true;
@@ -786,6 +883,9 @@
 
         function executeGroupAction() {
             const action = document.querySelector('input[name="groupAction"]:checked').value;
+            const selectedTarget = document.getElementById('groupSelector').value;
+            const isFilteredResultTarget = selectedTarget === '__filtered__';
+
             if (action === 'removeAll') {
                 showConfirm('إزالة كل التصنيفات', 'هل أنت متأكد من إزالة جميع تصنيفات المجموعات؟ ستصبح كل القنوات غير مصنفة.', () => {
                     channelsData.forEach(channel => { channel.groups = []; });
@@ -794,33 +894,53 @@
                 });
                 return;
             }
-            const selectedGroup = document.getElementById('groupSelector').value;
-            const isUncategorized = selectedGroup === 'غير مصنفة';
-            
+
+            const getTargetChannels = () => {
+                if (isFilteredResultTarget) {
+                    return [...displayedChannels];
+                }
+                const isUncategorized = selectedTarget === 'غير مصنفة';
+                return channelsData.filter(channel => {
+                    if (isUncategorized) return !channel.groups || channel.groups.length === 0;
+                    return channel.groups && channel.groups.includes(selectedTarget);
+                });
+            };
+
+            const targetChannels = getTargetChannels();
+            if (targetChannels.length === 0 && !isFilteredResultTarget) {
+                showToast('لم يتم العثور على قنوات في المجموعة المحددة', 'info');
+                return;
+            }
+
             if (action === 'delete') {
-                showConfirm('حذف المجموعة', `هل أنت متأكد من حذف كل قنوات المجموعة "${selectedGroup}"؟`, () => {
+                const confirmationMsg = isFilteredResultTarget ?
+                    `هل أنت متأكد من حذف ${targetChannels.length} قناة من نتائج البحث؟` :
+                    `هل أنت متأكد من حذف كل قنوات المجموعة "${selectedTarget}"؟`;
+                showConfirm('حذف القنوات', confirmationMsg, () => {
                     const originalCount = channelsData.length;
-                    channelsData = channelsData.filter(channel => {
-                        if (isUncategorized) { return channel.groups && channel.groups.length > 0; }
-                        return !channel.groups || !channel.groups.includes(selectedGroup);
-                    });
+                    const targetIndices = new Set(targetChannels.map(ch => channelsData.indexOf(ch)));
+                    channelsData = channelsData.filter((_, index) => !targetIndices.has(index));
                     const removedCount = originalCount - channelsData.length;
-                    showToast(`تم حذف ${removedCount} قناة من المجموعة`, 'success');
+                    showToast(`تم حذف ${removedCount} قناة بنجاح`, 'success');
                     updateAndRefreshUI();
                 });
             } else if (action === 'rename') {
                 const newGroupNameString = document.getElementById('newGroupNameField').value.trim();
-                
+                const targetIndices = new Set(targetChannels.map(ch => channelsData.indexOf(ch)));
+
                 if (newGroupNameString === '') {
-                    if (isUncategorized) {
-                         closeModal('manageGroupsModal');
-                         return;
-                    }
-                    showConfirm('إزالة التصنيف', `هل أنت متأكد من إزالة التصنيف "${selectedGroup}" من جميع قنواته؟`, () => {
+                     const confirmationMsg = isFilteredResultTarget ?
+                        `هل أنت متأكد من إزالة التصنيف من ${targetChannels.length} قناة مصفاة؟` :
+                        `هل أنت متأكد من إزالة التصنيف "${selectedTarget}" من جميع قنواته؟`;
+                    showConfirm('إزالة التصنيف', confirmationMsg, () => {
                         let affectedChannels = 0;
-                        channelsData.forEach(channel => {
-                            if (channel.groups && channel.groups.includes(selectedGroup)) {
-                                channel.groups = channel.groups.filter(g => g !== selectedGroup);
+                        channelsData.forEach((channel, index) => {
+                            if (targetIndices.has(index)) {
+                                if (isFilteredResultTarget) {
+                                    channel.groups = [];
+                                } else {
+                                    channel.groups = channel.groups.filter(g => g !== selectedTarget);
+                                }
                                 affectedChannels++;
                             }
                         });
@@ -829,35 +949,31 @@
                     });
                 } else {
                     const newGroups = newGroupNameString.split(';').map(g => g.trim()).filter(g => g);
-                    channelsData.forEach(channel => {
-                        const isTargeted = isUncategorized ? (!channel.groups || channel.groups.length === 0) : (channel.groups && channel.groups.includes(selectedGroup));
-                        if (isTargeted) {
-                            const currentGroups = new Set(channel.groups || []);
-                            if (!isUncategorized) {
-                                currentGroups.delete(selectedGroup);
+                    channelsData.forEach((channel, index) => {
+                        if (targetIndices.has(index)) {
+                            const currentGroups = new Set(isFilteredResultTarget ? [] : (channel.groups || []));
+                             if (!isFilteredResultTarget && selectedTarget !== 'غير مصنفة') {
+                                currentGroups.delete(selectedTarget);
                             }
                             newGroups.forEach(g => currentGroups.add(g));
                             channel.groups = Array.from(currentGroups);
                         }
                     });
-                    showToast(`تم إعادة تسمية المجموعة بنجاح`, 'success');
+                    showToast(`تم تعديل مجموعة ${targetIndices.size} قناة بنجاح`, 'success');
                     updateAndRefreshUI();
                 }
-            } else if (action === 'split') {
-                const groupChannels = channelsData.filter(channel => {
-                    if (isUncategorized) return !channel.groups || channel.groups.length === 0;
-                    return channel.groups && channel.groups.includes(selectedGroup);
-                });
-                if (groupChannels.length > 0) {
-                    const content = '#EXTM3U\n' + groupChannels.map(ch => `${buildUpdatedExtinf(ch.originalExtinf, ch.groups, ch.logo, ch.name, ch.chno)}\n${ch.url}`).join('\n\n');
-                    const fileName = `Group_${selectedGroup.replace(/[\/\\?%*:|"<>]/g, '-')}.m3u`;
-                    downloadFile(content, fileName, 'text/plain;charset=utf-8');
+            } else if (action === 'exportGroup') {
+                if (targetChannels.length > 0) {
+                    const content = createPlaylistContent('m3u', targetChannels);
+                    const fileName = isFilteredResultTarget ? 'Filtered_Results.m3u' : `Group_${selectedTarget.replace(/[\/\\?%*:|"<>]/g, '-')}.m3u`;
+                    if(content) downloadFile(content, fileName, 'text/plain;charset=utf-8');
                 } else {
-                    showToast('لم يتم العثور على قنوات في هذه المجموعة', 'info');
+                    showToast('لا توجد قنوات لتصديرها.', 'info');
                 }
                 closeModal('manageGroupsModal');
             }
         }
+
 
         function updateAndRefreshUI() {
             updateTvgChnoInAllChannels();
@@ -925,9 +1041,19 @@
                 return showToast("لا توجد قنوات لفرزها", "error");
             }
             handleSortCriteriaChange();
+            const isFiltered = displayedChannels.length < channelsData.length;
+            const scopeContainer = document.getElementById('sort-scope-container');
+            if (isFiltered) {
+                scopeContainer.style.display = 'block';
+                document.getElementById('filtered-sort-count').textContent = displayedChannels.length;
+                document.getElementById('sort-scope-filtered').checked = true;
+            } else {
+                scopeContainer.style.display = 'none';
+                document.getElementById('sort-scope-all').checked = true;
+            }
             openModal('sortModal');
         }
-        
+
         function handleSortCriteriaChange() {
             const criteria = document.querySelector('input[name="sortCriteria"]:checked').value;
             document.getElementById('sortByNameInputContainer').style.display = criteria === 'name' ? 'block' : 'none';
@@ -935,8 +1061,55 @@
             document.getElementById('moveBlockInputContainer').style.display = criteria === 'moveBlock' ? 'block' : 'none';
         }
         
-        function openManageGroupsModal() { if (channelsData.length === 0) return showToast("لا توجد قنوات لإدارة مجموعاتها", "error"); const groupSelector = document.getElementById('groupSelector'); groupSelector.innerHTML = ''; const allGroups = channelsData.flatMap(ch => (ch.groups && ch.groups.length) ? ch.groups : ['غير مصنفة']); const uniqueGroups = [...new Set(allGroups)]; uniqueGroups.sort((a, b) => a.localeCompare(b, 'ar')).forEach(group => { const option = document.createElement('option'); option.value = group; option.textContent = group; groupSelector.appendChild(option); }); handleGroupActionChange(); openModal('manageGroupsModal'); }
-        function handleGroupActionChange() { const action = document.querySelector('input[name="groupAction"]:checked').value; const renameContainer = document.getElementById('renameGroupInputContainer'); const groupSelector = document.getElementById('groupSelector'); const groupSelectorLabel = document.querySelector('#manageGroupsModal label[for="groupSelector"]'); const isGroupSpecificAction = action === 'rename' || action === 'delete' || action === 'split'; groupSelector.style.display = isGroupSpecificAction ? 'block' : 'none'; groupSelectorLabel.style.display = isGroupSpecificAction ? 'block' : 'none'; renameContainer.style.display = action === 'rename' ? 'block' : 'none'; }
+        function openManageGroupsModal() {
+            if (channelsData.length === 0) return showToast("لا توجد قنوات لإدارة مجموعاتها", "error");
+            const groupSelector = document.getElementById('groupSelector');
+            groupSelector.innerHTML = '';
+
+            const isFiltered = displayedChannels.length < channelsData.length;
+            if (isFiltered) {
+                const option = document.createElement('option');
+                option.value = '__filtered__';
+                option.textContent = `نتيجة البحث والتصفية (${displayedChannels.length} قناة)`;
+                groupSelector.appendChild(option);
+            }
+
+            const allGroups = channelsData.flatMap(ch => (ch.groups && ch.groups.length) ? ch.groups : ['غير مصنفة']);
+            const uniqueGroups = [...new Set(allGroups)];
+            uniqueGroups.sort((a, b) => a.localeCompare(b, 'ar')).forEach(group => {
+                const option = document.createElement('option');
+                option.value = group;
+                option.textContent = group;
+                groupSelector.appendChild(option);
+            });
+
+            document.getElementById('action-rename').checked = true;
+            handleGroupActionChange();
+            handleGroupSelectorChange();
+            openModal('manageGroupsModal');
+        }
+
+        function handleGroupSelectorChange() {
+            const selectedTarget = document.getElementById('groupSelector').value;
+            const isFilteredResult = selectedTarget === '__filtered__';
+            const newGroupNameInput = document.getElementById('newGroupNameField');
+
+            if (isFilteredResult) {
+                newGroupNameInput.placeholder = "اسم جديد للقنوات المصفاة";
+            } else {
+                newGroupNameInput.placeholder = "أدخل اسمًا جديدًا أو اتركه فارغًا";
+            }
+        }
+
+        function handleGroupActionChange() {
+            const action = document.querySelector('input[name="groupAction"]:checked').value;
+            const renameContainer = document.getElementById('renameGroupInputContainer');
+            const groupSelector = document.getElementById('groupSelector');
+            const isGlobalAction = action === 'removeAll';
+
+            groupSelector.disabled = isGlobalAction;
+            renameContainer.style.display = action === 'rename' ? 'block' : 'none';
+        }
         
         function openMergeModal() {
             if (channelsData.length === 0) {
