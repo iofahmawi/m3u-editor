@@ -1133,12 +1133,15 @@
                 option.textContent = `نتيجة البحث والتصفية (${displayedChannels.length} قناة)`;
                 groupSelector.appendChild(option);
                 defaultSelection = '__filtered__';
-            } else if (hasSelection) {
+            } 
+            if (hasSelection) {
                 const option = document.createElement('option');
                 option.value = '__selected__';
                 option.textContent = `القنوات المحددة (${selectedIndices.size} قناة)`;
                 groupSelector.appendChild(option);
-                defaultSelection = '__selected__';
+                if (!defaultSelection) {
+                    defaultSelection = '__selected__';
+                }
             }
 
             const allGroups = channelsData.flatMap(ch => (ch.groups && ch.groups.length) ? ch.groups : ['غير مصنفة']);
@@ -1191,7 +1194,6 @@
             document.getElementById('urlLoadContainer').style.display = 'none';
             document.getElementById('saveAddRow').style.display = 'flex';
             document.getElementById('toolsMergeRow').style.display = 'flex';
-            populateGroupFilter('groupFilter');
             ['openExportModalButton', 'addChannelButton', 'openSortModalButton', 'manageGroupsButton', 'openMergeModalButton', 'removeDuplicatesButton', 'openChannelCheckerButton', 'openFindReplaceButton', 'openSearchFilterModalButton', 'bulkActionsButton'].forEach(id => {
                 const button = document.getElementById(id);
                 if (button) button.style.display = 'inline-block';
