@@ -575,7 +575,7 @@
     
     <div id="manageGroupsModal" class="modal"><div class="modal-content"><span class="close" onclick="closeModal('manageGroupsModal')">&times;</span><h2>إدارة المجموعات</h2>
         <label for="groupSelector">اختر المجموعة:</label>
-        <select id="groupSelector" onchange="handleGroupSelectorChange()"></select>
+        <select id="groupSelector"></select>
         <label>اختر الإجراء:</label>
         <div class="modal-row">
             <input type="radio" id="action-rename" name="groupAction" value="rename" checked onchange="handleGroupActionChange()">
@@ -941,7 +941,7 @@
             }
             
             let confirmationMsg = '';
-            if(isFilteredResultTarget) confirmationMsg = `نتائج البحث (${targetChannels.length} قناة)`;
+            if(isFilteredResultTarget) confirmationMsg = `نتيجة البحث والتصفية (${targetChannels.length} قناة)`;
             else if(isSelectedResultTarget) confirmationMsg = `القنوات المحددة (${targetChannels.length} قناة)`;
             else confirmationMsg = `مجموعة "${selectedTarget}"`;
 
@@ -1083,12 +1083,12 @@
             if (isFiltered || hasSelection) {
                 scopeContainer.style.display = 'block';
                 if (isFiltered) {
-                    scopeSelector.innerHTML += `<option value="filtered">فرز نتائج البحث فقط (${displayedChannels.length})</option>`;
+                    scopeSelector.innerHTML += `<option value="filtered">فرز نتيجة البحث والتصفية (${displayedChannels.length} قناة)</option>`;
                 }
                 if (hasSelection) {
-                    scopeSelector.innerHTML += `<option value="selected">فرز القنوات المحددة فقط (${selectedIndices.size})</option>`;
+                    scopeSelector.innerHTML += `<option value="selected">فرز القنوات المحددة (${selectedIndices.size} قناة)</option>`;
                 }
-                scopeSelector.innerHTML += `<option value="all">فرز كامل القائمة (${channelsData.length})</option>`;
+                scopeSelector.innerHTML += `<option value="all">فرز كامل القائمة (${channelsData.length} قناة)</option>`;
                 
                 if (isFiltered) {
                     scopeSelector.value = 'filtered';
@@ -1136,7 +1136,7 @@
             } else if (hasSelection) {
                 const option = document.createElement('option');
                 option.value = '__selected__';
-                option.textContent = `القنوات المحددة فقط (${selectedIndices.size} قناة)`;
+                option.textContent = `القنوات المحددة (${selectedIndices.size} قناة)`;
                 groupSelector.appendChild(option);
                 defaultSelection = '__selected__';
             }
@@ -1161,15 +1161,7 @@
         }
 
         function handleGroupSelectorChange() {
-            const selectedTarget = document.getElementById('groupSelector').value;
-            const isSpecialTarget = selectedTarget === '__filtered__' || selectedTarget === '__selected__';
-            const newGroupNameInput = document.getElementById('newGroupNameField');
-
-            if (isSpecialTarget) {
-                newGroupNameInput.placeholder = "اسم مجموعة جديد للقنوات";
-            } else {
-                newGroupNameInput.placeholder = "أدخل اسمًا جديدًا أو اتركه فارغًا";
-            }
+            document.getElementById('newGroupNameField').placeholder = "أدخل اسمًا جديدًا أو اتركه فارغًا";
         }
 
         function handleGroupActionChange() {
@@ -1589,12 +1581,12 @@
             const hasSelection = selectedIndices.size > 0;
 
             if (isFiltered) {
-                scopeSelector.innerHTML += `<option value="filtered">نتائج البحث فقط (${displayedChannels.length})</option>`;
+                scopeSelector.innerHTML += `<option value="filtered">نتيجة البحث والتصفية (${displayedChannels.length} قناة)</option>`;
             }
             if (hasSelection) {
-                scopeSelector.innerHTML += `<option value="selected">القنوات المحددة فقط (${selectedIndices.size})</option>`;
+                scopeSelector.innerHTML += `<option value="selected">القنوات المحددة (${selectedIndices.size} قناة)</option>`;
             }
-            scopeSelector.innerHTML += `<option value="all">كل القنوات (${channelsData.length})</option>`;
+            scopeSelector.innerHTML += `<option value="all">كل القنوات (${channelsData.length} قناة)</option>`;
 
             if (isFiltered) {
                 scopeSelector.value = 'filtered';
