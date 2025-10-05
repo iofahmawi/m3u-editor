@@ -178,7 +178,7 @@
         }
         .toast {
             display: grid;
-            grid-template-columns: 1fr auto;
+            grid-template-columns: 1fr auto auto;
             align-items: center;
             gap: 10px;
             min-width: 300px;
@@ -209,6 +209,13 @@
         }
         .toast-close:hover {
             color: #333;
+        }
+        .toast-action {
+            color: var(--primary-color);
+            text-decoration: underline;
+            cursor: pointer;
+            font-weight: bold;
+            margin-left: 10px;
         }
         
         #paginationControls { display: flex; justify-content: center; align-items: center; margin-top: 20px; gap: 10px; } 
@@ -539,7 +546,7 @@
         <div class="modal-buttons"><button onclick="executeFindAndReplace()">تنفيذ</button><button onclick="closeModal('findReplaceModal')" class="cancel">إلغاء</button></div>
     </div></div>
 
-    <div id="multiUrlModal" class="modal"><div class="modal-content"><span class="close" onclick="closeModal('multiUrlModal')">&times;</span><h2>تحميل من عدة روابط</h2><p>ألصق الروابط هنا، كل رابط في سطر جديد. سيتم دمجها بالترتيب.</p><textarea id="multiUrlTextarea" placeholder="https://example.com/playlist1.m3u&#10;https://example.com/playlist2.m3u8"></textarea><div class="modal-buttons"><button onclick="processMultiUrlLoad()">تحميل ودمج</button><button onclick="closeModal('multiUrlModal')" class="cancel">إلغاء</button></div></div></div>
+    <div id="multiUrlModal" class="modal"><div class="modal-content"><span class="close" onclick="closeModal('multiUrlModal')">&times;</span><h2>تحميل من عدة روابط</h2><p>ألصق الروابط هنا، كل رابط في سطر جديد. سيتم دمجها بالترتيب.</p><textarea id="multiUrlTextarea" placeholder="https://example.com/playlist1.m3u&#10;https://example.com/playlist2.m3u8"></textarea><div class="modal-buttons"><button onclick="processMultiUrlLoad()">تحميل</button><button onclick="closeModal('multiUrlModal')" class="cancel">إلغاء</button></div></div></div>
     <div id="bulkEditGroupModal" class="modal"><div class="modal-content"><span class="close" onclick="closeModal('bulkEditGroupModal')">&times;</span><h2>تعديل مجموعة القنوات المحددة</h2><label for="bulkNewGroupName">اسم المجموعة الجديد (افصل بين المجموعات بـ ;):</label><input type="text" id="bulkNewGroupName" placeholder="أدخل الاسم الجديد للمجموعة"><div class="modal-buttons"><button onclick="executeBulkEditGroup()">تطبيق</button><button onclick="closeModal('bulkEditGroupModal')" class="cancel">إلغاء</button></div></div></div>
     <div id="editModal" class="modal"><div class="modal-content"><span class="close" onclick="closeModal('editModal')">&times;</span><h2>تحرير القناة</h2><label for="editIndexField">رقم القناة الجديد:</label><input type="number" id="editIndexField" min="1"><label for="editName">اسم القناة:</label><input type="text" id="editName"><label for="editGroup">المجموعة:</label><input type="text" id="editGroup"><label for="editLogo">رابط الصورة:</label><input type="url" id="editLogo"><div id="logoPreview"><img id="previewImage"></div><label for="editUrl">رابط التشغيل:</label><input type="url" id="editUrl"><input type="hidden" id="editOriginalIndex"><div class="modal-buttons"><button onclick="saveEdit()">حفظ</button><button onclick="closeModal('editModal')" class="cancel">إلغاء</button></div></div></div>
     <div id="addModal" class="modal"><div class="modal-content"><span class="close" onclick="closeModal('addModal')">&times;</span><h2>إضافة قناة جديدة</h2><label for="addIndexField">رقم القناة:</label><input type="number" id="addIndexField" min="1"><label for="addName">اسم القناة:</label><input type="text" id="addName" required><label for="addGroup">المجموعة:</label><input type="text" id="addGroup"><label for="addLogo">رابط الصورة:</label><input type="url" id="addLogo"><div id="addLogoPreview"><img id="addPreviewImage"></div><label for="addUrl">رابط التشغيل:</label><input type="url" id="addUrl" required><div class="modal-buttons"><button onclick="saveNewChannel()">إضافة</button><button onclick="closeModal('addModal')" class="cancel">إلغاء</button></div></div></div>
@@ -683,27 +690,50 @@
         document.getElementById('fileInput').addEventListener('change', handleFileSelect);
         document.getElementById('mergeFileInput').addEventListener('change', mergePlaylists);
         
-        function showToast(message, type = 'info', duration = 4000) {
+        function showToast(message, type = 'info', duration = 6000, action = null) {
             const container = document.getElementById('toastContainer');
             const toastWrapper = document.createElement('div');
             toastWrapper.className = 'toast-wrapper';
             const toast = document.createElement('div');
             toast.className = `toast ${type}`;
-            const cleanMessage = message.trim().replace(/\.$/, '');
-            toast.innerHTML = `<div class="toast-content">${cleanMessage}</div><button class="toast-close">&times;</button>`;
+
+            let contentHTML = `<div class="toast-content">${message}</div>`;
+            if (action) {
+                const actionId = `toast-action-${Date.now()}`;
+                contentHTML += `<span id="${actionId}" class="toast-action">${action.text}</span>`;
+            }
+            contentHTML += `<button class="toast-close">&times;</button>`;
+            toast.innerHTML = contentHTML;
+
             toastWrapper.appendChild(toast);
             container.appendChild(toastWrapper);
-            const closeButton = toast.querySelector('.toast-close');
+
             const removeToast = () => {
                 toastWrapper.classList.remove('show');
                 setTimeout(() => {
                     if (container.contains(toastWrapper)) container.removeChild(toastWrapper);
                 }, 500);
             };
+
+            if (action) {
+                const actionButton = toast.querySelector('.toast-action');
+                if (actionButton) {
+                    actionButton.onclick = (e) => {
+                        e.stopPropagation();
+                        action.callback();
+                        removeToast();
+                    };
+                }
+            }
+            
+            const closeButton = toast.querySelector('.toast-close');
             closeButton.onclick = removeToast;
             setTimeout(() => toastWrapper.classList.add('show'), 10);
-            setTimeout(removeToast, duration);
+            if(duration !== -1) {
+                setTimeout(removeToast, duration);
+            }
         }
+
 
         function showConfirm(title, message, onConfirm) { document.getElementById('confirmTitle').textContent = title; document.getElementById('confirmMessage').textContent = message; const confirmBtn = document.getElementById('confirmBtn'); const newConfirmBtn = confirmBtn.cloneNode(true); confirmBtn.parentNode.replaceChild(newConfirmBtn, confirmBtn); newConfirmBtn.onclick = () => { onConfirm(); closeModal('confirmModal'); }; openModal('confirmModal'); }
         function handleRowClick(event) { const row = event.currentTarget; if (event.target.closest('.action-button-icon')) return; const index = parseInt(row.dataset.index); if (selectedIndices.has(index)) { selectedIndices.delete(index); row.classList.remove('selected'); } else { selectedIndices.add(index); row.classList.add('selected'); } updateBulkActionsUI(); }
@@ -735,15 +765,8 @@
                 const allNewChannels = fileContents.map(content => parsePlaylist(content)).flat();
 
                 if (allNewChannels.length > 0) {
-                    channelsData = allNewChannels;
-                    isMerged = validFiles.length > 1;
-                    isSorted = false;
-                    const toastMessage = `تم استيراد ${allNewChannels.length} قناة من ${validFiles.length} ملفات بنجاح.`;
-                    showToast(toastMessage, 'success');
-                    
-                    displayedChannels = [...channelsData];
-                    updateTvgChnoInAllChannels();
-                    displayPaginatedChannels();
+                    channelsData = []; // Start fresh
+                    processNewChannels(allNewChannels, `تم استيراد ${allNewChannels.length} قناة من ${validFiles.length} ملفات.`);
                     showPlaylistControls();
                 } else {
                     showToast("الملفات المختارة لا تحتوي على قنوات صالحة.", "error");
@@ -756,6 +779,7 @@
                 event.target.value = '';
             }
         }
+
 
         function displayPaginatedChannels() { const totalPages = Math.ceil(displayedChannels.length / rowsPerPage); currentPage = Math.max(1, Math.min(currentPage, totalPages)); const startIndex = (currentPage - 1) * rowsPerPage; const endIndex = startIndex + rowsPerPage; const pagedChannels = displayedChannels.slice(startIndex, endIndex); renderTable(pagedChannels, startIndex); setupPaginationControls(totalPages); updateBulkActionsUI(); }
         function renderTable(channels, startIndex) { const resultsDiv = document.getElementById('results'); resultsDiv.innerHTML = ''; if (channelsData.length === 0) { resultsDiv.innerHTML = '<p>القائمة فارغة. أضف قناة أو قم بتحميل ملف.</p>'; return; } if (channels.length === 0) { resultsDiv.innerHTML = '<p>لا توجد نتائج مطابقة للبحث.</p>'; return; } const table = document.createElement('table'); const tbody = document.createElement('tbody'); table.innerHTML = `<thead><tr><th>رقم</th><th>الصورة</th><th>اسم القناة</th><th>المجموعة</th><th>إدارة</th></tr></thead>`; channels.forEach((channel, index) => { const originalIndex = channelsData.indexOf(channel); const row = tbody.insertRow(); row.setAttribute('draggable', 'true'); row.dataset.index = originalIndex; if (selectedIndices.has(originalIndex)) { row.classList.add('selected'); } const groupsDisplay = channel.groups && channel.groups.length > 0 ? channel.groups.join(', ') : 'غير مصنفة'; row.innerHTML = `<td><span class="status-dot ${channel.status || 'unchecked'}" data-index="${originalIndex}"></span>${startIndex + index + 1}</td><td class="logo">${channel.logo ? `<img src="${channel.logo}" alt="Logo" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">` : ''}<span class="placeholder" style="${channel.logo ? 'display:none;' : ''}">📺</span></td><td class="channel-name">${channel.name || ''}</td><td class="channel-group">${groupsDisplay}</td><td class="actions"><button class="action-button-icon edit-btn" data-index="${originalIndex}" title="تحرير">&#9998;</button><button class="action-button-icon delete-btn-icon" data-index="${originalIndex}" title="حذف">&#128465;</button></td>`; row.addEventListener('click', handleRowClick); row.addEventListener('dragstart', handleDragStart); row.addEventListener('dragenter', handleDragEnter); row.addEventListener('dragleave', handleDragLeave); row.addEventListener('dragover', handleDragOver); row.addEventListener('drop', handleDrop); }); table.appendChild(tbody); resultsDiv.appendChild(table); }
@@ -831,12 +855,57 @@
             return parseM3uPlaylist(content);
         }
 
-        async function mergePlaylists(event) { const files = event.target.files; if (!files.length) return; closeModal('mergeModal'); document.getElementById('loadingIndicator').style.display = 'block'; const newChannels = await Promise.all(Array.from(files).map(file => file.text().then(parsePlaylist))).then(results => results.flat()); channelsData.push(...newChannels); const duplicatesRemoved = removeDuplicates('name-url'); updateTvgChnoInAllChannels(); searchChannels(); document.getElementById('loadingIndicator').style.display = 'none'; event.target.value = ''; isMerged = true; isSorted = false; showToast(`تم دمج ${newChannels.length} قناة جديدة وإزالة ${duplicatesRemoved} قناة مكررة`, 'success'); }
-        function removeDuplicates(criteria = 'name') { const originalLength = channelsData.length; const seen = new Set(); channelsData = channelsData.filter(channel => { let key; const name = (channel.name || '').trim(); const url = (channel.url || '').trim(); const groupKey = (channel.groups || []).join(';'); if (criteria === 'name-url') key = `${name}-${url}`; else if (criteria === 'name') key = name; else if (criteria === 'name-url-group') key = `${name}-${url}-${groupKey}`; if (key && !seen.has(key)) { seen.add(key); return true; } return false; }); return originalLength - channelsData.length; }
+        function processNewChannels(newChannels, successMessage) {
+            const isInitialLoad = channelsData.length === 0;
+            const preMergeLength = channelsData.length;
+            channelsData.push(...newChannels);
+
+            let duplicatesFound = 0;
+            if (!isInitialLoad || newChannels.length > preMergeLength) {
+                const seen = new Set();
+                let uniqueCount = 0;
+                channelsData.forEach(channel => {
+                    const key = `${(channel.name || '').trim()}-${(channel.url || '').trim()}`;
+                    if (!seen.has(key)) {
+                        seen.add(key);
+                        uniqueCount++;
+                    }
+                });
+                duplicatesFound = channelsData.length - seen.size;
+            }
+
+            showToast(successMessage, 'success');
+
+            if (duplicatesFound > 0) {
+                const action = {
+                    text: 'إزالة التكرار الآن',
+                    callback: () => {
+                        const duplicatesRemoved = removeDuplicates('name-url');
+                        updateAndRefreshUI();
+                        showToast(`تم إزالة ${duplicatesRemoved} قناة مكررة.`, 'success');
+                    }
+                };
+                showToast(`وجدنا ${duplicatesFound} قناة مكررة.`, 'info', 8000, action);
+            }
+
+            isMerged = !isInitialLoad;
+            isSorted = false;
+            updateAndRefreshUI();
+        }
+
+        async function mergePlaylists(event) { const files = event.target.files; if (!files.length) return; closeModal('mergeModal'); document.getElementById('loadingIndicator').style.display = 'block'; const newChannels = await Promise.all(Array.from(files).map(file => file.text().then(parsePlaylist))).then(results => results.flat()); if(newChannels.length > 0) { processNewChannels(newChannels, `تم دمج ${newChannels.length} قناة جديدة.`); } else { showToast("لم يتم العثور على قنوات في الملفات المختارة.", "info"); } document.getElementById('loadingIndicator').style.display = 'none'; event.target.value = ''; }
+        function removeDuplicates(criteria = 'name-url') { const originalLength = channelsData.length; const seen = new Set(); channelsData = channelsData.filter(channel => { let key; const name = (channel.name || '').trim(); const url = (channel.url || '').trim(); const groupKey = (channel.groups || []).join(';'); if (criteria === 'name-url') key = `${name}-${url}`; else if (criteria === 'name') key = name; else if (criteria === 'name-url-group') key = `${name}-${url}-${groupKey}`; if (key && !seen.has(key)) { seen.add(key); return true; } return false; }); return originalLength - channelsData.length; }
         function removeDuplicatesManually() { if (channelsData.length === 0) return showToast("لا توجد قنوات", 'error'); openModal('removeDuplicatesModal'); }
-        function executeRemoveDuplicates() { const criteria = document.querySelector('input[name="duplicateCriteria"]:checked').value; const duplicatesRemoved = removeDuplicates(criteria); updateTvgChnoInAllChannels(); searchChannels(); closeModal('removeDuplicatesModal'); showToast(`تم إزالة ${duplicatesRemoved} قناة مكررة`, 'success'); }
-        function openMultiUrlModal() { document.getElementById('multiUrlTextarea').value = ''; openModal('multiUrlModal'); }
-        async function processMultiUrlLoad() { document.body.classList.remove('show-status-dots'); const urlsText = document.getElementById('multiUrlTextarea').value; const urls = urlsText.split('\n').map(u => u.trim()).filter(u => u); if (urls.length === 0) { return showToast("يرجى إدخال رابط واحد على الأقل", "error"); } closeModal('multiUrlModal'); document.getElementById('loadingIndicator').style.display = 'block'; let allNewChannels = []; let failedCount = 0; for (const url of urls) { try { const response = await fetch(url); if (!response.ok) throw new Error(`فشل تحميل الرابط (الحالة: ${response.status})`); const content = await response.text(); const channelsFromUrl = parsePlaylist(content); allNewChannels.push(...channelsFromUrl); } catch (error) { failedCount++; console.error(`خطأ في تحميل الرابط ${url}:`, error); } } document.getElementById('loadingIndicator').style.display = 'none'; if (allNewChannels.length > 0) { channelsData = allNewChannels; isMerged = urls.length > 1; isSorted = false; updateTvgChnoInAllChannels(); searchChannels(); showPlaylistControls(); let successMessage = `تم تحميل ${channelsData.length} قناة بنجاح من ${urls.length - failedCount} رابط.`; if (failedCount > 0) { successMessage += ` فشل تحميل ${failedCount} رابط.`; } showToast(successMessage, 'success'); } else { showToast("فشل تحميل أي قنوات من الروابط المقدمة", "error"); } }
+        
+        function executeRemoveDuplicates() {
+            const criteria = document.querySelector('input[name="duplicateCriteria"]:checked').value;
+            const duplicatesRemoved = removeDuplicates(criteria);
+            updateAndRefreshUI();
+            closeModal('removeDuplicatesModal');
+            showToast(`تم إزالة ${duplicatesRemoved} قناة مكررة بنجاح`, 'success');
+        }
+
+        async function processMultiUrlLoad() { document.body.classList.remove('show-status-dots'); const urlsText = document.getElementById('multiUrlTextarea').value; const urls = urlsText.split('\n').map(u => u.trim()).filter(u => u); if (urls.length === 0) { return showToast("يرجى إدخال رابط واحد على الأقل", "error"); } closeModal('multiUrlModal'); document.getElementById('loadingIndicator').style.display = 'block'; let allNewChannels = []; let failedCount = 0; for (const url of urls) { try { const response = await fetch(url); if (!response.ok) throw new Error(`فشل تحميل الرابط (الحالة: ${response.status})`); const content = await response.text(); const channelsFromUrl = parsePlaylist(content); allNewChannels.push(...channelsFromUrl); } catch (error) { failedCount++; console.error(`خطأ في تحميل الرابط ${url}:`, error); } } document.getElementById('loadingIndicator').style.display = 'none'; if (allNewChannels.length > 0) { channelsData = []; processNewChannels(allNewChannels, `تم تحميل ${allNewChannels.length} قناة بنجاح.`); showPlaylistControls(); } else { showToast("فشل تحميل أي قنوات من الروابط المقدمة", "error"); } }
         function createNewPlaylist() { document.body.classList.remove('show-status-dots'); channelsData = []; displayedChannels = []; selectedIndices.clear(); showPlaylistControls(); displayPaginatedChannels(); showToast('تم إنشاء قائمة جديدة فارغة', 'info'); }
         
         function executeSort() {
@@ -995,8 +1064,8 @@
                 if (targetChannels.length > 0) {
                     const content = createPlaylistContent('m3u', targetChannels);
                     let fileName = 'playlist.m3u';
-                    if (isFilteredResultTarget) fileName = 'Filtered_Results.m3u';
-                    else if (isSelectedResultTarget) fileName = 'Selected_Channels.m3u';
+                    if (isFilteredResultTarget) fileName = `نتيجة البحث (${targetChannels.length} قناة).m3u`;
+                    else if (isSelectedResultTarget) fileName = `القنوات المحددة (${targetChannels.length} قناة).m3u`;
                     else fileName = `Group_${selectedTarget.replace(/[\/\\?%*:|"<>]/g, '-')}.m3u`;
                     
                     if(content) downloadFile(content, fileName, 'text/plain;charset=utf-8');
@@ -1025,7 +1094,7 @@
             closeModal('mergeModal');
             document.getElementById('loadingIndicator').style.display = 'block';
 
-            let totalNewChannels = 0;
+            let allNewChannels = [];
             let failedCount = 0;
 
             for (const url of urls) {
@@ -1034,30 +1103,16 @@
                     if (!response.ok) throw new Error(`Failed to fetch`);
                     const content = await response.text();
                     const channelsFromUrl = parsePlaylist(content);
-                    if (channelsFromUrl.length > 0) {
-                        channelsData.push(...channelsFromUrl);
-                        totalNewChannels += channelsFromUrl.length;
-                    }
+                    allNewChannels.push(...channelsFromUrl);
                 } catch (error) {
                     failedCount++;
                     console.error(`Error fetching/parsing URL ${url}:`, error);
                 }
             }
-
             document.getElementById('loadingIndicator').style.display = 'none';
 
-            if (totalNewChannels > 0) {
-                const duplicatesRemoved = removeDuplicates('name-url');
-                let successMessage = `تم دمج ${totalNewChannels} قناة جديدة من ${urls.length - failedCount} رابط وإزالة ${duplicatesRemoved} قناة مكررة.`;
-                if (failedCount > 0) {
-                    successMessage += ` فشل تحميل ${failedCount} رابط.`;
-                }
-                showToast(successMessage, 'success');
-                isMerged = true;
-                isSorted = false;
-                updateTvgChnoInAllChannels();
-                searchChannels();
-                populateGroupFilter();
+            if (allNewChannels.length > 0) {
+                processNewChannels(allNewChannels, `تم دمج ${allNewChannels.length} قناة جديدة من ${urls.length - failedCount} رابط.`);
             } else {
                 showToast(`فشل تحميل أي قنوات من ${urls.length} رابط.`, "error");
             }
