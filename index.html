@@ -246,13 +246,15 @@
         .modal-content button { 
             background-color: var(--primary-color); 
             color: white; border: none; 
-            padding: 7.5px 12px;
-            border-radius: 4px; 
+            /* تم تعديل هذه الخصائص لتطابق الأزرار الرئيسية */
+            padding: 7.5px 20px; /* نفس الحشوة = نفس الارتفاع والعرض */
+            border-radius: 6px;  /* نفس درجة استدارة الحواف */
+            font-weight: bold;   /* نفس سماكة الخط */
+            /* --- */
             cursor: pointer; 
             margin-left: 3px; 
             box-sizing: border-box; 
             min-width: 80px;
-            font-weight: 600;
         } 
         .modal-content button.cancel { background-color: var(--button-delete-color); } 
         .modal-content button:hover { opacity: 0.8; } 
