@@ -74,22 +74,22 @@
             background-color: #fffaf5;
         }
         .upload-label {
-    background-color: var(--primary-color);
-    color: var(--text-light-color);
-    padding: 0 25px;
-    height: 40px;      /* ارتفاع أكبر لجعله مميزاً */
-    line-height: 40px; /* لمطابقة الارتفاع وتوسيط النص */
-    border-radius: 8px; cursor: pointer;
-    font-weight: bold; display: inline-block;
-    transition: background-color 0.3s; border: none; margin-top: 10px;
-}
+            background-color: var(--primary-color);
+            color: var(--text-light-color);
+            padding: 0 25px;
+            height: 40px;
+            line-height: 40px;
+            border-radius: 8px; cursor: pointer;
+            font-weight: bold; display: inline-block;
+            transition: background-color 0.3s; border: none; margin-top: 10px;
+        }
         .upload-label:hover { background-color: var(--primary-hover); }
 
         .action-btn {
             background-color: var(--secondary-color);
             color: white; 
             padding: 7.5px 20px; 
-            border-radius: 6px;
+            border-radius: 8px;
             cursor: pointer; font-weight: bold; border: none;
             transition: background-color 0.3s, opacity 0.3s;
             margin: 10px 5px; flex-shrink: 0;
@@ -134,8 +134,19 @@
 
         #groupFilter { text-align: center; text-align-last: center; }
 
-        #results { text-align: center; }
-        table { width: 100%; border-collapse: collapse; margin: 20px auto; table-layout: fixed; }
+        #results {
+            text-align: center;
+            margin: 20px auto;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 0;
+            table-layout: fixed;
+        }
         th, td { border: 1px solid var(--border-color); padding: 8px; text-align: center; box-sizing: border-box; overflow: hidden; vertical-align: middle; word-wrap: break-word; }
         th { background-color: var(--primary-color); color: white; }
         tr:nth-child(even) { background-color: var(--row-alt-color); }
@@ -243,19 +254,17 @@
             opacity: 0.5;
             cursor: not-allowed;
         }
-        .modal-content button { 
-            background-color: var(--primary-color); 
-            color: white; border: none; 
-            /* تم تعديل هذه الخصائص لتطابق الأزرار الرئيسية */
-            padding: 7.5px 20px; /* نفس الحشوة = نفس الارتفاع والعرض */
-            border-radius: 6px;  /* نفس درجة استدارة الحواف */
-            font-weight: bold;   /* نفس سماكة الخط */
-            /* --- */
-            cursor: pointer; 
-            margin-left: 3px; 
-            box-sizing: border-box; 
+        .modal-content button {
+            background-color: var(--primary-color);
+            color: white; border: none;
+            padding: 7.5px 20px;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-left: 3px;
+            box-sizing: border-box;
             min-width: 80px;
-        } 
+        }
         .modal-content button.cancel { background-color: var(--button-delete-color); } 
         .modal-content button:hover { opacity: 0.8; } 
         .modal-row { display: flex; align-items: center; margin-bottom: 10px; } 
