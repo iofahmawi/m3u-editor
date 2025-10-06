@@ -134,20 +134,17 @@
 
         #groupFilter { text-align: center; text-align-last: center; }
 
-        #results { text-align: center; }
+        #results { 
+            text-align: center; 
+        }
         table { 
             width: 100%; 
             margin: 20px auto; 
             table-layout: fixed; 
             border-spacing: 0;
-            border-collapse: separate; /* هذا ضروري لعمل الاستدارة */
+            border-collapse: separate;
             border-radius: 8px;
         }
-        /* هذه القواعد الجديدة ستصلح الزوايا بشكل نهائي */
-        th:first-child { border-top-right-radius: 8px; }
-        th:last-child { border-top-left-radius: 8px; }
-        tbody tr:last-child td:first-child { border-bottom-right-radius: 8px; }
-        tbody tr:last-child td:last-child { border-bottom-left-radius: 8px; }
         th, td { border: 1px solid var(--border-color); padding: 8px; text-align: center; box-sizing: border-box; overflow: hidden; vertical-align: middle; word-wrap: break-word; }
         th { background-color: var(--primary-color); color: white; }
         
@@ -1118,7 +1115,7 @@
                 showToast(`تم نقل ${count} قناة إلى الموضع ${target} بنجاح`, 'success');
             } else {
                 const scopeContainer = document.getElementById('sort-scope-container');
-                const scope = (scopeContainer.style.display === 'none') ? 'all' : document.getElementById('sort-scope-selector').value;
+                const scope = (scopeContainer.style.display === 'none' || !document.getElementById('sort-scope-selector').value) ? 'all' : document.getElementById('sort-scope-selector').value;
                 const sortFunction = (a, b) => (a.name || '').localeCompare(b.name || '', 'ar');
                 
                 let channelsToSort;
@@ -1343,33 +1340,31 @@
         
         function openSortModal() {
             if (channelsData.length === 0) return showToast("لا توجد قنوات لفرزها", "error");
-            
-            handleSortCriteriaChange();
+
             const isFiltered = displayedChannels.length < channelsData.length;
             const hasSelection = selectedIndices.size > 0;
-            const scopeContainer = document.getElementById('sort-scope-container');
             const scopeSelector = document.getElementById('sort-scope-selector');
             
             scopeSelector.innerHTML = '';
             
-            if (isFiltered || hasSelection) {
-                scopeContainer.style.display = 'block';
-                if (isFiltered) {
-                    scopeSelector.innerHTML += `<option value="filtered">فرز نتيجة البحث والتصفية (${displayedChannels.length} قناة)</option>`;
-                }
-                if (hasSelection) {
-                    scopeSelector.innerHTML += `<option value="selected">فرز القنوات المحددة (${selectedIndices.size} قناة)</option>`;
-                }
-                scopeSelector.innerHTML += `<option value="all">فرز كامل القائمة (${channelsData.length} قناة)</option>`;
-                
-                if (isFiltered) {
-                    scopeSelector.value = 'filtered';
-                } else {
-                    scopeSelector.value = 'selected';
-                }
-            } else {
-                scopeContainer.style.display = 'none';
+            if (isFiltered) {
+                scopeSelector.innerHTML += `<option value="filtered">فرز نتيجة البحث والتصفية (${displayedChannels.length} قناة)</option>`;
             }
+            if (hasSelection) {
+                scopeSelector.innerHTML += `<option value="selected">فرز القنوات المحددة (${selectedIndices.size} قناة)</option>`;
+            }
+            if (!isFiltered) {
+                scopeSelector.innerHTML += `<option value="all">فرز كامل القائمة (${channelsData.length} قناة)</option>`;
+            }
+
+            if (isFiltered) {
+                scopeSelector.value = 'filtered';
+            } else if (hasSelection) {
+                scopeSelector.value = 'selected';
+            }
+
+            handleSortCriteriaChange();
+            
             openModal('sortModal');
         }
 
@@ -1384,8 +1379,11 @@
             const scopeContainer = document.getElementById('sort-scope-container');
             const isFiltered = displayedChannels.length < channelsData.length;
             const hasSelection = selectedIndices.size > 0;
-            if (scopeContainer) {
-                scopeContainer.style.display = !isMoveBlock && (isFiltered || hasSelection) ? 'block' : 'none';
+
+            if (!isMoveBlock && (isFiltered || hasSelection)) {
+                scopeContainer.style.display = 'block';
+            } else {
+                scopeContainer.style.display = 'none';
             }
         }
         
@@ -1416,14 +1414,16 @@
                 }
             }
 
-            const allGroups = channelsData.flatMap(ch => (ch.groups && ch.groups.length) ? ch.groups : ['غير مصنفة']);
-            const uniqueGroups = [...new Set(allGroups)];
-            uniqueGroups.sort((a, b) => a.localeCompare(b, 'ar')).forEach(group => {
-                const option = document.createElement('option');
-                option.value = group;
-                option.textContent = group;
-                groupSelector.appendChild(option);
-            });
+            if (!isFiltered) {
+                const allGroups = channelsData.flatMap(ch => (ch.groups && ch.groups.length) ? ch.groups : ['غير مصنفة']);
+                const uniqueGroups = [...new Set(allGroups)];
+                uniqueGroups.sort((a, b) => a.localeCompare(b, 'ar')).forEach(group => {
+                    const option = document.createElement('option');
+                    option.value = group;
+                    option.textContent = group;
+                    groupSelector.appendChild(option);
+                });
+            }
             
             if(defaultSelection) {
                 groupSelector.value = defaultSelection;
@@ -1800,36 +1800,28 @@
             const groupFilter = document.getElementById('groupFilter');
             const actionButton = document.getElementById('searchFilterActionButton');
 
-            // الخطوة 1: حفظ الحالة الأولية عند فتح النافذة
             const initialSearchTerm = searchInput.value;
             const initialGroupFilter = groupFilter.value;
 
             populateGroupFilter('groupFilter');
-            // استعادة القيمة الأولية بعد ملء القائمة في حال كانت موجودة
             groupFilter.value = initialGroupFilter;
 
-            // الخطوة 2: وظيفة ذكية لتحديث حالة الزر
             const updateButtonState = () => {
                 const currentSearchTerm = searchInput.value;
                 const currentGroupFilter = groupFilter.value;
 
-                // هل تغير شيء عن الحالة الأولية؟
                 const hasChanged = currentSearchTerm !== initialSearchTerm || currentGroupFilter !== initialGroupFilter;
 
                 if (hasChanged) {
-                    // إذا أجرى المستخدم أي تغيير، يصبح الزر "تطبيق"
                     actionButton.textContent = 'تطبيق التصفية';
                     actionButton.onclick = applyFilter;
                     actionButton.classList.remove('cancel');
                 } else {
-                    // إذا لم يتغير شيء، نرى الحالة الحالية
                     if (isFilterActiveForButton) {
-                        // هناك فلتر فعال، فالزر يكون "إلغاء التصفية"
                         actionButton.textContent = 'إلغاء التصفية';
                         actionButton.onclick = cancelFilter;
                         actionButton.classList.add('cancel');
                     } else {
-                        // لا يوجد فلتر فعال، فالزر يكون "إغلاق"
                         actionButton.textContent = 'إغلاق';
                         actionButton.onclick = () => closeModal('searchFilterModal');
                         actionButton.classList.add('cancel');
@@ -1837,11 +1829,9 @@
                 }
             };
             
-            // ربط الوظيفة بالأحداث
             searchInput.oninput = updateButtonState;
             groupFilter.onchange = updateButtonState;
             
-            // تشغيل الوظيفة مرة واحدة عند الفتح لضبط حالة الزر الأولية
             updateButtonState();
         }
 
@@ -1875,7 +1865,9 @@
             if (hasSelection) {
                 scopeSelector.innerHTML += `<option value="selected">القنوات المحددة (${selectedIndices.size} قناة)</option>`;
             }
-            scopeSelector.innerHTML += `<option value="all">كل القنوات (${channelsData.length} قناة)</option>`;
+            if (!isFiltered) {
+                 scopeSelector.innerHTML += `<option value="all">كل القنوات (${channelsData.length} قناة)</option>`;
+            }
 
             if (isFiltered) {
                 scopeSelector.value = 'filtered';
