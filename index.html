@@ -134,19 +134,20 @@
 
         #groupFilter { text-align: center; text-align-last: center; }
 
-        #results {
-            text-align: center;
-            margin: 20px auto;
+        #results { text-align: center; }
+        table { 
+            width: 100%; 
+            margin: 20px auto; 
+            table-layout: fixed; 
+            border-spacing: 0;
+            border-collapse: separate; /* هذا ضروري لعمل الاستدارة */
             border-radius: 8px;
-            overflow: hidden;
-            /* تم حذف السطر الذي يضيف الإطار الخارجي */
         }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 0;
-            table-layout: fixed;
-        }
+        /* هذه القواعد الجديدة ستصلح الزوايا بشكل نهائي */
+        th:first-child { border-top-right-radius: 8px; }
+        th:last-child { border-top-left-radius: 8px; }
+        tbody tr:last-child td:first-child { border-bottom-right-radius: 8px; }
+        tbody tr:last-child td:last-child { border-bottom-left-radius: 8px; }
         th, td { border: 1px solid var(--border-color); padding: 8px; text-align: center; box-sizing: border-box; overflow: hidden; vertical-align: middle; word-wrap: break-word; }
         th { background-color: var(--primary-color); color: white; }
         
