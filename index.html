@@ -163,6 +163,15 @@
             background-color: var(--selected-row-color) !important;
         }
         tr.selected { background-color: var(--selected-row-color) !important; }
+
+        /* --- التعديل الأول: إخفاء لون القناة المسحوبة أثناء السحب --- */
+        body.is-dragging tr.selected {
+            background-color: transparent !important;
+        }
+        body.is-dragging tr:nth-child(even).selected {
+            background-color: var(--row-alt-color) !important;
+        }
+
         table th:nth-child(1), table td:nth-child(1) { width: 12%; min-width: 80px; } table th:nth-child(2), table td:nth-child(2) { width: 10%; min-width: 50px; } table th:nth-child(3), table td:nth-child(3) { width: 46%; min-width: 100px;} table th:nth-child(4), table td:nth-child(4) { width: 20%; min-width: 80px; } table th:nth-child(5), table td:nth-child(5) { width: 12%; min-width: 60px; }
         td.logo img { width: 30px; height: 30px; object-fit: contain; display: block; margin: 0 auto; }
         td.logo .placeholder { font-size: 20px; text-align: center; }
@@ -721,12 +730,35 @@
                 document.getElementById('removeDuplicatesModal').style.zIndex = '1000';
             }
         }
-        function handleDragStart(e) { e.currentTarget.style.cursor = 'grabbing'; const startIndex = parseInt(e.currentTarget.dataset.index); if (selectedIndices.has(startIndex)) { draggedIndices = Array.from(selectedIndices).sort((a, b) => a - b); } else { selectedIndices.clear(); selectedIndices.add(startIndex); document.querySelectorAll('tr.selected').forEach(row => row.classList.remove('selected')); e.currentTarget.classList.add('selected'); updateBulkActionsUI(); } draggedIndices = Array.from(selectedIndices).sort((a, b) => a - b); }
+
+        // --- التعديل الثاني: إضافة / إزالة كلاس من body ---
+        function handleDragStart(e) {
+            e.currentTarget.style.cursor = 'grabbing';
+            const startIndex = parseInt(e.currentTarget.dataset.index);
+            if (selectedIndices.has(startIndex)) {
+                draggedIndices = Array.from(selectedIndices).sort((a, b) => a - b);
+            } else {
+                selectedIndices.clear();
+                selectedIndices.add(startIndex);
+                document.querySelectorAll('tr.selected').forEach(row => row.classList.remove('selected'));
+                e.currentTarget.classList.add('selected');
+                updateBulkActionsUI();
+            }
+            draggedIndices = Array.from(selectedIndices).sort((a, b) => a - b);
+            
+            // إضافة الكلاس عند بدء السحب
+            document.body.classList.add('is-dragging');
+        }
+
+        function handleDragEnd(e) {
+            // إزالة الكلاس عند انتهاء السحب (سواء تم الإفلات أو الإلغاء)
+            document.body.classList.remove('is-dragging');
+        }
+        
         function handleDragEnter(e) { e.preventDefault(); const targetRow = e.currentTarget; const targetIndex = parseInt(targetRow.dataset.index); if (!draggedIndices.includes(targetIndex)) { targetRow.classList.add('drag-over-indicator'); } }
         function handleDragLeave(e) { e.currentTarget.classList.remove('drag-over-indicator'); }
         function handleDragOver(e) { e.preventDefault(); }
         
-        // --- الدالة الجديدة والمصححة بالكامل ---
         function handleDrop(e) {
             e.preventDefault();
             const dropTargetRow = e.currentTarget;
@@ -739,26 +771,37 @@
                 return;
             }
 
+            // تحديد اتجاه السحب (للأسفل أم للأعلى)
             const isDraggingDown = draggedIndices[0] < dropIndex;
+
+            // استخراج العناصر المسحوبة
             const draggedItems = draggedIndices.map(index => channelsData[index]);
+            
+            // إنشاء قائمة جديدة بدون العناصر المسحوبة
             const remainingChannels = channelsData.filter(channel => !draggedItems.includes(channel));
 
+            // العنصر الهدف الذي سيتم الإفلات عنده
             const dropTargetChannel = channelsData[dropIndex];
+            
+            // البحث عن مكان العنصر الهدف في القائمة الجديدة
             let newDropIndex = remainingChannels.indexOf(dropTargetChannel);
 
+            // إذا كنا نسحب للأسفل، يجب وضع العناصر "بعد" الهدف وليس قبله
             if (isDraggingDown && newDropIndex !== -1) {
-                // إذا كنا نسحب للأسفل، نضع القناة "بعد" الهدف
                 newDropIndex++;
             }
 
-            if (newDropIndex === -1) {
+            if (newDropIndex === -1) { // حالة نادرة إذا لم يتم العثور على الهدف
                 newDropIndex = remainingChannels.length;
             }
 
+            // إدراج العناصر المسحوبة في الموضع الصحيح
             remainingChannels.splice(newDropIndex, 0, ...draggedItems);
 
+            // تحديث القائمة الرئيسية
             channelsData = remainingChannels;
             
+            // إعادة تعيين كل شيء
             draggedIndices = [];
             selectedIndices.clear();
             updateBulkActionsUI();
@@ -865,7 +908,16 @@
 
 
         function displayPaginatedChannels() { const totalPages = Math.ceil(displayedChannels.length / rowsPerPage); currentPage = Math.max(1, Math.min(currentPage, totalPages)); const startIndex = (currentPage - 1) * rowsPerPage; const endIndex = startIndex + rowsPerPage; const pagedChannels = displayedChannels.slice(startIndex, endIndex); renderTable(pagedChannels, startIndex); setupPaginationControls(totalPages); updateBulkActionsUI(); }
-        function renderTable(channels, startIndex) { const resultsDiv = document.getElementById('results'); resultsDiv.innerHTML = ''; if (channelsData.length === 0) { resultsDiv.innerHTML = '<p>القائمة فارغة. أضف قناة أو قم بتحميل ملف.</p>'; return; } if (channels.length === 0) { resultsDiv.innerHTML = '<p>لا توجد نتائج مطابقة للبحث.</p>'; return; } const table = document.createElement('table'); const tbody = document.createElement('tbody'); table.innerHTML = `<thead><tr><th>رقم</th><th>الصورة</th><th>اسم القناة</th><th>المجموعة</th><th>إدارة</th></tr></thead>`; channels.forEach((channel, index) => { const originalIndex = channelsData.indexOf(channel); const row = tbody.insertRow(); row.setAttribute('draggable', 'true'); row.dataset.index = originalIndex; if (selectedIndices.has(originalIndex)) { row.classList.add('selected'); } const groupsDisplay = channel.groups && channel.groups.length > 0 ? channel.groups.join(', ') : 'غير مصنفة'; row.innerHTML = `<td><span class="status-dot ${channel.status || 'unchecked'}" data-index="${originalIndex}"></span>${startIndex + index + 1}</td><td class="logo">${channel.logo ? `<img src="${channel.logo}" alt="Logo" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">` : ''}<span class="placeholder" style="${channel.logo ? 'display:none;' : ''}">📺</span></td><td class="channel-name">${channel.name || ''}</td><td class="channel-group">${groupsDisplay}</td><td class="actions"><button class="action-button-icon edit-btn" data-index="${originalIndex}" title="تحرير">&#9998;</button><button class="action-button-icon delete-btn-icon" data-index="${originalIndex}" title="حذف">&#128465;</button></td>`; row.addEventListener('click', handleRowClick); row.addEventListener('dragstart', handleDragStart); row.addEventListener('dragenter', handleDragEnter); row.addEventListener('dragleave', handleDragLeave); row.addEventListener('dragover', handleDragOver); row.addEventListener('drop', handleDrop); }); table.appendChild(tbody); resultsDiv.appendChild(table); }
+        function renderTable(channels, startIndex) { const resultsDiv = document.getElementById('results'); resultsDiv.innerHTML = ''; if (channelsData.length === 0) { resultsDiv.innerHTML = '<p>القائمة فارغة. أضف قناة أو قم بتحميل ملف.</p>'; return; } if (channels.length === 0) { resultsDiv.innerHTML = '<p>لا توجد نتائج مطابقة للبحث.</p>'; return; } const table = document.createElement('table'); const tbody = document.createElement('tbody'); table.innerHTML = `<thead><tr><th>رقم</th><th>الصورة</th><th>اسم القناة</th><th>المجموعة</th><th>إدارة</th></tr></thead>`; channels.forEach((channel, index) => { const originalIndex = channelsData.indexOf(channel); const row = tbody.insertRow(); row.setAttribute('draggable', 'true'); row.dataset.index = originalIndex; if (selectedIndices.has(originalIndex)) { row.classList.add('selected'); } const groupsDisplay = channel.groups && channel.groups.length > 0 ? channel.groups.join(', ') : 'غير مصنفة'; row.innerHTML = `<td><span class="status-dot ${channel.status || 'unchecked'}" data-index="${originalIndex}"></span>${startIndex + index + 1}</td><td class="logo">${channel.logo ? `<img src="${channel.logo}" alt="Logo" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">` : ''}<span class="placeholder" style="${channel.logo ? 'display:none;' : ''}">📺</span></td><td class="channel-name">${channel.name || ''}</td><td class="channel-group">${groupsDisplay}</td><td class="actions"><button class="action-button-icon edit-btn" data-index="${originalIndex}" title="تحرير">&#9998;</button><button class="action-button-icon delete-btn-icon" data-index="${originalIndex}" title="حذف">&#128465;</button></td>`;
+            row.addEventListener('click', handleRowClick);
+            row.addEventListener('dragstart', handleDragStart);
+            // --- التعديل الثالث: إضافة المستمع لانتهاء السحب ---
+            row.addEventListener('dragend', handleDragEnd);
+            row.addEventListener('dragenter', handleDragEnter);
+            row.addEventListener('dragleave', handleDragLeave);
+            row.addEventListener('dragover', handleDragOver);
+            row.addEventListener('drop', handleDrop);
+        }); table.appendChild(tbody); resultsDiv.appendChild(table); }
         function setupPaginationControls(totalPages) { const container = document.getElementById('paginationControls'); container.innerHTML = ''; if (totalPages <= 1) return; container.innerHTML = `<button id="prevPage" onclick="changePage(-1)" ${currentPage === 1 ? 'disabled' : ''}>السابق</button><span id="pageInfo">صفحة ${currentPage} من ${totalPages}</span><button id="nextPage" onclick="changePage(1)" ${currentPage === totalPages ? 'disabled' : ''}>التالي</button>`; }
         function changePage(direction) { currentPage += direction; displayPaginatedChannels(); }
         function searchChannels() { const searchTerm = document.getElementById('searchInput').value.toLowerCase(); const selectedGroup = document.getElementById('groupFilter').value; let tempChannels = channelsData; if (selectedGroup !== 'all') { tempChannels = channelsData.filter(ch => { if (selectedGroup === 'uncategorized') { return !ch.groups || ch.groups.length === 0; } return ch.groups && ch.groups.includes(selectedGroup); }); } if (searchTerm) { displayedChannels = tempChannels.filter(ch => (ch.name || '').toLowerCase().includes(searchTerm) || (ch.groups && ch.groups.join(' ').toLowerCase().includes(searchTerm))); } else { displayedChannels = [...tempChannels]; } currentPage = 1; isFilterActiveForButton = (searchTerm !== '' || selectedGroup !== 'all'); displayPaginatedChannels(); }
