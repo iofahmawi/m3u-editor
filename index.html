@@ -139,7 +139,7 @@
             margin: 20px auto;
             border-radius: 8px;
             overflow: hidden;
-            border: 1px solid var(--border-color);
+            /* تم حذف السطر الذي يضيف الإطار الخارجي */
         }
         table {
             width: 100%;
@@ -149,6 +149,12 @@
         }
         th, td { border: 1px solid var(--border-color); padding: 8px; text-align: center; box-sizing: border-box; overflow: hidden; vertical-align: middle; word-wrap: break-word; }
         th { background-color: var(--primary-color); color: white; }
+        
+        th:first-child { border-top-right-radius: 8px; }
+        th:last-child { border-top-left-radius: 8px; }
+        tbody tr:last-child td:first-child { border-bottom-right-radius: 8px; }
+        tbody tr:last-child td:last-child { border-bottom-left-radius: 8px; }
+
         tr:nth-child(even) { background-color: var(--row-alt-color); }
         tbody tr { 
             cursor: pointer; 
@@ -1793,34 +1799,49 @@
             const groupFilter = document.getElementById('groupFilter');
             const actionButton = document.getElementById('searchFilterActionButton');
 
+            // الخطوة 1: حفظ الحالة الأولية عند فتح النافذة
+            const initialSearchTerm = searchInput.value;
+            const initialGroupFilter = groupFilter.value;
+
             populateGroupFilter('groupFilter');
+            // استعادة القيمة الأولية بعد ملء القائمة في حال كانت موجودة
+            groupFilter.value = initialGroupFilter;
 
-            if (isFilterActiveForButton) {
-                actionButton.textContent = 'إلغاء التصفية';
-                actionButton.onclick = cancelFilter;
-                actionButton.classList.add('cancel'); 
-            } else {
-                actionButton.textContent = 'إغلاق';
-                actionButton.onclick = () => closeModal('searchFilterModal');
-                actionButton.classList.add('cancel'); 
-            }
-
+            // الخطوة 2: وظيفة ذكية لتحديث حالة الزر
             const updateButtonState = () => {
-                if (!isFilterActiveForButton) {
-                    if (searchInput.value.trim() !== '' || groupFilter.value !== 'all') {
-                        actionButton.textContent = 'تطبيق التصفية';
-                        actionButton.onclick = applyFilter;
-                        actionButton.classList.remove('cancel'); 
+                const currentSearchTerm = searchInput.value;
+                const currentGroupFilter = groupFilter.value;
+
+                // هل تغير شيء عن الحالة الأولية؟
+                const hasChanged = currentSearchTerm !== initialSearchTerm || currentGroupFilter !== initialGroupFilter;
+
+                if (hasChanged) {
+                    // إذا أجرى المستخدم أي تغيير، يصبح الزر "تطبيق"
+                    actionButton.textContent = 'تطبيق التصفية';
+                    actionButton.onclick = applyFilter;
+                    actionButton.classList.remove('cancel');
+                } else {
+                    // إذا لم يتغير شيء، نرى الحالة الحالية
+                    if (isFilterActiveForButton) {
+                        // هناك فلتر فعال، فالزر يكون "إلغاء التصفية"
+                        actionButton.textContent = 'إلغاء التصفية';
+                        actionButton.onclick = cancelFilter;
+                        actionButton.classList.add('cancel');
                     } else {
+                        // لا يوجد فلتر فعال، فالزر يكون "إغلاق"
                         actionButton.textContent = 'إغلاق';
                         actionButton.onclick = () => closeModal('searchFilterModal');
-                        actionButton.classList.add('cancel'); 
+                        actionButton.classList.add('cancel');
                     }
                 }
             };
             
+            // ربط الوظيفة بالأحداث
             searchInput.oninput = updateButtonState;
             groupFilter.onchange = updateButtonState;
+            
+            // تشغيل الوظيفة مرة واحدة عند الفتح لضبط حالة الزر الأولية
+            updateButtonState();
         }
 
         function applyFilter() {
