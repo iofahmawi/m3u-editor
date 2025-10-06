@@ -159,7 +159,9 @@
             -webkit-tap-highlight-color: transparent;
             outline: none;
         } 
-        tbody tr.drag-over-indicator { border-top: 3px solid var(--primary-color); }
+        tbody tr.drag-over-indicator {
+            background-color: var(--selected-row-color) !important;
+        }
         tr.selected { background-color: var(--selected-row-color) !important; }
         table th:nth-child(1), table td:nth-child(1) { width: 12%; min-width: 80px; } table th:nth-child(2), table td:nth-child(2) { width: 10%; min-width: 50px; } table th:nth-child(3), table td:nth-child(3) { width: 46%; min-width: 100px;} table th:nth-child(4), table td:nth-child(4) { width: 20%; min-width: 80px; } table th:nth-child(5), table td:nth-child(5) { width: 12%; min-width: 60px; }
         td.logo img { width: 30px; height: 30px; object-fit: contain; display: block; margin: 0 auto; }
@@ -715,7 +717,6 @@
             const modal = document.getElementById(modalId); 
             if(modal) modal.style.display = 'none'; 
             
-            // If we are closing the info modal, restore the z-index of the duplicates modal
             if (modalId === 'editModal' && document.getElementById('removeDuplicatesModal').style.display === 'flex') {
                 document.getElementById('removeDuplicatesModal').style.zIndex = '1000';
             }
@@ -725,33 +726,47 @@
         function handleDragLeave(e) { e.currentTarget.classList.remove('drag-over-indicator'); }
         function handleDragOver(e) { e.preventDefault(); }
         
+        // --- الدالة الجديدة والمصححة بالكامل ---
         function handleDrop(e) {
             e.preventDefault();
-            e.currentTarget.classList.remove('drag-over-indicator');
-            const dropIndex = parseInt(e.currentTarget.dataset.index);
+            const dropTargetRow = e.currentTarget;
+            dropTargetRow.classList.remove('drag-over-indicator');
+
+            const dropIndex = parseInt(dropTargetRow.dataset.index);
 
             if (draggedIndices.length === 0 || draggedIndices.includes(dropIndex)) {
                 draggedIndices = [];
                 return;
             }
-            
+
+            const isDraggingDown = draggedIndices[0] < dropIndex;
             const draggedItems = draggedIndices.map(index => channelsData[index]);
-            const remainingChannels = channelsData.filter((_, index) => !draggedIndices.includes(index));
-            
-            const itemsRemovedBeforeDropTarget = channelsData.slice(0, dropIndex).filter((_, index) => draggedIndices.includes(index)).length;
-            const newDropIndex = dropIndex - itemsRemovedBeforeDropTarget;
+            const remainingChannels = channelsData.filter(channel => !draggedItems.includes(channel));
+
+            const dropTargetChannel = channelsData[dropIndex];
+            let newDropIndex = remainingChannels.indexOf(dropTargetChannel);
+
+            if (isDraggingDown && newDropIndex !== -1) {
+                // إذا كنا نسحب للأسفل، نضع القناة "بعد" الهدف
+                newDropIndex++;
+            }
+
+            if (newDropIndex === -1) {
+                newDropIndex = remainingChannels.length;
+            }
 
             remainingChannels.splice(newDropIndex, 0, ...draggedItems);
-            
+
             channelsData = remainingChannels;
             
             draggedIndices = [];
-            selectedIndices.clear(); 
+            selectedIndices.clear();
             updateBulkActionsUI();
             updateTvgChnoInAllChannels();
             searchChannels();
             showToast(`تم نقل القنوات بنجاح`, 'success');
         }
+
 
         document.addEventListener('DOMContentLoaded', () => { document.getElementById('uploadArea').style.display = 'block'; document.getElementById('urlLoadContainer').style.display = 'block'; document.getElementById('saveAddRow').style.display = 'none'; document.getElementById('toolsMergeRow').style.display = 'none'; ['openExportModalButton', 'addChannelButton', 'openSortModalButton', 'manageGroupsButton', 'openMergeModalButton', 'removeDuplicatesButton', 'bulkActionsButton'].forEach(id => { const button = document.getElementById(id); if (button) button.style.display = 'none'; }); document.getElementById('results').innerHTML = ''; });
         document.getElementById('fileInput').addEventListener('change', handleFileSelect);
@@ -1036,7 +1051,7 @@
                     
                     itemDiv.appendChild(radio);
                     itemDiv.appendChild(label);
-                    itemDiv.appendChild(document.createRange().createContextualFragment(infoIcon)); // Safer way to add icon
+                    itemDiv.appendChild(document.createRange().createContextualFragment(infoIcon));
                     groupDiv.appendChild(itemDiv);
                 });
                 resultsList.appendChild(groupDiv);
