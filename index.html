@@ -283,14 +283,23 @@
         #paginationControls { display: flex; justify-content: center; align-items: center; margin-top: 20px; gap: 10px; } 
         #paginationControls button { background-color: #f0f0f0; border: 1px solid var(--border-color); padding: 7.5px 16px; border-radius: 4px; cursor: pointer; }
         #paginationControls button:disabled { background-color: #e9ecef; cursor: not-allowed; } #pageInfo { font-weight: bold; } #confirmModal .modal-content { max-width: 400px; text-align: center; } #confirmMessage { margin: 20px 0; font-size: 1.1em; } 
-        .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.4); align-items: center; justify-content: center; } 
-        
-        .modal:not(#addModal, #editModal, #manageGroupsModal, #findReplaceModal, #bulkActionsModal, #removeDuplicatesModal) { 
-            align-items: flex-start; 
-            padding-top: 15vh; 
+        /* START: MODIFICATION - Center all modals */
+        .modal { 
+            display: none; 
+            position: fixed; 
+            z-index: 1000; 
+            left: 0; top: 0; 
+            width: 100%; 
+            height: 100%; 
+            overflow: auto; 
+            background-color: rgba(0,0,0,0.4); 
+            align-items: center; /* This centers the modal vertically */
+            justify-content: center; 
+            padding-top: 0; /* Remove previous top padding */
         } 
+        /* END: MODIFICATION */
 
-        .modal-content { padding: 20px; border: 1px solid var(--border-color); width: auto; max-width: 500px; border-radius: 10px; position: relative; box-sizing: border-box; overflow-y: auto; max-height: 80vh; margin: 0; } .modal-content textarea { width: 95%; min-height: 150px; padding: 8px; margin: 10px auto; display: block; border: 1px solid var(--border-color); border-radius: 4px; box-sizing: border-box; resize: vertical; } #multiUrlTextarea { direction: ltr; text-align: left; } .close { color: #aaa; float: left; font-size: 28px; font-weight: bold; } .close:hover, .close:focus { color: #000; text-decoration: none; cursor: pointer; } 
+        .modal-content { padding: 20px; border: 1px solid var(--border-color); width: auto; max-width: 500px; border-radius: 10px; position: relative; box-sizing: border-box; overflow-y: auto; max-height: 90vh; margin: auto; } .modal-content textarea { width: 95%; min-height: 150px; padding: 8px; margin: 10px auto; display: block; border: 1px solid var(--border-color); border-radius: 4px; box-sizing: border-box; resize: vertical; } #multiUrlTextarea { direction: ltr; text-align: left; } .close { color: #aaa; float: left; font-size: 28px; font-weight: bold; } .close:hover, .close:focus { color: #000; text-decoration: none; cursor: pointer; } 
         .modal-content input[type="text"], .modal-content input[type="url"], .modal-content input[type="number"], .modal-content select { 
             width: 95%; padding: 8px; margin: 10px 0; display: inline-block; border: 1px solid var(--border-color); border-radius: 4px; box-sizing: border-box; 
             transition: border-color 0.3s, box-shadow 0.3s;
@@ -332,7 +341,6 @@
             display: flex;
             align-items: center;
             gap: 10px;
-            /* --- هذا هو تعديلك الصحيح --- */
             margin-bottom: 25px;
         }
         #addModal .modal-content h2,
@@ -482,6 +490,22 @@
         .move-block-row input {
             width: 100px;
         }
+        
+        /* START: MODIFICATION - Compact layout for sort modal */
+        .modal-content.compact-layout .modal-row {
+            margin-bottom: 2px;
+        }
+        .modal-content.compact-layout .move-block-row {
+            margin-bottom: 4px;
+        }
+        .modal-content.compact-layout .modal-buttons {
+            margin-top: 10px;
+        }
+        .modal-content.compact-layout #moveBlockInputContainer {
+            padding: 5px;
+        }
+        /* END: MODIFICATION */
+
 
         #loadingIndicator { font-weight: bold; color: var(--primary-color); text-align: center; margin: 20px; } #logoPreview img, #addPreviewImage { max-width: 50px; max-height: 50px; display: none; } #mergeModal .modal-content-body { padding: 15px; text-align: center; } #mergeOptionSelector { width: 100%; padding: 10px; font-size: 1em; margin-bottom: 20px; } .merge-option-container { padding: 10px; } .merge-option-container p { margin-bottom: 20px; color: #666; } 
         .merge-option-container button { background-color: var(--primary-color); color: white; padding: 7.5px 25px; font-size: 1em; border: none; border-radius: 6px; cursor: pointer; }
@@ -514,8 +538,8 @@ td {
             .modal-content {
                 width: 91%;
                 padding: 15px;
-                margin: 0;
-                max-height: 85vh;
+                margin: auto; /* Ensure margin is auto for centering */
+                max-height: 90vh;
             }
             .modal-content input[type="text"],
             .modal-content input[type="url"],
@@ -555,7 +579,6 @@ td {
     </style>
 </head>
 <body>
-    <!-- محتوى HTML يبقى كما هو -->
     <div class="container">
         <h1 class="page-title"><a href="">محرر قوائم تشغيل M3U/M3U8</a></h1>
         
@@ -751,17 +774,23 @@ td {
         </div>
     </div>
     
-    <div id="sortModal" class="modal"><div class="modal-content"><span class="close" onclick="closeModal('sortModal')">&times;</span><h2>فرز وترتيب القنوات</h2>
+    <div id="sortModal" class="modal"><div class="modal-content">
+        <span class="close" onclick="closeModal('sortModal')">&times;</span>
+        <h2>فرز وترتيب القنوات</h2>
         <div id="sort-scope-container" style="display: none; margin-bottom: 15px;">
             <label for="sort-scope-selector" style="display:block; margin-bottom: 5px;"><strong>نطاق الفرز:</strong></label>
             <select id="sort-scope-selector" style="width: 95%;"></select>
         </div>
         <div class="modal-row"><input type="radio" id="sort-alpha" name="sortCriteria" value="alphabetical" checked onchange="handleSortCriteriaChange()"><label for="sort-alpha">أبجدي</label></div>
+        <div class="modal-row"><input type="radio" id="sort-chno" name="sortCriteria" value="tvg-chno" onchange="handleSortCriteriaChange()"><label for="sort-chno">حسب الرقم الأصلي (tvg-chno)</label></div>
         <div class="modal-row"><input type="radio" id="sort-name" name="sortCriteria" value="name" onchange="handleSortCriteriaChange()"><label for="sort-name">حسب اسم القناة</label></div>
         <div id="sortByNameInputContainer" style="display: none; margin-right: 25px;"><input type="text" id="sortByNameField" placeholder="أدخل اسم القناة (مثال: mbc)"></div>
         <div class="modal-row"><input type="radio" id="sort-group" name="sortCriteria" value="group" onchange="handleSortCriteriaChange()"><label for="sort-group">حسب اسم المجموعة</label></div>
         <div id="sortByGroupInputContainer" style="display: none; margin-right: 25px;"><input type="text" id="sortByGroupField" placeholder="أدخل اسم المجموعة"></div>
-        <div class="modal-row"><input type="radio" id="sort-move" name="sortCriteria" value="moveBlock" onchange="handleSortCriteriaChange()"><label for="sort-move">نقل مجموعة قنوات إلى موضع جديد</label></div>
+        <div class="modal-row" id="sort-move-row">
+            <input type="radio" id="sort-move" name="sortCriteria" value="moveBlock" onchange="handleSortCriteriaChange()">
+            <label for="sort-move">نقل مجموعة قنوات إلى موضع جديد</label>
+        </div>
         <div id="moveBlockInputContainer">
             <div class="move-block-row">
                 <label for="moveFromIndex">نقل من رقم:</label>
@@ -776,31 +805,53 @@ td {
                 <input type="number" id="moveTargetIndex" min="1" placeholder="مثال: 1">
             </div>
         </div>
+        <div class="modal-row" style="margin-top: 15px; padding-top: 10px; border-top: 1px solid var(--border-color);">
+            <input type="checkbox" id="sort-descending">
+            <label for="sort-descending">ترتيب تنازلي</label>
+        </div>
         <div class="modal-buttons"><button onclick="executeSort()">تنفيذ</button><button onclick="closeModal('sortModal')" class="cancel">إلغاء</button></div>
     </div></div>
     
-    <div id="manageGroupsModal" class="modal"><div class="modal-content"><span class="close" onclick="closeModal('manageGroupsModal')">&times;</span><h2>إدارة المجموعات</h2>
-        <label for="groupSelector">اختر المجموعة:</label>
-        <select id="groupSelector"></select>
-        <label>اختر الإجراء:</label>
-        <div class="modal-row">
-            <input type="radio" id="action-rename" name="groupAction" value="rename" checked onchange="handleGroupActionChange()">
-            <label for="action-rename">إعادة تسمية</label>
-        </div>
-        <div id="renameGroupInputContainer" style="margin-right: 25px;">
-            <input type="text" id="newGroupNameField" placeholder="أدخل اسمًا جديدًا أو اتركه فارغًا">
-        </div>
-        <div class="modal-row">
-            <input type="radio" id="action-remove-all-groups" name="groupAction" value="removeAll" onchange="handleGroupActionChange()">
-            <label for="action-remove-all-groups">إزالة كل التصنيفات</label>
-        </div>
-        <div class="modal-row">
-            <input type="radio" id="action-delete" name="groupAction" value="delete" onchange="handleGroupActionChange()">
-            <label for="action-delete">حذف المجموعة</label>
-        </div>
-        <div class="modal-row">
-            <input type="radio" id="action-export-group" name="groupAction" value="exportGroup" onchange="handleGroupActionChange()">
-            <label for="action-export-group">تصدير قنوات المجموعة</label>
+    <div id="manageGroupsModal" class="modal"><div class="modal-content">
+        <span class="close" onclick="closeModal('manageGroupsModal')">&times;</span>
+        <h2>إدارة المجموعات</h2>
+        <!-- START: MODIFICATION - Removed inline styles that caused scrolling -->
+        <div style="padding: 5px; margin: 0 -5px 15px -5px;">
+        <!-- END: MODIFICATION -->
+            <label for="groupSelector">اختر المجموعة:</label>
+            <select id="groupSelector" onchange="handleGroupSelectorChange()"></select>
+            <label>اختر الإجراء:</label>
+            <div class="modal-row">
+                <input type="radio" id="action-rename" name="groupAction" value="rename" checked onchange="handleGroupActionChange()">
+                <label for="action-rename">إعادة تسمية</label>
+            </div>
+            <div id="renameGroupInputContainer" style="margin-right: 25px;">
+                <input type="text" id="newGroupNameField" placeholder="أدخل اسمًا جديدًا أو اتركه فارغًا">
+                <div class="modal-row" style="font-size: 0.9em; margin-top: 5px;">
+                    <input type="checkbox" id="rename-add-as-new">
+                    <label for="rename-add-as-new">إضافة دون حذف التصنيفات الحالية</label>
+                </div>
+            </div>
+            <div class="modal-row">
+                <input type="radio" id="action-merge" name="groupAction" value="merge" onchange="handleGroupActionChange()">
+                <label for="action-merge">دمج المجموعة المحددة</label>
+            </div>
+            <div id="mergeGroupInputContainer" style="display: none; margin-right: 25px;">
+                <label for="mergeTargetSelector" style="display: block;">مع المجموعة:</label>
+                <select id="mergeTargetSelector"></select>
+            </div>
+            <div class="modal-row">
+                <input type="radio" id="action-remove-all-groups" name="groupAction" value="removeAll" onchange="handleGroupActionChange()">
+                <label for="action-remove-all-groups">إزالة كل التصنيفات</label>
+            </div>
+            <div class="modal-row">
+                <input type="radio" id="action-delete" name="groupAction" value="delete" onchange="handleGroupActionChange()">
+                <label for="action-delete">حذف المجموعة</label>
+            </div>
+            <div class="modal-row">
+                <input type="radio" id="action-export-group" name="groupAction" value="exportGroup" onchange="handleGroupActionChange()">
+                <label for="action-export-group">تصدير قنوات المجموعة</label>
+            </div>
         </div>
         <div class="modal-buttons">
             <button onclick="executeGroupAction()">تنفيذ</button>
@@ -1030,7 +1081,6 @@ td {
 
         function displayPaginatedChannels() { const totalPages = Math.ceil(displayedChannels.length / rowsPerPage); currentPage = Math.max(1, Math.min(currentPage, totalPages)); const startIndex = (currentPage - 1) * rowsPerPage; const endIndex = startIndex + rowsPerPage; const pagedChannels = displayedChannels.slice(startIndex, endIndex); renderTable(pagedChannels, startIndex); setupPaginationControls(totalPages); updateBulkActionsUI(); }
         
-        // --- START: تعديل دالة renderTable ---
         function renderTable(channels, startIndex) { 
             const resultsDiv = document.getElementById('results'); 
             resultsDiv.innerHTML = ''; 
@@ -1045,7 +1095,6 @@ td {
             const table = document.createElement('table'); 
             const tbody = document.createElement('tbody'); 
             
-            // تعديل رأس الجدول: إزالة "إدارة"
             table.innerHTML = `<thead><tr><th>رقم</th><th>اسم القناة</th><th>المجموعة</th></tr></thead>`; 
             
             channels.forEach((channel, index) => { 
@@ -1059,14 +1108,11 @@ td {
                 
                 const groupsDisplay = channel.groups && channel.groups.length > 0 ? channel.groups.join(', ') : 'غير مصنفة'; 
                 
-                // إضافة onclick على الصورة والنص البديل
-                // event.stopPropagation() مهمة جدًا لمنع تحديد السطر عند الضغط على الصورة
                 const logoHtml = `
                     ${channel.logo ? `<img src="${channel.logo}" alt="Logo" onclick="event.stopPropagation(); openEditModal(${originalIndex});" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">` : ''}
                     <span class="placeholder" style="${channel.logo ? 'display:none;' : ''}" onclick="event.stopPropagation(); openEditModal(${originalIndex});">📺</span>
                 `;
                 
-                // إزالة خلية الإدارة <td>...</td> بالكامل
                 row.innerHTML = `
                     <td>
                         <span class="status-dot ${channel.status || 'unchecked'}" data-index="${originalIndex}"></span>
@@ -1090,7 +1136,6 @@ td {
             table.appendChild(tbody); 
             resultsDiv.appendChild(table); 
         }
-        // --- END: تعديل دالة renderTable ---
 
         function setupPaginationControls(totalPages) { const container = document.getElementById('paginationControls'); container.innerHTML = ''; if (totalPages <= 1) return; container.innerHTML = `<button id="prevPage" onclick="changePage(-1)" ${currentPage === 1 ? 'disabled' : ''}>السابق</button><span id="pageInfo">صفحة ${currentPage} من ${totalPages}</span><button id="nextPage" onclick="changePage(1)" ${currentPage === totalPages ? 'disabled' : ''}>التالي</button>`; }
         function changePage(direction) { currentPage += direction; displayPaginatedChannels(); }
@@ -1335,6 +1380,7 @@ td {
         
         function executeSort() {
             const criteria = document.querySelector('input[name="sortCriteria"]:checked').value;
+            const isDescending = document.getElementById('sort-descending').checked;
             
             if (criteria === 'moveBlock') {
                 const from = parseInt(document.getElementById('moveFromIndex').value);
@@ -1374,9 +1420,12 @@ td {
 
                 if (criteria === 'alphabetical') {
                     channelsToSort.sort(sortFunction);
+                } else if (criteria === 'tvg-chno') {
+                    channelsToSort.sort((a, b) => (a.chno || 0) - (b.chno || 0));
                 } else if (criteria === 'name') {
                     const term = document.getElementById('sortByNameField').value.toLowerCase().trim();
                     if (term) channelsToSort.sort((a, b) => (b.name.toLowerCase().includes(term) - a.name.toLowerCase().includes(term)) || sortFunction(a, b));
+                    else channelsToSort.sort(sortFunction);
                 } else if (criteria === 'group') {
                     const term = document.getElementById('sortByGroupField').value.toLowerCase().trim();
                     if (term) channelsToSort.sort((a, b) => {
@@ -1384,8 +1433,13 @@ td {
                         const bHasGroup = b.groups && b.groups.some(g => g.toLowerCase().includes(term));
                         return (bHasGroup - aHasGroup) || sortFunction(a, b);
                     });
+                    else channelsToSort.sort(sortFunction);
                 }
                 
+                if (isDescending && criteria !== 'tvg-chno') {
+                    channelsToSort.reverse();
+                }
+
                 if (scope === 'all') {
                     channelsData = channelsToSort;
                 } else {
@@ -1402,7 +1456,7 @@ td {
             searchChannels();
             closeModal('sortModal');
         }
-
+        
         function executeGroupAction() {
             const action = document.querySelector('input[name="groupAction"]:checked').value;
             const selectedTarget = document.getElementById('groupSelector').value;
@@ -1451,14 +1505,16 @@ td {
                 });
             } else if (action === 'rename') {
                 const newGroupNameString = document.getElementById('newGroupNameField').value.trim();
+                const isAdditive = document.getElementById('rename-add-as-new').checked;
                 const targetIndices = new Set(targetChannels.map(ch => channelsData.indexOf(ch)));
+                const isUncategorized = selectedTarget === 'غير مصنفة';
 
-                if (newGroupNameString === '') {
+                if (newGroupNameString === '' && !isAdditive) {
                      showConfirm('إزالة التصنيف', `هل أنت متأكد من إزالة التصنيف من ${confirmationMsg}؟`, () => {
                         let affectedChannels = 0;
                         channelsData.forEach((channel, index) => {
                             if (targetIndices.has(index)) {
-                                if (isFilteredResultTarget || isSelectedResultTarget) {
+                                if (isFilteredResultTarget || isSelectedResultTarget || isUncategorized) {
                                     channel.groups = [];
                                 } else {
                                     channel.groups = channel.groups.filter(g => g !== selectedTarget);
@@ -1471,12 +1527,17 @@ td {
                     });
                 } else {
                     const newGroups = newGroupNameString.split(';').map(g => g.trim()).filter(g => g);
+                    if (newGroups.length === 0) return;
+                    
                     channelsData.forEach((channel, index) => {
                         if (targetIndices.has(index)) {
-                            const isSpecialTarget = isFilteredResultTarget || isSelectedResultTarget;
-                            const currentGroups = new Set(isSpecialTarget ? [] : (channel.groups || []));
-                             if (!isSpecialTarget && selectedTarget !== 'غير مصنفة') {
-                                currentGroups.delete(selectedTarget);
+                            let currentGroups = new Set(channel.groups || []);
+                            if (!isAdditive) {
+                                if (isFilteredResultTarget || isSelectedResultTarget || isUncategorized) {
+                                    currentGroups.clear();
+                                } else {
+                                    currentGroups.delete(selectedTarget);
+                                }
                             }
                             newGroups.forEach(g => currentGroups.add(g));
                             channel.groups = Array.from(currentGroups);
@@ -1485,6 +1546,26 @@ td {
                     showToast(`تم تعديل مجموعة ${targetIndices.size} قناة بنجاح`, 'success');
                     updateAndRefreshUI();
                 }
+            } else if (action === 'merge') {
+                const mergeTargetGroup = document.getElementById('mergeTargetSelector').value;
+                if (!mergeTargetGroup || selectedTarget === mergeTargetGroup) {
+                    return showToast('يرجى اختيار مجموعة مختلفة للدمج معها.', 'error');
+                }
+                showConfirm('دمج المجموعات', `هل أنت متأكد من دمج كل قنوات "${selectedTarget}" في مجموعة "${mergeTargetGroup}"؟`, () => {
+                    const targetIndices = new Set(targetChannels.map(ch => channelsData.indexOf(ch)));
+                    let affectedCount = 0;
+                    channelsData.forEach((channel, index) => {
+                        if (targetIndices.has(index)) {
+                            const currentGroups = new Set(channel.groups || []);
+                            currentGroups.delete(selectedTarget);
+                            currentGroups.add(mergeTargetGroup);
+                            channel.groups = Array.from(currentGroups);
+                            affectedCount++;
+                        }
+                    });
+                    showToast(`تم دمج ${affectedCount} قناة بنجاح.`, 'success');
+                    updateAndRefreshUI();
+                });
             } else if (action === 'exportGroup') {
                 if (targetChannels.length > 0) {
                     const content = createPlaylistContent('m3u', targetChannels);
@@ -1585,6 +1666,14 @@ td {
             const isFiltered = displayedChannels.length < channelsData.length;
             const hasSelection = selectedIndices.size > 0;
             const scopeSelector = document.getElementById('sort-scope-selector');
+            const moveBlockOptionRow = document.getElementById('sort-move-row');
+            
+            if (isFiltered || hasSelection) {
+                moveBlockOptionRow.style.display = 'none';
+                document.getElementById('sort-alpha').checked = true;
+            } else {
+                moveBlockOptionRow.style.display = 'flex';
+            }
             
             scopeSelector.innerHTML = '';
             
@@ -1603,20 +1692,35 @@ td {
             } else if (hasSelection) {
                 scopeSelector.value = 'selected';
             }
+            
+            document.getElementById('sort-descending').checked = false;
 
             handleSortCriteriaChange();
             
             openModal('sortModal');
         }
-
+        
+        // --- START: MODIFICATION - Logic to handle margins in sort modal
         function handleSortCriteriaChange() {
             const criteria = document.querySelector('input[name="sortCriteria"]:checked').value;
+            const modalContent = document.querySelector('#sortModal .modal-content');
             const isMoveBlock = criteria === 'moveBlock';
+            const isChnoSort = criteria === 'tvg-chno';
 
             document.getElementById('sortByNameInputContainer').style.display = criteria === 'name' ? 'block' : 'none';
             document.getElementById('sortByGroupInputContainer').style.display = criteria === 'group' ? 'block' : 'none';
             document.getElementById('moveBlockInputContainer').style.display = isMoveBlock ? 'block' : 'none';
+            document.getElementById('sort-descending').disabled = isChnoSort;
             
+            // Toggle compact layout class
+            if (modalContent) {
+                if (isMoveBlock) {
+                    modalContent.classList.add('compact-layout');
+                } else {
+                    modalContent.classList.remove('compact-layout');
+                }
+            }
+
             const scopeContainer = document.getElementById('sort-scope-container');
             const isFiltered = displayedChannels.length < channelsData.length;
             const hasSelection = selectedIndices.size > 0;
@@ -1627,6 +1731,7 @@ td {
                 scopeContainer.style.display = 'none';
             }
         }
+        // --- END: MODIFICATION ---
         
         function openManageGroupsModal() {
             if (channelsData.length === 0) return showToast("لا توجد قنوات لإدارة مجموعاتها", "error");
@@ -1655,39 +1760,70 @@ td {
                 }
             }
 
-            if (!isFiltered) {
-                const allGroups = channelsData.flatMap(ch => (ch.groups && ch.groups.length) ? ch.groups : ['غير مصنفة']);
-                const uniqueGroups = [...new Set(allGroups)];
-                uniqueGroups.sort((a, b) => a.localeCompare(b, 'ar')).forEach(group => {
-                    const option = document.createElement('option');
-                    option.value = group;
-                    option.textContent = group;
-                    groupSelector.appendChild(option);
-                });
-            }
+            const allGroups = channelsData.flatMap(ch => (ch.groups && ch.groups.length) ? ch.groups : ['غير مصنفة']);
+            const uniqueGroups = [...new Set(allGroups)];
+            uniqueGroups.sort((a, b) => a.localeCompare(b, 'ar')).forEach(group => {
+                const option = document.createElement('option');
+                option.value = group;
+                option.textContent = group;
+                groupSelector.appendChild(option);
+            });
             
             if(defaultSelection) {
                 groupSelector.value = defaultSelection;
             }
 
             document.getElementById('action-rename').checked = true;
-            handleGroupActionChange();
+            document.getElementById('rename-add-as-new').checked = false;
             handleGroupSelectorChange();
+            handleGroupActionChange();
             openModal('manageGroupsModal');
         }
 
         function handleGroupSelectorChange() {
-            document.getElementById('newGroupNameField').placeholder = "أدخل اسمًا جديدًا أو اتركه فارغًا";
-        }
+            const groupSelector = document.getElementById('groupSelector');
+            const mergeTargetSelector = document.getElementById('mergeTargetSelector');
+            const selectedGroup = groupSelector.value;
+            
+            mergeTargetSelector.innerHTML = '';
 
+            const allGroups = channelsData.flatMap(ch => (ch.groups && ch.groups.length) ? ch.groups : ['غير مصنفة']);
+            const uniqueGroups = [...new Set(allGroups)];
+
+            uniqueGroups
+                .filter(group => group !== selectedGroup)
+                .sort((a, b) => a.localeCompare(b, 'ar'))
+                .forEach(group => {
+                    const option = document.createElement('option');
+                    option.value = group;
+                    option.textContent = group;
+                    mergeTargetSelector.appendChild(option);
+            });
+            
+            document.getElementById('newGroupNameField').placeholder = "أدخل اسمًا جديدًا أو اتركه فارغًا";
+            handleGroupActionChange();
+        }
+        
         function handleGroupActionChange() {
             const action = document.querySelector('input[name="groupAction"]:checked').value;
             const renameContainer = document.getElementById('renameGroupInputContainer');
+            const mergeContainer = document.getElementById('mergeGroupInputContainer');
             const groupSelector = document.getElementById('groupSelector');
             const isGlobalAction = action === 'removeAll';
+            
+            const renameCheckbox = document.getElementById('rename-add-as-new').parentElement;
 
             groupSelector.disabled = isGlobalAction;
             renameContainer.style.display = action === 'rename' ? 'block' : 'none';
+            mergeContainer.style.display = action === 'merge' ? 'block' : 'none';
+            renameCheckbox.style.display = action === 'rename' ? 'flex' : 'none';
+            
+            const isDynamicGroup = groupSelector.value === '__filtered__' || groupSelector.value === '__selected__';
+            document.getElementById('action-merge').disabled = isDynamicGroup;
+            if(isDynamicGroup && action === 'merge') {
+                 document.getElementById('action-rename').checked = true;
+                 handleGroupActionChange();
+            }
         }
         
         function openMergeModal() {
