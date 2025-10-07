@@ -471,13 +471,45 @@
             display: block;
         }
         
-        #moveBlockInputContainer {
+        /* START: MODIFICATION - Smooth animation for sort modal containers */
+        #sortByNameInputContainer, #sortByGroupInputContainer, #moveBlockInputContainer {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s ease-in-out, margin 0.4s ease-in-out;
             margin-right: 25px;
-            padding: 10px;
-            border: 1px solid var(--border-color);
-            border-radius: 5px;
-            display: none;
+            margin-top: 0;
+            margin-bottom: 0;
         }
+
+        #sortByNameInputContainer.visible, #sortByGroupInputContainer.visible {
+            max-height: 100px;
+            margin-bottom: 10px;
+        }
+        #moveBlockInputContainer.visible {
+            max-height: 200px;
+        }
+        /* END: MODIFICATION */
+        
+        /* START: MODIFICATION - Smooth animation for group management modal */
+        #renameGroupInputContainer, #mergeGroupInputContainer {
+            max-height: 0;
+            overflow: hidden;
+            transition: all 0.4s ease-in-out;
+            margin-right: 25px;
+            margin-top: 0;
+            margin-bottom: 0;
+            padding: 0;
+        }
+        #renameGroupInputContainer.visible {
+            max-height: 150px;
+            margin-bottom: 10px;
+        }
+        #mergeGroupInputContainer.visible {
+            max-height: 100px;
+            margin-bottom: 10px;
+        }
+        /* END: MODIFICATION */
+
         .move-block-row {
             display: flex;
             align-items: center;
@@ -491,7 +523,6 @@
             width: 100px;
         }
         
-        /* START: MODIFICATION - Compact layout for sort modal */
         .modal-content.compact-layout .modal-row {
             margin-bottom: 2px;
         }
@@ -502,9 +533,9 @@
             margin-top: 10px;
         }
         .modal-content.compact-layout #moveBlockInputContainer {
-            padding: 5px;
+            padding-top: 5px;
+            padding-bottom: 5px;
         }
-        /* END: MODIFICATION */
 
 
         #loadingIndicator { font-weight: bold; color: var(--primary-color); text-align: center; margin: 20px; } #logoPreview img, #addPreviewImage { max-width: 50px; max-height: 50px; display: none; } #mergeModal .modal-content-body { padding: 15px; text-align: center; } #mergeOptionSelector { width: 100%; padding: 10px; font-size: 1em; margin-bottom: 20px; } .merge-option-container { padding: 10px; } .merge-option-container p { margin-bottom: 20px; color: #666; } 
@@ -784,9 +815,9 @@ td {
         <div class="modal-row"><input type="radio" id="sort-alpha" name="sortCriteria" value="alphabetical" checked onchange="handleSortCriteriaChange()"><label for="sort-alpha">أبجدي</label></div>
         <div class="modal-row"><input type="radio" id="sort-chno" name="sortCriteria" value="tvg-chno" onchange="handleSortCriteriaChange()"><label for="sort-chno">حسب الرقم الأصلي (tvg-chno)</label></div>
         <div class="modal-row"><input type="radio" id="sort-name" name="sortCriteria" value="name" onchange="handleSortCriteriaChange()"><label for="sort-name">حسب اسم القناة</label></div>
-        <div id="sortByNameInputContainer" style="display: none; margin-right: 25px;"><input type="text" id="sortByNameField" placeholder="أدخل اسم القناة (مثال: mbc)"></div>
+        <div id="sortByNameInputContainer"><input type="text" id="sortByNameField" placeholder="أدخل اسم القناة (مثال: mbc)"></div>
         <div class="modal-row"><input type="radio" id="sort-group" name="sortCriteria" value="group" onchange="handleSortCriteriaChange()"><label for="sort-group">حسب اسم المجموعة</label></div>
-        <div id="sortByGroupInputContainer" style="display: none; margin-right: 25px;"><input type="text" id="sortByGroupField" placeholder="أدخل اسم المجموعة"></div>
+        <div id="sortByGroupInputContainer"><input type="text" id="sortByGroupField" placeholder="أدخل اسم المجموعة"></div>
         <div class="modal-row" id="sort-move-row">
             <input type="radio" id="sort-move" name="sortCriteria" value="moveBlock" onchange="handleSortCriteriaChange()">
             <label for="sort-move">نقل مجموعة قنوات إلى موضع جديد</label>
@@ -825,7 +856,7 @@ td {
                 <input type="radio" id="action-rename" name="groupAction" value="rename" checked onchange="handleGroupActionChange()">
                 <label for="action-rename">إعادة تسمية</label>
             </div>
-            <div id="renameGroupInputContainer" style="margin-right: 25px;">
+            <div id="renameGroupInputContainer">
                 <input type="text" id="newGroupNameField" placeholder="أدخل اسمًا جديدًا أو اتركه فارغًا">
                 <div class="modal-row" style="font-size: 0.9em; margin-top: 5px;">
                     <input type="checkbox" id="rename-add-as-new">
@@ -836,7 +867,7 @@ td {
                 <input type="radio" id="action-merge" name="groupAction" value="merge" onchange="handleGroupActionChange()">
                 <label for="action-merge">دمج المجموعة المحددة</label>
             </div>
-            <div id="mergeGroupInputContainer" style="display: none; margin-right: 25px;">
+            <div id="mergeGroupInputContainer">
                 <label for="mergeTargetSelector" style="display: block;">مع المجموعة:</label>
                 <select id="mergeTargetSelector"></select>
             </div>
@@ -1700,32 +1731,35 @@ td {
             openModal('sortModal');
         }
         
-        // --- START: MODIFICATION - Logic to handle margins in sort modal
+        // --- START: MODIFICATION - Logic to handle smooth animation in sort modal
         function handleSortCriteriaChange() {
             const criteria = document.querySelector('input[name="sortCriteria"]:checked').value;
             const modalContent = document.querySelector('#sortModal .modal-content');
-            const isMoveBlock = criteria === 'moveBlock';
-            const isChnoSort = criteria === 'tvg-chno';
-
-            document.getElementById('sortByNameInputContainer').style.display = criteria === 'name' ? 'block' : 'none';
-            document.getElementById('sortByGroupInputContainer').style.display = criteria === 'group' ? 'block' : 'none';
-            document.getElementById('moveBlockInputContainer').style.display = isMoveBlock ? 'block' : 'none';
-            document.getElementById('sort-descending').disabled = isChnoSort;
             
-            // Toggle compact layout class
-            if (modalContent) {
-                if (isMoveBlock) {
-                    modalContent.classList.add('compact-layout');
-                } else {
-                    modalContent.classList.remove('compact-layout');
-                }
-            }
+            // Define containers
+            const nameContainer = document.getElementById('sortByNameInputContainer');
+            const groupContainer = document.getElementById('sortByGroupInputContainer');
+            const moveContainer = document.getElementById('moveBlockInputContainer');
+            
+            // Toggle visibility using classes
+            nameContainer.classList.toggle('visible', criteria === 'name');
+            groupContainer.classList.toggle('visible', criteria === 'group');
+            moveContainer.classList.toggle('visible', criteria === 'moveBlock');
 
+            // Handle compact layout for the moveBlock option
+            if (modalContent) {
+                modalContent.classList.toggle('compact-layout', criteria === 'moveBlock');
+            }
+            
+            // Disable descending sort for tvg-chno
+            document.getElementById('sort-descending').disabled = (criteria === 'tvg-chno');
+
+            // Handle scope container visibility
             const scopeContainer = document.getElementById('sort-scope-container');
             const isFiltered = displayedChannels.length < channelsData.length;
             const hasSelection = selectedIndices.size > 0;
 
-            if (!isMoveBlock && (isFiltered || hasSelection)) {
+            if (criteria !== 'moveBlock' && (isFiltered || hasSelection)) {
                 scopeContainer.style.display = 'block';
             } else {
                 scopeContainer.style.display = 'none';
@@ -1804,27 +1838,30 @@ td {
             handleGroupActionChange();
         }
         
+        // --- START: MODIFICATION - Logic to handle smooth animation in group management modal
         function handleGroupActionChange() {
             const action = document.querySelector('input[name="groupAction"]:checked').value;
             const renameContainer = document.getElementById('renameGroupInputContainer');
             const mergeContainer = document.getElementById('mergeGroupInputContainer');
             const groupSelector = document.getElementById('groupSelector');
             const isGlobalAction = action === 'removeAll';
-            
-            const renameCheckbox = document.getElementById('rename-add-as-new').parentElement;
 
             groupSelector.disabled = isGlobalAction;
-            renameContainer.style.display = action === 'rename' ? 'block' : 'none';
-            mergeContainer.style.display = action === 'merge' ? 'block' : 'none';
-            renameCheckbox.style.display = action === 'rename' ? 'flex' : 'none';
-            
+
             const isDynamicGroup = groupSelector.value === '__filtered__' || groupSelector.value === '__selected__';
             document.getElementById('action-merge').disabled = isDynamicGroup;
-            if(isDynamicGroup && action === 'merge') {
-                 document.getElementById('action-rename').checked = true;
-                 handleGroupActionChange();
+
+            if (isDynamicGroup && action === 'merge') {
+                document.getElementById('action-rename').checked = true;
+                setTimeout(handleGroupActionChange, 0);
+                return; 
             }
+
+            const currentAction = document.querySelector('input[name="groupAction"]:checked').value;
+            renameContainer.classList.toggle('visible', currentAction === 'rename');
+            mergeContainer.classList.toggle('visible', currentAction === 'merge');
         }
+        // --- END: MODIFICATION ---
         
         function openMergeModal() {
             if (channelsData.length === 0) {
