@@ -145,7 +145,7 @@
             border-collapse: separate;
             border-radius: 8px;
         }
-        th, td { border: 1px solid var(--border-color); padding: 8px; text-align: center; box-sizing: border-box; overflow: hidden; vertical-align: middle; word-wrap: break-word; }
+        th, td { border: 1px solid var(--border-color); padding: 12px; text-align: center; box-sizing: border-box; overflow: hidden; vertical-align: middle; word-wrap: break-word; }
         th { background-color: var(--primary-color); color: white; }
         
         th:first-child { border-top-right-radius: 8px; }
@@ -171,11 +171,46 @@
             background-color: var(--row-alt-color) !important;
         }
 
-        table th:nth-child(1), table td:nth-child(1) { width: 12%; min-width: 80px; } table th:nth-child(2), table td:nth-child(2) { width: 10%; min-width: 50px; } table th:nth-child(3), table td:nth-child(3) { width: 46%; min-width: 100px;} table th:nth-child(4), table td:nth-child(4) { width: 20%; min-width: 80px; } table th:nth-child(5), table td:nth-child(5) { width: 12%; min-width: 60px; }
-        td.logo img { width: 30px; height: 30px; object-fit: contain; display: block; margin: 0 auto; }
-        td.logo .placeholder { font-size: 20px; text-align: center; }
-        td.channel-name, td.channel-group { direction: ltr; }
-        .channel-name { white-space: normal !important; word-break: break-word; overflow: hidden; }
+        /* --- START: التعديل على عرض الأعمدة --- */
+        table th:nth-child(1), table td:nth-child(1) { width: 15%; min-width: 80px; } /* رقم */
+        table th:nth-child(2), table td:nth-child(2) { width: 60%; min-width: 150px;} /* اسم القناة + الصورة */
+        table th:nth-child(3), table td:nth-child(3) { width: 25%; min-width: 80px; } /* المجموعة */
+
+        /* إخفاء العمود الرابع (إدارة) بالكامل */
+        table th:nth-child(4), table td:nth-child(4) {
+            display: none;
+        }
+        /* --- END: التعديل على عرض الأعمدة --- */
+        
+        /* --- START: التعديل النهائي لتنسيق خلية اسم القناة --- */
+        td.channel-name {
+            position: relative; /* نجعل الخلية مرجعًا لمكان الصورة */
+            padding-right: 45px; /* نترك مساحة فارغة على اليمين لوضع الصورة فيها */
+        }
+
+        td.channel-name img,
+        td.channel-name .placeholder {
+            position: absolute; /* نجعل الصورة "عائمة" بشكل مطلق داخل الخلية */
+            right: 8px; /* نثبتها على بعد 8 بكسل من حافة الخلية اليمنى */
+            top: 50%; /* نضعها في منتصف ارتفاع الخلية */
+            transform: translateY(-50%); /* نضبط مكانها لتتوسط عموديًا بشكل دقيق */
+            width: 30px;
+            height: 30px;
+            object-fit: contain;
+            cursor: pointer; /* تغيير شكل المؤشر للإشارة إلى أنها قابلة للنقر */
+        }
+
+        td.channel-name .name-text {
+            text-align: center; /* نكتفي بتوسيط النص أفقيًا */
+            white-space: normal !important;
+            word-break: break-word;
+            overflow: hidden;
+            direction: ltr;
+        }
+        /* --- END: التعديل النهائي لتنسيق خلية اسم القناة --- */
+        
+        td.channel-group { direction: ltr; }
+
 
         .action-button-icon { background: none; border: none; cursor: pointer; font-size: 1.2em; margin: 0 1px; padding: 5px 3px; display: inline-block; text-align: center; color: var(--secondary-color); font-weight: bold; transition: color 0.3s; }
         .action-button-icon:hover { color: var(--secondary-hover); }
@@ -465,14 +500,17 @@
             table {
                 font-size: 14px;
             }
-            th,
-            td {
-                padding: 6px 3px;
+            th {
+    padding: 6px 3px; /* للحفاظ على ارتفاع صف العناوين الأصلي */
+}
+td {
+    padding: 14px 5px;  /* لزيادة ارتفاع صفوف البيانات فقط */
+}
+            
+            table th:nth-child(2), table td:nth-child(2) { 
+                display: table-cell; 
             }
-            table th:nth-child(2),
-            table td:nth-child(2) {
-                display: none;
-            }
+
             .modal-content {
                 width: 91%;
                 padding: 15px;
@@ -517,6 +555,7 @@
     </style>
 </head>
 <body>
+    <!-- محتوى HTML يبقى كما هو -->
     <div class="container">
         <h1 class="page-title"><a href="">محرر قوائم تشغيل M3U/M3U8</a></h1>
         
@@ -944,7 +983,7 @@
 
 
         function showConfirm(title, message, onConfirm) { document.getElementById('confirmTitle').textContent = title; document.getElementById('confirmMessage').textContent = message; const confirmBtn = document.getElementById('confirmBtn'); const newConfirmBtn = confirmBtn.cloneNode(true); confirmBtn.parentNode.replaceChild(newConfirmBtn, confirmBtn); newConfirmBtn.onclick = () => { onConfirm(); closeModal('confirmModal'); }; openModal('confirmModal'); }
-        function handleRowClick(event) { const row = event.currentTarget; if (event.target.closest('.action-button-icon')) return; const index = parseInt(row.dataset.index); if (selectedIndices.has(index)) { selectedIndices.delete(index); row.classList.remove('selected'); } else { selectedIndices.add(index); row.classList.add('selected'); } updateBulkActionsUI(); }
+        function handleRowClick(event) { const row = event.currentTarget; if (event.target.closest('img, .placeholder')) return; const index = parseInt(row.dataset.index); if (selectedIndices.has(index)) { selectedIndices.delete(index); row.classList.remove('selected'); } else { selectedIndices.add(index); row.classList.add('selected'); } updateBulkActionsUI(); }
         
         function updateBulkActionsUI() {
             const bulkActionsButton = document.getElementById('bulkActionsButton');
@@ -990,15 +1029,69 @@
 
 
         function displayPaginatedChannels() { const totalPages = Math.ceil(displayedChannels.length / rowsPerPage); currentPage = Math.max(1, Math.min(currentPage, totalPages)); const startIndex = (currentPage - 1) * rowsPerPage; const endIndex = startIndex + rowsPerPage; const pagedChannels = displayedChannels.slice(startIndex, endIndex); renderTable(pagedChannels, startIndex); setupPaginationControls(totalPages); updateBulkActionsUI(); }
-        function renderTable(channels, startIndex) { const resultsDiv = document.getElementById('results'); resultsDiv.innerHTML = ''; if (channelsData.length === 0) { resultsDiv.innerHTML = '<p>القائمة فارغة. أضف قناة أو قم بتحميل ملف.</p>'; return; } if (channels.length === 0) { resultsDiv.innerHTML = '<p>لا توجد نتائج مطابقة للبحث.</p>'; return; } const table = document.createElement('table'); const tbody = document.createElement('tbody'); table.innerHTML = `<thead><tr><th>رقم</th><th>الصورة</th><th>اسم القناة</th><th>المجموعة</th><th>إدارة</th></tr></thead>`; channels.forEach((channel, index) => { const originalIndex = channelsData.indexOf(channel); const row = tbody.insertRow(); row.setAttribute('draggable', 'true'); row.dataset.index = originalIndex; if (selectedIndices.has(originalIndex)) { row.classList.add('selected'); } const groupsDisplay = channel.groups && channel.groups.length > 0 ? channel.groups.join(', ') : 'غير مصنفة'; row.innerHTML = `<td><span class="status-dot ${channel.status || 'unchecked'}" data-index="${originalIndex}"></span>${startIndex + index + 1}</td><td class="logo">${channel.logo ? `<img src="${channel.logo}" alt="Logo" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">` : ''}<span class="placeholder" style="${channel.logo ? 'display:none;' : ''}">📺</span></td><td class="channel-name">${channel.name || ''}</td><td class="channel-group">${groupsDisplay}</td><td class="actions"><button class="action-button-icon edit-btn" data-index="${originalIndex}" title="تحرير">&#9998;</button><button class="action-button-icon delete-btn-icon" data-index="${originalIndex}" title="حذف">&#128465;</button></td>`;
-            row.addEventListener('click', handleRowClick);
-            row.addEventListener('dragstart', handleDragStart);
-            row.addEventListener('dragend', handleDragEnd);
-            row.addEventListener('dragenter', handleDragEnter);
-            row.addEventListener('dragleave', handleDragLeave);
-            row.addEventListener('dragover', handleDragOver);
-            row.addEventListener('drop', handleDrop);
-        }); table.appendChild(tbody); resultsDiv.appendChild(table); }
+        
+        // --- START: تعديل دالة renderTable ---
+        function renderTable(channels, startIndex) { 
+            const resultsDiv = document.getElementById('results'); 
+            resultsDiv.innerHTML = ''; 
+            if (channelsData.length === 0) { 
+                resultsDiv.innerHTML = '<p>القائمة فارغة. أضف قناة أو قم بتحميل ملف.</p>'; 
+                return; 
+            } 
+            if (channels.length === 0) { 
+                resultsDiv.innerHTML = '<p>لا توجد نتائج مطابقة للبحث.</p>'; 
+                return; 
+            } 
+            const table = document.createElement('table'); 
+            const tbody = document.createElement('tbody'); 
+            
+            // تعديل رأس الجدول: إزالة "إدارة"
+            table.innerHTML = `<thead><tr><th>رقم</th><th>اسم القناة</th><th>المجموعة</th></tr></thead>`; 
+            
+            channels.forEach((channel, index) => { 
+                const originalIndex = channelsData.indexOf(channel); 
+                const row = tbody.insertRow(); 
+                row.setAttribute('draggable', 'true'); 
+                row.dataset.index = originalIndex; 
+                if (selectedIndices.has(originalIndex)) { 
+                    row.classList.add('selected'); 
+                } 
+                
+                const groupsDisplay = channel.groups && channel.groups.length > 0 ? channel.groups.join(', ') : 'غير مصنفة'; 
+                
+                // إضافة onclick على الصورة والنص البديل
+                // event.stopPropagation() مهمة جدًا لمنع تحديد السطر عند الضغط على الصورة
+                const logoHtml = `
+                    ${channel.logo ? `<img src="${channel.logo}" alt="Logo" onclick="event.stopPropagation(); openEditModal(${originalIndex});" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">` : ''}
+                    <span class="placeholder" style="${channel.logo ? 'display:none;' : ''}" onclick="event.stopPropagation(); openEditModal(${originalIndex});">📺</span>
+                `;
+                
+                // إزالة خلية الإدارة <td>...</td> بالكامل
+                row.innerHTML = `
+                    <td>
+                        <span class="status-dot ${channel.status || 'unchecked'}" data-index="${originalIndex}"></span>
+                        ${startIndex + index + 1}
+                    </td>
+                    <td class="channel-name">
+                        ${logoHtml}
+                        <span class="name-text">${channel.name || ''}</span>
+                    </td>
+                    <td class="channel-group">${groupsDisplay}</td>
+                `;
+                
+                row.addEventListener('click', handleRowClick);
+                row.addEventListener('dragstart', handleDragStart);
+                row.addEventListener('dragend', handleDragEnd);
+                row.addEventListener('dragenter', handleDragEnter);
+                row.addEventListener('dragleave', handleDragLeave);
+                row.addEventListener('dragover', handleDragOver);
+                row.addEventListener('drop', handleDrop);
+            }); 
+            table.appendChild(tbody); 
+            resultsDiv.appendChild(table); 
+        }
+        // --- END: تعديل دالة renderTable ---
+
         function setupPaginationControls(totalPages) { const container = document.getElementById('paginationControls'); container.innerHTML = ''; if (totalPages <= 1) return; container.innerHTML = `<button id="prevPage" onclick="changePage(-1)" ${currentPage === 1 ? 'disabled' : ''}>السابق</button><span id="pageInfo">صفحة ${currentPage} من ${totalPages}</span><button id="nextPage" onclick="changePage(1)" ${currentPage === totalPages ? 'disabled' : ''}>التالي</button>`; }
         function changePage(direction) { currentPage += direction; displayPaginatedChannels(); }
         function searchChannels() { const searchTerm = document.getElementById('searchInput').value.toLowerCase(); const selectedGroup = document.getElementById('groupFilter').value; let tempChannels = channelsData; if (selectedGroup !== 'all') { tempChannels = channelsData.filter(ch => { if (selectedGroup === 'uncategorized') { return !ch.groups || ch.groups.length === 0; } return ch.groups && ch.groups.includes(selectedGroup); }); } if (searchTerm) { displayedChannels = tempChannels.filter(ch => (ch.name || '').toLowerCase().includes(searchTerm) || (ch.groups && ch.groups.join(' ').toLowerCase().includes(searchTerm))); } else { displayedChannels = [...tempChannels]; } currentPage = 1; isFilterActiveForButton = (searchTerm !== '' || selectedGroup !== 'all'); displayPaginatedChannels(); }
@@ -1423,7 +1516,7 @@
             const urlsText = document.getElementById('mergeUrlTextarea').value;
             const urls = urlsText.split('\n').map(u => u.trim()).filter(u => u);
             if (urls.length === 0) {
-                return showToast("يرجى إدخال رابط واحد على الأقل للدمج", 'error');
+                return showToast("يرجى إدخال رابط واحد على الأقل للدمج", "error");
             }
 
             closeModal('mergeModal');
@@ -1711,7 +1804,7 @@
         }
 
         function downloadFile(content, fileName, mimeType) { const blob = new Blob([content], { type: mimeType }); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); const prefix = isMerged ? 'merged_' : isSorted ? 'sorted_' : ''; a.download = prefix + fileName; document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(a.href); }
-        document.addEventListener('click', e => { if (e.target.classList.contains('edit-btn')) openEditModal(parseInt(e.target.dataset.index)); if (e.target.classList.contains('delete-btn-icon')) deleteChannel(parseInt(e.target.dataset.index)); });
+        document.addEventListener('click', e => { if (e.target.classList.contains('delete-btn-icon')) deleteChannel(parseInt(e.target.dataset.index)); });
         
         function handleBulkActionChange() {
             const selectedAction = document.querySelector('input[name="bulkAction"]:checked').value;
