@@ -2,7 +2,7 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale-1.0">
     <title>محرر قوائم تشغيل M3U/M3U8</title>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
@@ -122,6 +122,7 @@
             background-color: var(--container-bg-color); width: 100%; margin-bottom: 15px;
         }
         
+        /* START: MODIFICATION - Changed box-shadow to inset */
         input[type="text"]:focus,
         input[type="url"]:focus,
         input[type="number"]:focus,
@@ -129,8 +130,9 @@
         select:focus {
             outline: none;
             border-color: var(--button-delete-color);
-            box-shadow: 0 0 0 2px rgba(84, 110, 122, 0.25);
+            box-shadow: inset 0 0 0 2px rgba(84, 110, 122, 0.25);
         }
+        /* END: MODIFICATION */
 
         #groupFilter { text-align: center; text-align-last: center; }
 
@@ -1853,10 +1855,12 @@ td {
 
             if (isDynamicGroup && action === 'merge') {
                 document.getElementById('action-rename').checked = true;
+                // Use a minimal timeout to allow the radio button state to update before re-running the logic
                 setTimeout(handleGroupActionChange, 0);
                 return; 
             }
 
+            // Get the currently checked value again, in case it was changed above
             const currentAction = document.querySelector('input[name="groupAction"]:checked').value;
             renameContainer.classList.toggle('visible', currentAction === 'rename');
             mergeContainer.classList.toggle('visible', currentAction === 'merge');
