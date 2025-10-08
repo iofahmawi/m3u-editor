@@ -186,21 +186,21 @@
         
         /* --- START: التعديل النهائي لتنسيق خلية اسم القناة --- */
         td.channel-name {
-            position: relative; /* نجعل الخلية مرجعًا لمكان الصورة */
-            padding-right: 45px; /* نترك مساحة فارغة على اليمين لوضع الصورة فيها */
-        }
+    position: relative; 
+    padding-left: 45px; /* <<< التغيير هنا: مساحة على اليسار */
+}
 
         td.channel-name img,
-        td.channel-name .placeholder {
-            position: absolute; /* نجعل الصورة "عائمة" بشكل مطلق داخل الخلية */
-            right: 8px; /* نثبتها على بعد 8 بكسل من حافة الخلية اليمنى */
-            top: 50%; /* نضعها في منتصف ارتفاع الخلية */
-            transform: translateY(-50%); /* نضبط مكانها لتتوسط عموديًا بشكل دقيق */
-            width: 30px;
-            height: 30px;
-            object-fit: contain;
-            cursor: pointer; /* تغيير شكل المؤشر للإشارة إلى أنها قابلة للنقر */
-        }
+td.channel-name .placeholder {
+    position: absolute; 
+    left: 8px;              /* <<< التغيير هنا: تثبيت على اليسار */
+    top: 50%; 
+    transform: translateY(-50%); 
+    width: 30px;
+    height: 30px;
+    object-fit: contain;
+    cursor: pointer; 
+}
 
         td.channel-name .name-text {
             text-align: center; /* نكتفي بتوسيط النص أفقيًا */
