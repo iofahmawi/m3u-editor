@@ -285,7 +285,7 @@ td.channel-name .placeholder {
         #paginationControls { display: flex; justify-content: center; align-items: center; margin-top: 20px; gap: 10px; } 
         #paginationControls button { background-color: #f0f0f0; border: 1px solid var(--border-color); padding: 7.5px 16px; border-radius: 4px; cursor: pointer; }
         #paginationControls button:disabled { background-color: #e9ecef; cursor: not-allowed; } #pageInfo { font-weight: bold; } #confirmModal .modal-content { max-width: 400px; text-align: center; } #confirmMessage { margin: 20px 0; font-size: 1.1em; } 
-        /* START: MODIFICATION - Center all modals */
+        /* START: MODIFICATION - Center all modals (FIXED) */
         .modal { 
             display: none; 
             position: fixed; 
@@ -609,6 +609,16 @@ td {
         .site-footer a:hover {
             text-decoration: underline;
         }
+
+        /* --- START: وضع نافذة تعديل المجموعة في الأعلى (الحل الصحيح والنهائي) --- */
+#bulkEditGroupModal {
+    align-items: flex-start;
+}
+#bulkEditGroupModal .modal-content {
+    margin: 80px auto 0;
+}
+/* --- END: وضع نافذة تعديل المجموعة في الأعلى --- */
+
     </style>
 </head>
 <body>
