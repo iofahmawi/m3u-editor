@@ -630,7 +630,7 @@ td {
         <div id="mainControls">
             <label for="fileInput" id="uploadArea" class="upload-area">
                 <p style="font-size: 1.1em; font-weight: bold;">اضغط لرفع ملف قائمة التشغيل</p>
-                <span class="upload-label">اختيار ملف M3U أو M3U8</span>
+                <span class="upload-label">اختيار ملف M3U, JSON, CSV...</span>
             </label>
             
             <div id="urlLoadContainer">
@@ -657,8 +657,8 @@ td {
             </div>
         </div>
 
-        <input type="file" id="fileInput" accept=".m3u,.m3u8,.pls" multiple style="display: none;">
-        <input type="file" id="mergeFileInput" accept=".m3u,.m3u8,.pls" multiple style="display: none;">
+        <input type="file" id="fileInput" accept=".m3u,.m3u8,.pls,.json,.csv" multiple style="display: none;">
+        <input type="file" id="mergeFileInput" accept=".m3u,.m3u8,.pls,.json,.csv" multiple style="display: none;">
         <div id="results"></div>
         <div id="paginationControls"></div>
     </div>
@@ -1193,18 +1193,21 @@ td {
             const files = event.target.files;
             if (files.length === 0) return;
 
-            const allowedExtensions = /\.(m3u|m3u8|pls)$/i;
+            const allowedExtensions = /\.(m3u|m3u8|pls|json|csv)$/i;
             const validFiles = Array.from(files).filter(file => allowedExtensions.test(file.name));
             
             if (validFiles.length === 0) {
-                return showToast("يرجى اختيار ملفات بامتداد M3U, M3U8, أو PLS", "error");
+                return showToast("يرجى اختيار ملف بامتداد صالح (M3U, PLS, JSON, CSV)", "error");
             }
             
             document.getElementById('loadingIndicator').style.display = 'block';
             
             try {
-                const fileContents = await Promise.all(validFiles.map(file => file.text()));
-                const allNewChannels = fileContents.map(content => parsePlaylist(content)).flat();
+                const parsePromises = validFiles.map(file => 
+                    file.text().then(content => parseFileContent(content, file.name))
+                );
+                
+                const allNewChannels = (await Promise.all(parsePromises)).flat();
 
                 if (allNewChannels.length > 0) {
                     channelsData = []; // Start fresh
@@ -1352,12 +1355,83 @@ td {
             return channels;
         }
 
-        function parsePlaylist(content) {
-            if (content.trim().toLowerCase().startsWith('[playlist]')) {
-                return parsePlsPlaylist(content);
+        function parseJsonPlaylist(content) {
+            try {
+                const data = JSON.parse(content);
+                if (!Array.isArray(data)) {
+                    showToast("ملف JSON غير صالح: يجب أن يحتوي على مصفوفة من القنوات.", "error");
+                    return [];
+                }
+                return data.map(item => ({
+                    name: item.name || 'قناة غير معروفة',
+                    url: item.url || '',
+                    logo: item.logo || '',
+                    groups: Array.isArray(item.groups) ? item.groups : [],
+                    chno: item.chno || 0,
+                    originalExtinf: item.originalExtinf || '',
+                    status: 'unchecked'
+                })).filter(ch => ch.url); // Ensure channel has a URL
+            } catch (e) {
+                showToast("خطأ في تحليل ملف JSON.", "error");
+                return [];
             }
-            return parseM3uPlaylist(content);
         }
+
+        function parseCsvPlaylist(content) {
+            try {
+                const lines = content.split(/\r?\n/).filter(line => line.trim() !== '');
+                if (lines.length < 2) return [];
+
+                const header = lines[0].split(',').map(h => h.trim().toLowerCase());
+                const nameIndex = header.indexOf('name');
+                const urlIndex = header.indexOf('url');
+                const logoIndex = header.indexOf('logo');
+                const groupsIndex = header.indexOf('groups');
+
+                if (nameIndex === -1 || urlIndex === -1) {
+                    showToast("ملف CSV غير صالح: يجب أن يحتوي على عمودي 'name' و 'url' على الأقل.", "error");
+                    return [];
+                }
+
+                const channels = [];
+                for (let i = 1; i < lines.length; i++) {
+                    // Simple split, doesn't handle commas within quotes
+                    const data = lines[i].split(','); 
+                    const name = data[nameIndex] || 'قناة غير معروفة';
+                    const url = data[urlIndex] || '';
+                    if (!url) continue;
+
+                    const logo = logoIndex > -1 ? data[logoIndex] : '';
+                    const groupsString = groupsIndex > -1 ? data[groupsIndex] : '';
+                    const groups = groupsString ? groupsString.split(';').map(g => g.trim()) : [];
+
+                    channels.push({ name, url, logo, groups, status: 'unchecked' });
+                }
+                return channels;
+            } catch (e) {
+                showToast("خطأ في تحليل ملف CSV.", "error");
+                return [];
+            }
+        }
+        
+        function parseFileContent(content, fileName) {
+            const extension = fileName.split('.').pop().toLowerCase();
+            if (content.trim().toLowerCase().startsWith('[playlist]') || extension === 'pls') {
+                return parsePlsPlaylist(content);
+            } else if (extension === 'm3u' || extension === 'm3u8') {
+                return parseM3uPlaylist(content);
+            } else if (extension === 'json') {
+                return parseJsonPlaylist(content);
+            } else if (extension === 'csv') {
+                return parseCsvPlaylist(content);
+            }
+            // Fallback for files without extension but with M3U header
+            if (content.trim().startsWith('#EXTM3U')) {
+                return parseM3uPlaylist(content);
+            }
+            return [];
+        }
+
 
         function processNewChannels(newChannels, successMessage) {
             const isInitialLoad = channelsData.length === 0;
@@ -1402,7 +1476,12 @@ td {
             if (!files.length) return; 
             closeModal('mergeModal'); 
             document.getElementById('loadingIndicator').style.display = 'block'; 
-            const newChannels = await Promise.all(Array.from(files).map(file => file.text().then(parsePlaylist))).then(results => results.flat()); 
+
+            const parsePromises = Array.from(files).map(file => 
+                file.text().then(content => parseFileContent(content, file.name))
+            );
+            const newChannels = (await Promise.all(parsePromises)).flat();
+            
             if(newChannels.length > 0) { 
                 const countStr = generateCountString(newChannels.length, {singular: 'قناة', dualGenitive: 'قناتين', plural: 'قنوات', gender: 'f'});
                 processNewChannels(newChannels, `تم دمج ${countStr} جديدة.`); 
@@ -1412,6 +1491,7 @@ td {
             document.getElementById('loadingIndicator').style.display = 'none'; 
             event.target.value = ''; 
         }
+
         function removeDuplicates(criteria = 'name-url') { const originalLength = channelsData.length; const seen = new Set(); channelsData = channelsData.filter(channel => { let key; const name = (channel.name || '').trim(); const url = (channel.url || '').trim(); const groupKey = (channel.groups || []).join(';'); if (criteria === 'name-url') key = `${name}-${url}`; else if (criteria === 'name') key = name; else if (criteria === 'name-url-group') key = `${name}-${url}-${groupKey}`; if (key && !seen.has(key)) { seen.add(key); return true; } return false; }); return originalLength - channelsData.length; }
         function removeDuplicatesManually() { if (channelsData.length === 0) return showToast("لا توجد قنوات", 'error'); openModal('removeDuplicatesModal'); }
         
@@ -1555,7 +1635,7 @@ td {
                     const response = await fetch(url); 
                     if (!response.ok) throw new Error(`فشل تحميل الرابط (الحالة: ${response.status})`); 
                     const content = await response.text(); 
-                    const channelsFromUrl = parsePlaylist(content); 
+                    const channelsFromUrl = parseFileContent(content, url); 
                     allNewChannels.push(...channelsFromUrl); 
                 } catch (error) { 
                     failedCount++; 
@@ -1574,14 +1654,21 @@ td {
         }
         
         function createNewPlaylist() {
-            showConfirm('إنشاء قائمة جديدة', 'هل أنت متأكد؟ سيتم حذف القائمة الحالية والبدء من جديد.', () => {
-                document.body.classList.remove('show-status-dots'); 
-                channelsData = [];
-                displayedChannels = [];
-                selectedIndices.clear();
-                localStorage.removeItem('m3uEditorSession'); // Clear the saved session
-                location.reload(); // Reload the page to go back to the start screen
-            });
+            // لا يوجد تأكيد، يتم التنفيذ مباشرة
+            document.body.classList.remove('show-status-dots');
+            
+            // 1. مسح جميع البيانات الحالية
+            channelsData = [];
+            displayedChannels = [];
+            selectedIndices.clear();
+            localStorage.removeItem('m3uEditorSession'); // مسح الجلسة المحفوظة
+
+            // 2. تحديث الواجهة لعرض قائمة فارغة وأدوات التحرير
+            showPlaylistControls(); // إظهار أزرار الحفظ والإضافة والأدوات
+            updateAndRefreshUI(false); // إعادة رسم الواجهة (ستظهر رسالة "القائمة فارغة")
+
+            // 3. إعطاء رسالة تأكيد للمستخدم
+            showToast('تم إنشاء قائمة جديدة فارغة بنجاح.', 'success');
         }
         
         function executeSort() {
@@ -1825,7 +1912,7 @@ td {
                     const response = await fetch(url);
                     if (!response.ok) throw new Error(`Failed to fetch`);
                     const content = await response.text();
-                    const channelsFromUrl = parsePlaylist(content);
+                    const channelsFromUrl = parseFileContent(content, url);
                     allNewChannels.push(...channelsFromUrl);
                 } catch (error) {
                     failedCount++;
