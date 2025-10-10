@@ -285,7 +285,7 @@ td.channel-name .placeholder {
         #paginationControls { display: flex; justify-content: center; align-items: center; margin-top: 20px; gap: 10px; } 
         #paginationControls button { background-color: #f0f0f0; border: 1px solid var(--border-color); padding: 7.5px 16px; border-radius: 4px; cursor: pointer; }
         #paginationControls button:disabled { background-color: #e9ecef; cursor: not-allowed; } #pageInfo { font-weight: bold; } #confirmModal .modal-content { max-width: 400px; text-align: center; } #confirmMessage { margin: 20px 0; font-size: 1.1em; } 
-        /* START: MODIFICATION - Center all modals (FIXED) */
+        /* START: MODIFICATION - Center all modals */
         .modal { 
             display: none; 
             position: fixed; 
@@ -611,13 +611,13 @@ td {
         }
 
         /* --- START: وضع نافذة تعديل المجموعة في الأعلى (الحل الصحيح والنهائي) --- */
-#bulkEditGroupModal {
-    align-items: flex-start;
-}
-#bulkEditGroupModal .modal-content {
-    margin: 80px auto 0;
-}
-/* --- END: وضع نافذة تعديل المجموعة في الأعلى --- */
+        #bulkEditGroupModal {
+            align-items: flex-start;
+        }
+        #bulkEditGroupModal .modal-content {
+            margin: 80px auto 0;
+        }
+        /* --- END: وضع نافذة تعديل المجموعة في الأعلى --- */
 
     </style>
 </head>
@@ -919,7 +919,15 @@ td {
         </div>
     </div></div>
 
-    <div id="exportModal" class="modal"><div class="modal-content"><span class="close" onclick="closeModal('exportModal')">&times;</span><h2>تصدير قائمة التشغيل</h2><p>اختر الصيغة المطلوبة للحفظ:</p><div class="modal-row"><input type="radio" id="export-m3u" name="exportFormat" value="m3u" checked><label for="export-m3u">M3U</label></div><div class="modal-row"><input type="radio" id="export-m3u8" name="exportFormat" value="m3u8"><label for="export-m3u8">M3U8</label></div><div class="modal-row"><input type="radio" id="export-pls" name="exportFormat" value="pls"><label for="export-pls">PLS</label></div><div class="modal-row"><input type="radio" id="export-enigma2" name="exportFormat" value="enigma2"><label for="export-enigma2">Enigma2</label></div><div class="modal-buttons"><button onclick="executeExport()">تصدير</button><button onclick="closeModal('exportModal')" class="cancel">إلغاء</button></div></div></div>
+    <div id="exportModal" class="modal"><div class="modal-content"><span class="close" onclick="closeModal('exportModal')">&times;</span><h2>تصدير قائمة التشغيل</h2><p>اختر الصيغة المطلوبة للحفظ:</p>
+        <div class="modal-row"><input type="radio" id="export-m3u" name="exportFormat" value="m3u" checked><label for="export-m3u">M3U</label></div>
+        <div class="modal-row"><input type="radio" id="export-m3u8" name="exportFormat" value="m3u8"><label for="export-m3u8">M3U8</label></div>
+        <div class="modal-row"><input type="radio" id="export-pls" name="exportFormat" value="pls"><label for="export-pls">PLS</label></div>
+        <div class="modal-row"><input type="radio" id="export-json" name="exportFormat" value="json"><label for="export-json">JSON</label></div>
+        <div class="modal-row"><input type="radio" id="export-csv" name="exportFormat" value="csv"><label for="export-csv">CSV</label></div>
+        <div class="modal-row"><input type="radio" id="export-enigma2" name="exportFormat" value="enigma2"><label for="export-enigma2">Enigma2</label></div>
+        <div class="modal-buttons"><button onclick="executeExport()">تصدير</button><button onclick="closeModal('exportModal')" class="cancel">إلغاء</button></div>
+    </div></div>
     <div id="confirmModal" class="modal"><div class="modal-content"><span class="close" onclick="closeModal('confirmModal')">&times;</span><h2 id="confirmTitle">تأكيد الإجراء</h2><p id="confirmMessage">هل أنت متأكد؟</p><div class="modal-buttons"><button id="confirmBtn" class="action-btn">تأكيد</button><button onclick="closeModal('confirmModal')" class="action-btn delete-btn">إلغاء</button></div></div></div>
     <div id="toastContainer"></div>
     
@@ -2080,6 +2088,8 @@ td {
                 if (format === 'm3u') savePlaylist(channels);
                 else if (format === 'm3u8') savePlaylistAsM3u8(channels);
                 else if (format === 'pls') savePlaylistAsPls(channels);
+                else if (format === 'json') savePlaylistAsJson(channels);
+                else if (format === 'csv') savePlaylistAsCsv(channels);
                 else if (format === 'enigma2') saveEnigma2Bouquets(channels);
             };
 
@@ -2115,8 +2125,38 @@ td {
 
         const createPlaylistContent = (type, channelsToExport = channelsData) => { if (channelsToExport.length === 0) { showToast("لا يوجد قنوات للحفظ", "error"); return null; } if (type === 'pls') { return '[playlist]\nNumberOfEntries=' + channelsToExport.length + '\nVersion=2\n' + channelsToExport.map((ch, i) => `File${i+1}=${ch.url}\nTitle${i+1}=${ch.name}\nLength${i+1}=-1`).join('\n'); } return '#EXTM3U\n' + channelsToExport.map(ch => `${buildUpdatedExtinf(ch.originalExtinf, ch.groups, ch.logo, ch.name, ch.chno)}\n${ch.url}`).join('\n\n'); }
         function savePlaylist(channelsToExport = channelsData) { const c = createPlaylistContent('m3u', channelsToExport); if(c) downloadFile(c, 'playlist.m3u', 'text/plain;charset=utf-8'); }
-        function savePlaylistAsM3u8(channelsToExport = channelsData) { const c = createPlaylistContent('m3u8', channelsToExport); if(c) downloadFile(c, 'application/x-mpegurl;charset=utf-8'); }
-        function savePlaylistAsPls(channelsToExport = channelsData) { const c = createPlaylistContent('pls', channelsToExport); if(c) downloadFile(c, 'playlist.pls', 'text/plain;charset=utf-8'); }
+        function savePlaylistAsM3u8(channelsToExport = channelsData) { const c = createPlaylistContent('m3u8', channelsToExport); if(c) downloadFile(c, 'playlist.m3u8', 'application/x-mpegurl;charset=utf-8'); }
+        function savePlaylistAsPls(channelsToExport = channelsData) { const c = createPlaylistContent('pls', channelsToExport); if(c) downloadFile(c, 'playlist.pls', 'audio/x-scpls;charset=utf-8'); }
+
+        function savePlaylistAsJson(channelsToExport = channelsData) {
+            const content = JSON.stringify(channelsToExport, null, 2);
+            downloadFile(content, 'playlist.json', 'application/json;charset=utf-8');
+        }
+
+        function savePlaylistAsCsv(channelsToExport = channelsData) {
+            const escapeCsvField = (field) => {
+                if (field === undefined || field === null) {
+                    return '';
+                }
+                const stringField = String(field);
+                if (stringField.includes(',') || stringField.includes('"') || stringField.includes('\n')) {
+                    return `"${stringField.replace(/"/g, '""')}"`;
+                }
+                return stringField;
+            };
+
+            const header = ['name', 'logo', 'url', 'groups'].join(',');
+            const rows = channelsToExport.map(ch => {
+                const name = escapeCsvField(ch.name);
+                const logo = escapeCsvField(ch.logo);
+                const url = escapeCsvField(ch.url);
+                const groups = escapeCsvField((ch.groups || []).join(';'));
+                return [name, logo, url, groups].join(',');
+            });
+            const content = [header, ...rows].join('\n');
+            downloadFile(content, 'playlist.csv', 'text/csv;charset=utf-8;');
+        }
+
         async function saveEnigma2Bouquets(channelsToExport = channelsData) {
             if (channelsToExport.length === 0) { showToast("لا يوجد قنوات للحفظ", "error"); return; }
             const zip = new JSZip();
@@ -2154,7 +2194,7 @@ td {
             }
         }
 
-        function downloadFile(content, fileName, mimeType) { const blob = new Blob([content], { type: mimeType }); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); const prefix = isMerged ? 'merged_' : isSorted ? 'sorted_' : ''; a.download = prefix + fileName; document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(a.href); }
+        function downloadFile(content, fileName, mimeType) { const blob = new Blob([new Uint8Array([0xEF, 0xBB, 0xBF]), content], { type: mimeType }); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); const prefix = isMerged ? 'merged_' : isSorted ? 'sorted_' : ''; a.download = prefix + fileName; document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(a.href); }
         document.addEventListener('click', e => { if (e.target.classList.contains('delete-btn-icon')) deleteChannel(parseInt(e.target.dataset.index)); });
         
         function handleBulkActionChange() {
