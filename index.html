@@ -610,14 +610,14 @@ td {
             text-decoration: underline;
         }
 
-        /* --- START: وضع نافذة تعديل المجموعة في الأعلى (الحل الصحيح والنهائي) --- */
-        #bulkEditGroupModal {
+        /* --- START: تنسيق النوافذ الصغيرة لتظهر في الأعلى --- */
+        .modal.modal-top {
             align-items: flex-start;
         }
-        #bulkEditGroupModal .modal-content {
-            margin: 80px auto 0;
+        .modal.modal-top .modal-content {
+            margin: 100px auto 0;
         }
-        /* --- END: وضع نافذة تعديل المجموعة في الأعلى --- */
+        /* --- END: تنسيق النوافذ الصغيرة لتظهر في الأعلى --- */
 
     </style>
 </head>
@@ -664,9 +664,9 @@ td {
     </div>
 
     <!-- All Modals -->
-    <div id="searchFilterModal" class="modal"><div class="modal-content"><span class="close" onclick="closeModal('searchFilterModal')">&times;</span><h2>بحث وتصفية القنوات</h2><input type="text" id="searchInput" placeholder="ابحث عن قناة..."><select id="groupFilter"><option value="all">كل المجموعات</option></select><div class="modal-buttons"><button id="searchFilterActionButton">إغلاق</button></div></div></div>
+    <div id="searchFilterModal" class="modal modal-top"><div class="modal-content"><span class="close" onclick="closeModal('searchFilterModal')">&times;</span><h2>بحث وتصفية القنوات</h2><input type="text" id="searchInput" placeholder="ابحث عن قناة..."><select id="groupFilter"><option value="all">كل المجموعات</option></select><div class="modal-buttons"><button id="searchFilterActionButton">إغلاق</button></div></div></div>
     
-    <div id="bulkActionsModal" class="modal">
+    <div id="bulkActionsModal" class="modal modal-top">
         <div class="modal-content">
             <span class="close" onclick="closeModal('bulkActionsModal')">&times;</span>
             <h2>إجراءات على القنوات المحددة</h2>
@@ -707,7 +707,7 @@ td {
         </div>
     </div>
     
-    <div id="channelCheckerModal" class="modal"><div class="modal-content"><span class="close" onclick="closeModal('channelCheckerModal')">&times;</span><h2>مدقق حالة القنوات</h2><p>سيقوم هذا الإجراء بالتحقق من كل قناة لتحديد ما إذا كانت تعمل. قد يستغرق هذا بعض الوقت للقوائم الكبيرة.</p><div id="checker-progress-container"><p id="checker-progress-text">اضغط على زر 'بدء الفحص' للتحقق من حالة القنوات.</p><div id="checker-progress-bar-container"><div id="checker-progress-bar">0%</div></div></div><p id="checker-summary-text" style="font-weight: bold;"></p><div class="modal-buttons"><button id="start-check-btn" onclick="executeChannelCheck()">بدء الفحص</button><button id="stop-check-btn" onclick="stopChannelCheck()" class="cancel" style="display:none;">إيقاف الفحص</button><button id="checker-cancel-btn" onclick="closeModal('channelCheckerModal')" class="cancel">إغلاق</button></div><div class="dropdown-container" id="checker-actions-container" style="display: none;"><button onclick="toggleCheckerActions()" class="dropdown-btn">إجراءات &#9662;</button><div id="checker-actions-dropdown" class="dropdown-content"><a href="#" id="export-working-btn" onclick="exportWorkingChannels()">تصدير القنوات التي تعمل</a><a href="#" id="select-failed-btn" onclick="selectFailedChannels()">تحديد القنوات التي لا تعمل</a><a href="#" id="delete-failed-btn" class="delete-option" onclick="deleteFailedChannels()">حذف القنوات التي لا تعمل</a></div></div></div></div>
+    <div id="channelCheckerModal" class="modal modal-top"><div class="modal-content"><span class="close" onclick="closeModal('channelCheckerModal')">&times;</span><h2>مدقق حالة القنوات</h2><p>سيقوم هذا الإجراء بالتحقق من كل قناة لتحديد ما إذا كانت تعمل. قد يستغرق هذا بعض الوقت للقوائم الكبيرة.</p><div id="checker-progress-container"><p id="checker-progress-text">اضغط على زر 'بدء الفحص' للتحقق من حالة القنوات.</p><div id="checker-progress-bar-container"><div id="checker-progress-bar">0%</div></div></div><p id="checker-summary-text" style="font-weight: bold;"></p><div class="modal-buttons"><button id="start-check-btn" onclick="executeChannelCheck()">بدء الفحص</button><button id="stop-check-btn" onclick="stopChannelCheck()" class="cancel" style="display:none;">إيقاف الفحص</button><button id="checker-cancel-btn" onclick="closeModal('channelCheckerModal')" class="cancel">إغلاق</button></div><div class="dropdown-container" id="checker-actions-container" style="display: none;"><button onclick="toggleCheckerActions()" class="dropdown-btn">إجراءات &#9662;</button><div id="checker-actions-dropdown" class="dropdown-content"><a href="#" id="export-working-btn" onclick="exportWorkingChannels()">تصدير القنوات التي تعمل</a><a href="#" id="select-failed-btn" onclick="selectFailedChannels()">تحديد القنوات التي لا تعمل</a><a href="#" id="delete-failed-btn" class="delete-option" onclick="deleteFailedChannels()">حذف القنوات التي لا تعمل</a></div></div></div></div>
 
     <div id="findReplaceModal" class="modal"><div class="modal-content"><span class="close" onclick="closeModal('findReplaceModal')">&times;</span><h2>بحث واستبدال</h2>
         <div class="find-replace-options" style="margin-bottom: 15px;">
@@ -724,10 +724,10 @@ td {
         <div class="modal-buttons"><button onclick="executeFindAndReplace()">تنفيذ</button><button onclick="closeModal('findReplaceModal')" class="cancel">إلغاء</button></div>
     </div></div>
 
-    <div id="multiUrlModal" class="modal"><div class="modal-content"><span class="close" onclick="closeModal('multiUrlModal')">&times;</span><h2>تحميل من عدة روابط</h2><p>ألصق الروابط هنا، كل رابط في سطر جديد. سيتم دمجها بالترتيب.</p><textarea id="multiUrlTextarea" placeholder="https://example.com/playlist1.m3u&#10;https://example.com/playlist2.m3u8"></textarea><div class="modal-buttons"><button onclick="processMultiUrlLoad()">تحميل</button><button onclick="closeModal('multiUrlModal')" class="cancel">إلغاء</button></div></div></div>
-    <div id="bulkEditGroupModal" class="modal"><div class="modal-content"><span class="close" onclick="closeModal('bulkEditGroupModal')">&times;</span><h2>تعديل مجموعة القنوات المحددة</h2><label for="bulkNewGroupName">اسم المجموعة الجديد:</label><input type="text" id="bulkNewGroupName" placeholder="أدخل اسمًا جديدًا أو اتركه فارغًا"><div class="modal-buttons"><button onclick="executeBulkEditGroup()">تطبيق</button><button onclick="closeModal('bulkEditGroupModal')" class="cancel">إلغاء</button></div></div></div>
+    <div id="multiUrlModal" class="modal modal-top"><div class="modal-content"><span class="close" onclick="closeModal('multiUrlModal')">&times;</span><h2>تحميل من عدة روابط</h2><p>ألصق الروابط هنا، كل رابط في سطر جديد. سيتم دمجها بالترتيب.</p><textarea id="multiUrlTextarea" placeholder="https://example.com/playlist1.m3u&#10;https://example.com/playlist2.m3u8"></textarea><div class="modal-buttons"><button onclick="processMultiUrlLoad()">تحميل</button><button onclick="closeModal('multiUrlModal')" class="cancel">إلغاء</button></div></div></div>
+    <div id="bulkEditGroupModal" class="modal modal-top"><div class="modal-content"><span class="close" onclick="closeModal('bulkEditGroupModal')">&times;</span><h2>تعديل مجموعة القنوات المحددة</h2><label for="bulkNewGroupName">اسم المجموعة الجديد:</label><input type="text" id="bulkNewGroupName" placeholder="أدخل اسمًا جديدًا أو اتركه فارغًا"><div class="modal-buttons"><button onclick="executeBulkEditGroup()">تطبيق</button><button onclick="closeModal('bulkEditGroupModal')" class="cancel">إلغاء</button></div></div></div>
 
-    <div id="editModal" class="modal">
+    <div id="editModal" class="modal modal-top">
         <div class="modal-content">
             <span class="close" onclick="closeModal('editModal')">&times;</span>
             <h2>تحرير القناة</h2>
@@ -760,7 +760,7 @@ td {
         </div>
     </div>
 
-    <div id="addModal" class="modal">
+    <div id="addModal" class="modal modal-top">
         <div class="modal-content">
             <span class="close" onclick="closeModal('addModal')">&times;</span>
             <h2>إضافة قناة جديدة</h2>
@@ -792,7 +792,7 @@ td {
         </div>
     </div>
     
-    <div id="removeDuplicatesModal" class="modal">
+    <div id="removeDuplicatesModal" class="modal modal-top">
         <div class="modal-content">
             <span class="close" onclick="closeModal('removeDuplicatesModal')">&times;</span>
             <h2>إزالة التكرار</h2>
@@ -817,7 +817,7 @@ td {
         </div>
     </div>
     
-    <div id="sortModal" class="modal"><div class="modal-content">
+    <div id="sortModal" class="modal modal-top"><div class="modal-content">
         <span class="close" onclick="closeModal('sortModal')">&times;</span>
         <h2>فرز وترتيب القنوات</h2>
         <div id="sort-scope-container" style="display: none; margin-bottom: 15px;">
@@ -900,7 +900,7 @@ td {
         </div>
     </div></div>
     
-    <div id="mergeModal" class="modal"><div class="modal-content"><span class="close" onclick="closeModal('mergeModal')">&times;</span><h2>خيارات الدمج</h2>
+    <div id="mergeModal" class="modal modal-top"><div class="modal-content"><span class="close" onclick="closeModal('mergeModal')">&times;</span><h2>خيارات الدمج</h2>
         <div class="modal-content-body">
             <label for="mergeOptionSelector" style="display:block; margin-bottom: 5px; text-align: right;">اختر طريقة الدمج:</label>
             <select id="mergeOptionSelector" onchange="handleMergeOptionChange()">
@@ -919,7 +919,7 @@ td {
         </div>
     </div></div>
 
-    <div id="exportModal" class="modal"><div class="modal-content"><span class="close" onclick="closeModal('exportModal')">&times;</span><h2>تصدير قائمة التشغيل</h2><p>اختر الصيغة المطلوبة للحفظ:</p>
+    <div id="exportModal" class="modal modal-top"><div class="modal-content"><span class="close" onclick="closeModal('exportModal')">&times;</span><h2>تصدير قائمة التشغيل</h2><p>اختر الصيغة المطلوبة للحفظ:</p>
         <div class="modal-row"><input type="radio" id="export-m3u" name="exportFormat" value="m3u" checked><label for="export-m3u">M3U</label></div>
         <div class="modal-row"><input type="radio" id="export-m3u8" name="exportFormat" value="m3u8"><label for="export-m3u8">M3U8</label></div>
         <div class="modal-row"><input type="radio" id="export-pls" name="exportFormat" value="pls"><label for="export-pls">PLS</label></div>
@@ -928,7 +928,7 @@ td {
         <div class="modal-row"><input type="radio" id="export-enigma2" name="exportFormat" value="enigma2"><label for="export-enigma2">Enigma2</label></div>
         <div class="modal-buttons"><button onclick="executeExport()">تصدير</button><button onclick="closeModal('exportModal')" class="cancel">إلغاء</button></div>
     </div></div>
-    <div id="confirmModal" class="modal"><div class="modal-content"><span class="close" onclick="closeModal('confirmModal')">&times;</span><h2 id="confirmTitle">تأكيد الإجراء</h2><p id="confirmMessage">هل أنت متأكد؟</p><div class="modal-buttons"><button id="confirmBtn" class="action-btn">تأكيد</button><button onclick="closeModal('confirmModal')" class="action-btn delete-btn">إلغاء</button></div></div></div>
+    <div id="confirmModal" class="modal modal-top"><div class="modal-content"><span class="close" onclick="closeModal('confirmModal')">&times;</span><h2 id="confirmTitle">تأكيد الإجراء</h2><p id="confirmMessage">هل أنت متأكد؟</p><div class="modal-buttons"><button id="confirmBtn" class="action-btn">تأكيد</button><button onclick="closeModal('confirmModal')" class="action-btn delete-btn">إلغاء</button></div></div></div>
     <div id="toastContainer"></div>
     
     <footer class="site-footer">
