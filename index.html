@@ -6,6 +6,7 @@
     <title>محرر قوائم تشغيل M3U/M3U8</title>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
     
     <style>
         /* Warm & Minimalist Theme with Final Polishing */
@@ -263,6 +264,13 @@
 
         table th:nth-child(4), table td:nth-child(4) { display: none; }
         
+        .channel-index-cell {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0px;
+        }
+        
         td.channel-name { position: relative; padding-left: 45px; }
 
         td.channel-name img,
@@ -291,6 +299,22 @@
         .action-button-icon:hover { color: var(--secondary-hover); }
         .delete-btn-icon { color: var(--button-delete-color); }
         .delete-btn-icon:hover { color: var(--button-delete-hover); }
+        
+        /* Style for the new Play button */
+        .play-btn-icon {
+            color: #5cb85c;
+            font-size: 1.1em;
+            vertical-align: middle;
+            display: none; /* Hidden by default */
+        }
+        .play-btn-icon:hover {
+            color: #4cae4c;
+        }
+
+        /* Show play button when play mode is enabled on the body */
+        body.play-mode-enabled .play-btn-icon {
+            display: inline-block;
+        }
 
         .modal-content { background-color: var(--container-bg-color); }
         
@@ -332,8 +356,9 @@
             color: #fff;
         }
         .toast.success { border-left-color: var(--primary-color); }
-        .toast.error { border-left-color: var(--delete-color); }
-        .toast.info { border-left-color: var(--secondary-color); }
+.toast.error { border-left-color: var(--delete-color); }
+.toast.info { border-left-color: var(--secondary-color); }
+.toast.play { border-left-color: #5cb85c; } /* <-- أضف هذا السطر */
         .toast-content {
             text-align: right;
             overflow: hidden;
@@ -462,6 +487,41 @@
         #addLogoPreview, #logoPreview {
             margin-right: auto;
             padding-left: 5px;
+        }
+        
+        /* Player Modal Styles */
+#playerModal .modal-content {
+    max-width: 900px;
+    /* استخدم متغير اللون الأبيض من تصميمك ليتناسق مع الوضع الليلي/النهاري */
+    background-color: var(--container-bg-color); 
+    border-color: var(--border-color);
+    padding: 15px;
+}
+#playerModal .close {
+    position: absolute;
+    top: 6px;
+    left: 15px;
+    float: none;
+    color: #000; /* <-- تم التغيير إلى اللون الأسود الصريح */
+    opacity: 0.8;
+    text-shadow: none;
+}
+#playerModal h2 {
+    color: #000; /* اللون الافتراضي (النهاري) هو الأسود */
+    text-align: center;
+    margin-top: 0;
+    margin-bottom: 10px;
+    font-size: 1.2em;
+}
+#videoContainer {
+    width: 100%;
+    /* تغيير خلفية الفيديو إلى الأسود للحفاظ على تركيز المشاهدة */
+    background-color: #000; 
+}
+        #videoContainer video {
+            width: 100%;
+            height: auto;
+            max-height: 70vh;
         }
 
         #duplicate-results-list { margin-top: 15px; }
@@ -789,7 +849,21 @@
             width: 100%;
             margin: 0;
         }
+body.dark-mode #playerModal h2 {
+    color: #fff; /* تغيير اللون إلى الأبيض في الوضع الليلي */
+}
+body.dark-mode #playerModal .close {
+    color: #fff; /* <-- هذا السطر سيجعل لون الزر أبيضًا في الوضع الليلي */
+}
+/* --- START: Player Modal Position Tweak --- */
+#playerModal {
+    align-items: flex-start; /* يوقف التوسيط العمودي ويجعلها تبدأ من الأعلى */
+}
 
+#playerModal .modal-content {
+    margin-top: 25vh; /* يضيف مسافة صغيرة (5% من ارتفاع الشاشة) من الحافة العلوية */
+}
+/* --- END: Player Modal Position Tweak --- */
     </style>
 </head>
 <body>
@@ -830,6 +904,7 @@
                         <a href="#" onclick="openMergeModal(); closeAdvancedToolsDropdown(); return false;">دمج قوائم</a>
                         <a href="#" onclick="removeDuplicatesManually(); closeAdvancedToolsDropdown(); return false;">إزالة التكرار</a>
                         <a href="#" onclick="openFindReplaceModal(); closeAdvancedToolsDropdown(); return false;">بحث واستبدال</a>
+                        <a href="#" id="playModeToggle" onclick="togglePlayMode(); closeAdvancedToolsDropdown(); return false;">تفعيل وضع التشغيل</a>
                         <a href="#" onclick="openChannelCheckerModal(); closeAdvancedToolsDropdown(); return false;">فحص حالة القنوات</a>
                     </div>
                 </div>
@@ -846,6 +921,14 @@
     </div>
 
     <!-- All Modals -->
+    <div id="playerModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closePlayerModal()">&times;</span>
+            <h2 id="playerChannelName"></h2>
+            <div id="videoContainer"></div>
+        </div>
+    </div>
+    
     <div id="dragDropChoiceModal" class="modal modal-small-top">
         <div class="modal-content">
             <span class="close" onclick="cancelDragOperation()">&times;</span>
@@ -1142,6 +1225,8 @@
         let channelsData = []; let displayedChannels = []; let isMerged = false, isSorted = false; let draggedIndices = []; let selectedIndices = new Set(); let currentPage = 1; const rowsPerPage = 100; let isChecking = false; let isFilterActiveForButton = false;
         let filterDragMode = null;
         let latestDropTargetRow = null;
+        let isPlayMode = false;
+        let hlsPlayer = null;
         
         function generateCountString(count, words) {
             if (count === 1) {
@@ -1218,6 +1303,8 @@
 
         function closeModal(modalId) { 
             if(modalId === 'channelCheckerModal' && isChecking) { stopChannelCheck(); } 
+            if(modalId === 'playerModal') { closePlayerModal(); return; }
+            
             const modal = document.getElementById(modalId); 
             if(modal) modal.style.display = 'none'; 
             
@@ -1410,7 +1497,7 @@
         }
 
         function showConfirm(title, message, onConfirm) { document.getElementById('confirmTitle').textContent = title; document.getElementById('confirmMessage').textContent = message; const confirmBtn = document.getElementById('confirmBtn'); const newConfirmBtn = confirmBtn.cloneNode(true); confirmBtn.parentNode.replaceChild(newConfirmBtn, confirmBtn); newConfirmBtn.onclick = () => { onConfirm(); closeModal('confirmModal'); }; openModal('confirmModal'); }
-        function handleRowClick(event) { const row = event.currentTarget; if (event.target.closest('img, .placeholder')) return; const index = parseInt(row.dataset.index); if (selectedIndices.has(index)) { selectedIndices.delete(index); row.classList.remove('selected'); } else { selectedIndices.add(index); row.classList.add('selected'); } updateBulkActionsUI(); }
+        function handleRowClick(event) { const row = event.currentTarget; if (event.target.closest('img, .placeholder, .play-btn-icon')) return; const index = parseInt(row.dataset.index); if (selectedIndices.has(index)) { selectedIndices.delete(index); row.classList.remove('selected'); } else { selectedIndices.add(index); row.classList.add('selected'); } updateBulkActionsUI(); }
         
         function updateBulkActionsUI() {
             const bulkActionsButton = document.getElementById('bulkActionsButton');
@@ -1513,8 +1600,11 @@
                 
                 row.innerHTML = `
                     <td>
-                        <span class="status-dot ${channel.status || 'unchecked'}" data-index="${originalIndex}"></span>
-                        ${startIndex + index + 1}
+                        <div class="channel-index-cell">
+                             <span class="status-dot ${channel.status || 'unchecked'}" data-index="${originalIndex}"></span>
+                             <span>${startIndex + index + 1}</span>
+                             <button class="action-button-icon play-btn-icon" onclick="playChannel(event, ${originalIndex})" title="تشغيل القناة">▶</button>
+                        </div>
                     </td>
                     <td class="channel-name">
                         ${logoHtml}
@@ -1534,6 +1624,60 @@
             table.appendChild(tbody); 
             resultsDiv.appendChild(table); 
         }
+        
+        function togglePlayMode() {
+            isPlayMode = !isPlayMode;
+            document.body.classList.toggle('play-mode-enabled', isPlayMode);
+            const toggleButton = document.getElementById('playModeToggle');
+            // الكود الجديد
+if (isPlayMode) {
+    //...
+    showToast('تم تفعيل وضع التشغيل.', 'play', 3000);
+} else {
+    //...
+    showToast('تم إيقاف وضع التشغيل.', 'play', 3000);
+}
+        }
+
+        function playChannel(event, index) {
+            event.stopPropagation(); 
+            const channel = channelsData[index];
+            if (!channel || !channel.url) {
+                return showToast("لا يوجد رابط تشغيل لهذه القناة.", "error");
+            }
+            
+            document.getElementById('playerChannelName').textContent = channel.name;
+            const videoContainer = document.getElementById('videoContainer');
+            
+            videoContainer.innerHTML = `<video id="videoPlayer" controls autoplay></video>`;
+            const video = videoContainer.querySelector('video');
+            const videoSrc = channel.url;
+
+            if (Hls.isSupported() && (videoSrc.includes('.m3u8') || videoSrc.includes('.m3u'))) {
+                if (hlsPlayer) hlsPlayer.destroy();
+                hlsPlayer = new Hls();
+                hlsPlayer.loadSource(videoSrc);
+                hlsPlayer.attachMedia(video);
+                hlsPlayer.on(Hls.Events.MANIFEST_PARSED, () => video.play());
+            } else {
+                video.src = videoSrc;
+                video.addEventListener('canplay', () => video.play());
+            }
+            openModal('playerModal');
+        }
+        
+        function closePlayerModal() {
+            if (hlsPlayer) {
+                hlsPlayer.destroy();
+                hlsPlayer = null;
+            }
+            const videoContainer = document.getElementById('videoContainer');
+            videoContainer.innerHTML = ''; // This stops native video playback
+            
+            const modal = document.getElementById('playerModal');
+            if(modal) modal.style.display = 'none';
+        }
+
 
         function setupPaginationControls(totalPages) { const container = document.getElementById('paginationControls'); container.innerHTML = ''; if (totalPages <= 1) return; container.innerHTML = `<button id="prevPage" onclick="changePage(-1)" ${currentPage === 1 ? 'disabled' : ''}>السابق</button><span id="pageInfo">صفحة ${currentPage} من ${totalPages}</span><button id="nextPage" onclick="changePage(1)" ${currentPage === totalPages ? 'disabled' : ''}>التالي</button>`; }
         function changePage(direction) { currentPage += direction; displayPaginatedChannels(); }
