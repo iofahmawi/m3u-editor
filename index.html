@@ -110,10 +110,16 @@
         #manageGroupsButton, #openSortModalButton, #removeDuplicatesButton, #addChannelButton, #openMergeModalButton, #openExportModalButton, #bulkActionsButton { display: none; }
         #mainControls { text-align: center; margin-bottom: 20px; }
         .button-row { display: flex; justify-content: center; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 10px; }
-        #initialButtonsRow { justify-content: space-between; }
-        #initialButtonsRow button { flex: 1; margin: 0; }
-        @media (max-width: 768px) { #mainControls button { width: 45%; margin: 5px 0; } #initialButtonsRow { flex-direction: column; } #initialButtonsRow button { width: 100%; } }
-        @media (min-width: 769px) { #mainControls button { width: auto; min-width: 150px; } #initialButtonsRow button { width: auto; } }
+        
+        /* --- START: تعديل Media Queries لضمان تطابق حجم زر الأدوات المتقدمة --- */
+        @media (max-width: 768px) {
+            #toolsMergeRow > .action-btn, 
+            #toolsMergeRow > .advanced-tools-dropdown {
+                flex: 1 1 40%;
+                margin: 5px 0;
+            }
+        }
+        /* --- END: تعديل Media Queries --- */
 
         #searchInput, #groupFilter {
             padding: 10px; border: 1px solid var(--border-color);
@@ -122,7 +128,6 @@
             background-color: var(--container-bg-color); width: 100%; margin-bottom: 15px;
         }
         
-        /* START: MODIFICATION - Changed box-shadow to inset */
         input[type="text"]:focus,
         input[type="url"]:focus,
         input[type="number"]:focus,
@@ -132,7 +137,6 @@
             border-color: var(--button-delete-color);
             box-shadow: inset 0 0 0 2px rgba(84, 110, 122, 0.25);
         }
-        /* END: MODIFICATION */
 
         #groupFilter { text-align: center; text-align-last: center; }
 
@@ -157,10 +161,13 @@
 
         tr:nth-child(even) { background-color: var(--row-alt-color); }
         tbody tr { 
-            cursor: pointer; 
+            cursor: grab; 
             -webkit-tap-highlight-color: transparent;
             outline: none;
         } 
+        tbody tr:not([draggable="true"]) {
+            cursor: default;
+        }
         tbody tr.drag-over-indicator {
             background-color: var(--selected-row-color) !important;
         }
@@ -173,43 +180,38 @@
             background-color: var(--row-alt-color) !important;
         }
 
-        /* --- START: التعديل على عرض الأعمدة --- */
         table th:nth-child(1), table td:nth-child(1) { width: 15%; min-width: 80px; } /* رقم */
         table th:nth-child(2), table td:nth-child(2) { width: 60%; min-width: 150px;} /* اسم القناة + الصورة */
         table th:nth-child(3), table td:nth-child(3) { width: 25%; min-width: 80px; } /* المجموعة */
 
-        /* إخفاء العمود الرابع (إدارة) بالكامل */
         table th:nth-child(4), table td:nth-child(4) {
             display: none;
         }
-        /* --- END: التعديل على عرض الأعمدة --- */
         
-        /* --- START: التعديل النهائي لتنسيق خلية اسم القناة --- */
         td.channel-name {
-    position: relative; 
-    padding-left: 45px; /* <<< التغيير هنا: مساحة على اليسار */
-}
+            position: relative; 
+            padding-left: 45px;
+        }
 
         td.channel-name img,
-td.channel-name .placeholder {
-    position: absolute; 
-    left: 8px;              /* <<< التغيير هنا: تثبيت على اليسار */
-    top: 50%; 
-    transform: translateY(-50%); 
-    width: 30px;
-    height: 30px;
-    object-fit: contain;
-    cursor: pointer; 
-}
+        td.channel-name .placeholder {
+            position: absolute; 
+            left: 8px;
+            top: 50%; 
+            transform: translateY(-50%); 
+            width: 30px;
+            height: 30px;
+            object-fit: contain;
+            cursor: pointer; 
+        }
 
         td.channel-name .name-text {
-            text-align: center; /* نكتفي بتوسيط النص أفقيًا */
+            text-align: center;
             white-space: normal !important;
             word-break: break-word;
             overflow: hidden;
             direction: ltr;
         }
-        /* --- END: التعديل النهائي لتنسيق خلية اسم القناة --- */
         
         td.channel-group { direction: ltr; }
 
@@ -285,7 +287,7 @@ td.channel-name .placeholder {
         #paginationControls { display: flex; justify-content: center; align-items: center; margin-top: 20px; gap: 10px; } 
         #paginationControls button { background-color: #f0f0f0; border: 1px solid var(--border-color); padding: 7.5px 16px; border-radius: 4px; cursor: pointer; }
         #paginationControls button:disabled { background-color: #e9ecef; cursor: not-allowed; } #pageInfo { font-weight: bold; } #confirmModal .modal-content { max-width: 400px; text-align: center; } #confirmMessage { margin: 20px 0; font-size: 1.1em; } 
-        /* START: MODIFICATION - Center all modals */
+        
         .modal { 
             display: none; 
             position: fixed; 
@@ -295,11 +297,10 @@ td.channel-name .placeholder {
             height: 100%; 
             overflow: auto; 
             background-color: rgba(0,0,0,0.4); 
-            align-items: center; /* This centers the modal vertically */
+            align-items: center;
             justify-content: center; 
-            padding-top: 0; /* Remove previous top padding */
+            padding-top: 0;
         } 
-        /* END: MODIFICATION */
 
         .modal-content { padding: 20px; border: 1px solid var(--border-color); width: auto; max-width: 500px; border-radius: 10px; position: relative; box-sizing: border-box; overflow-y: auto; max-height: 90vh; margin: auto; } .modal-content textarea { width: 95%; min-height: 150px; padding: 8px; margin: 10px auto; display: block; border: 1px solid var(--border-color); border-radius: 4px; box-sizing: border-box; resize: vertical; } #multiUrlTextarea { direction: ltr; text-align: left; } .close { color: #aaa; float: left; font-size: 28px; font-weight: bold; } .close:hover, .close:focus { color: #000; text-decoration: none; cursor: pointer; } 
         .modal-content input[type="text"], .modal-content input[type="url"], .modal-content input[type="number"], .modal-content select { 
@@ -333,7 +334,7 @@ td.channel-name .placeholder {
             display: flex;
             justify-content: center;
             align-items: center;
-            margin-top: 25px; /* عاد إلى القيمة الأصلية */
+            margin-top: 25px;
             flex-wrap: wrap;
             gap: 10px;
             width: 100%;
@@ -431,7 +432,7 @@ td.channel-name .placeholder {
             border-radius: 6px;
             cursor: pointer;
             text-align: center;
-            transition: background-color 0.3s;
+            transition: background-color: 0.3s;
         }
         #channelCheckerModal .dropdown-btn:hover {
             background-color: var(--secondary-hover) !important;
@@ -473,7 +474,6 @@ td.channel-name .placeholder {
             display: block;
         }
         
-        /* START: MODIFICATION - Smooth animation for sort modal containers */
         #sortByNameInputContainer, #sortByGroupInputContainer, #moveBlockInputContainer {
             max-height: 0;
             overflow: hidden;
@@ -490,9 +490,7 @@ td.channel-name .placeholder {
         #moveBlockInputContainer.visible {
             max-height: 200px;
         }
-        /* END: MODIFICATION */
         
-        /* START: MODIFICATION - Smooth animation for group management modal */
         #renameGroupInputContainer, #mergeGroupInputContainer {
             max-height: 0;
             overflow: hidden;
@@ -510,7 +508,6 @@ td.channel-name .placeholder {
             max-height: 100px;
             margin-bottom: 10px;
         }
-        /* END: MODIFICATION */
 
         .move-block-row {
             display: flex;
@@ -545,6 +542,59 @@ td.channel-name .placeholder {
         .merge-option-container button:hover { background-color: var(--primary-hover); } 
         .status-dot { height: 10px; width: 10px; border-radius: 50%; display: none; margin-left: 5px; } body.show-status-dots .status-dot { display: inline-block; } .status-dot.unchecked { background-color: #bbb; } .status-dot.checking { background-color: #f0ad4e; animation: blinker 1s linear infinite; } .status-dot.checked-ok { background-color: #5cb85c; } .status-dot.checked-fail { background-color: var(--delete-color); } @keyframes blinker { 50% { opacity: 0.5; } } #checker-progress-bar-container { width: 100%; background-color: #f3f3f3; border-radius: 5px; margin: 15px 0; } #checker-progress-bar { width: 0%; height: 20px; background-color: var(--primary-color); border-radius: 5px; text-align: center; line-height: 20px; color: white; transition: width 0.3s; } .find-replace-options div { margin-bottom: 5px; }
         
+        /* --- START: Advanced Tools Dropdown --- */
+        .advanced-tools-dropdown {
+            position: relative;
+            display: flex;
+            flex-shrink: 0;
+            box-sizing: border-box;
+            margin: 10px 5px;
+        }
+
+        .advanced-tools-dropdown-content {
+            display: none;
+            position: absolute;
+            background-color: var(--container-bg-color);
+            min-width: 100%;
+            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.15);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            z-index: 100;
+            top: 100%;
+            left: 0;
+            margin-top: 5px;
+            overflow: hidden;
+            text-align: right;
+        }
+
+        .advanced-tools-dropdown-content a {
+            color: var(--text-color);
+            padding: 12px 16px;
+            text-decoration: none;
+            display: block;
+            border-bottom: 1px solid var(--border-color);
+            white-space: nowrap;
+            cursor: pointer;
+        }
+
+        .advanced-tools-dropdown-content a:last-child {
+            border-bottom: none;
+        }
+
+        .advanced-tools-dropdown-content a:hover {
+            background-color: var(--row-alt-color);
+        }
+
+        .advanced-tools-dropdown-content.show {
+            display: block;
+        }
+        
+        .advanced-tools-dropdown > .action-btn {
+            width: 100%;
+            margin: 0;
+        }
+        /* --- END: Advanced Tools Dropdown --- */
+        
         @media (max-width: 600px) {
             h1.page-title {
                 font-size: 1.9em;
@@ -558,11 +608,11 @@ td.channel-name .placeholder {
                 font-size: 14px;
             }
             th {
-    padding: 6px 3px; /* للحفاظ على ارتفاع صف العناوين الأصلي */
-}
-td {
-    padding: 14px 5px;  /* لزيادة ارتفاع صفوف البيانات فقط */
-}
+                padding: 6px 3px;
+            }
+            td {
+                padding: 14px 5px;
+            }
             
             table th:nth-child(2), table td:nth-child(2) { 
                 display: table-cell; 
@@ -571,7 +621,7 @@ td {
             .modal-content {
                 width: 91%;
                 padding: 15px;
-                margin: auto; /* Ensure margin is auto for centering */
+                margin: auto;
                 max-height: 90vh;
             }
             .modal-content input[type="text"],
@@ -610,10 +660,9 @@ td {
             text-decoration: underline;
         }
 
-        /* --- START: تعديل مسافات النوافذ من الأعلى --- */
         .modal.modal-medium-top,
         .modal.modal-small-top {
-            align-items: flex-start; /* Override the default vertical centering to position from the top */
+            align-items: flex-start;
         }
         .modal.modal-medium-top .modal-content {
             margin-top: 100px;
@@ -621,7 +670,18 @@ td {
         .modal.modal-small-top .modal-content {
             margin-top: 150px;
         }
-        /* --- END: تعديل مسافات النوافذ من الأعلى --- */
+
+        /* --- تعديل لصفحة البداية: جعل كل زر في سطر منفصل --- */
+        #initialButtonsRow {
+            flex-direction: column; /* يجعل الأزرار مصفوفة عمودياً */
+            align-items: center;    /* يضمن توسط الأزرار في الحاوية */
+            gap: 15px;              /* يضيف مسافة أكبر بين الزرين */
+        }
+
+        #initialButtonsRow .action-btn {
+            width: 100%;             /* يحدد عرضًا مناسبًا للأزرار */
+            margin: 0;              /* نلغي الهوامش السابقة */
+        }
 
     </style>
 </head>
@@ -643,19 +703,24 @@ td {
                     <button class="action-btn" id="createNewPlaylistButton" onclick="createNewPlaylist()">إنشاء قائمة جديدة</button>
                  </div>
             </div>
-
-            <div class="button-row" id="saveAddRow">
-                <button class="action-btn" id="openExportModalButton" onclick="openModal('exportModal')">تصدير القائمة</button>
-                <button class="action-btn" id="addChannelButton" onclick="openAddModal()">إضافة قناة</button>
-            </div>
             
             <div class="button-row" id="toolsMergeRow">
-                <button class="action-btn" id="openSortModalButton" onclick="openSortModal()">فرز وترتيب</button>
+                <!-- الترتيب الجديد المقترح -->
+                <button class="action-btn" onclick="openModal('exportModal')">تصدير القائمة</button>
                 <button class="action-btn" id="manageGroupsButton" onclick="openManageGroupsModal()">إدارة المجموعات</button>
-                <button class="action-btn" id="openMergeModalButton" onclick="openMergeModal()">دمج قوائم</button>
-                <button class="action-btn" id="removeDuplicatesButton" onclick="removeDuplicatesManually()">إزالة التكرار</button>
-                <button class="action-btn" id="openChannelCheckerButton" onclick="openChannelCheckerModal()">فحص حالة القنوات</button>
-                <button class="action-btn" id="openFindReplaceButton" onclick="openFindReplaceModal()">بحث واستبدال</button>
+                <button class="action-btn" id="openSortModalButton" onclick="openSortModal()">فرز وترتيب</button>
+
+                <div class="advanced-tools-dropdown">
+                    <button class="action-btn" id="advancedToolsButton">خيارات إضافية</button>
+                    <div class="advanced-tools-dropdown-content" id="advancedToolsDropdown">
+                        <a href="#" onclick="openAddModal(); closeAdvancedToolsDropdown(); return false;">إضافة قناة</a>
+                        <a href="#" onclick="openMergeModal(); closeAdvancedToolsDropdown(); return false;">دمج قوائم</a>
+                        <a href="#" onclick="removeDuplicatesManually(); closeAdvancedToolsDropdown(); return false;">إزالة التكرار</a>
+                        <a href="#" onclick="openFindReplaceModal(); closeAdvancedToolsDropdown(); return false;">بحث واستبدال</a>
+                        <a href="#" onclick="openChannelCheckerModal(); closeAdvancedToolsDropdown(); return false;">فحص حالة القنوات</a>
+                    </div>
+                </div>
+
                 <button class="action-btn" id="openSearchFilterModalButton" onclick="openModal('searchFilterModal')">بحث وتصفية</button>
                 <button class="action-btn" id="bulkActionsButton" onclick="openModal('bulkActionsModal')">إجراءات على المحدد</button>
             </div>
@@ -668,9 +733,33 @@ td {
     </div>
 
     <!-- All Modals -->
+    <!-- All Modals -->
+<div id="dragDropChoiceModal" class="modal modal-small-top">
+    <div class="modal-content">
+        <span class="close" onclick="cancelDragOperation()">&times;</span>
+        <h2>كيف تريد تطبيق الترتيب؟</h2>
+        <div style="margin: 20px 0;">
+            <!-- تم تبديل هذا الخيار ليصبح الأول -->
+            <div class="modal-row">
+                <input type="radio" id="dragChoiceGroup" name="dragDropChoice" value="group" checked>
+                <label for="dragChoiceGroup">تجميع المجموعة وترتيبها</label>
+            </div>
+            <!-- وهذا الخيار أصبح الثاني -->
+            <div class="modal-row">
+                <input type="radio" id="dragChoiceInPlace" name="dragDropChoice" value="sortInPlace">
+                <label for="dragChoiceInPlace">الترتيب في الأماكن الحالية فقط</label>
+            </div>
+        </div>
+        <div class="modal-buttons">
+            <button id="executeDragDropChoice">تنفيذ</button>
+            <button class="cancel" onclick="cancelDragOperation()">إلغاء</button>
+        </div>
+    </div>
+</div>
+
     <div id="searchFilterModal" class="modal modal-small-top"><div class="modal-content"><span class="close" onclick="closeModal('searchFilterModal')">&times;</span><h2>بحث وتصفية القنوات</h2><input type="text" id="searchInput" placeholder="ابحث عن قناة..."><select id="groupFilter"><option value="all">كل المجموعات</option></select><div class="modal-buttons"><button id="searchFilterActionButton">إغلاق</button></div></div></div>
     
-    <div id="bulkActionsModal" class="modal modal-medium-top">
+    <div id="bulkActionsModal" class="modal">
         <div class="modal-content">
             <span class="close" onclick="closeModal('bulkActionsModal')">&times;</span>
             <h2>إجراءات على القنوات المحددة</h2>
@@ -941,40 +1030,25 @@ td {
 
     <script>
         let channelsData = []; let displayedChannels = []; let isMerged = false, isSorted = false; let draggedIndices = []; let selectedIndices = new Set(); let currentPage = 1; const rowsPerPage = 100; let isChecking = false; let isFilterActiveForButton = false;
+        let filterDragMode = null;
+        let latestDropTargetRow = null;
         
-        /**
-         * Generates a grammatically appropriate Arabic string for a number and a noun.
-         * @param {number} count The number.
-         * @param {object} words An object with word forms and gender: 
-         *                       {singular, dualGenitive, plural, gender: 'm'|'f'}.
-         * @returns {string} The grammatically correct count string.
-         */
         function generateCountString(count, words) {
-            // Case 1: The number is 1
             if (count === 1) {
                 return words.gender === 'f' ? `${words.singular} واحدة` : `${words.singular} واحد`;
             }
-
-            // Case 2: The number is 2
             if (count === 2) {
-                return words.dualGenitive; // e.g., "قناتين", "ملفين"
+                return words.dualGenitive;
             }
-
-            // Cases 3-10
             if (count >= 3 && count <= 10) {
-                return `${count} ${words.plural}`; // e.g., "3 قنوات", "10 ملفات"
+                return `${count} ${words.plural}`;
             }
-
-            // Cases 11 and above (simplified for UI)
             if (count >= 11) {
-                return `${count} ${words.singular}`; // e.g., "11 قناة", "40 ملفًا"
+                return `${count} ${words.singular}`;
             }
-
-            // Handle 0 or other edge cases
-            return `${count} ${words.plural}`; // A safe default for 0, e.g., "0 قنوات"
+            return `${count} ${words.plural}`;
         }
 
-        // START: SESSION MANAGEMENT - Functions to save and load the session
         function saveSession() {
             try {
                 if (channelsData.length > 0) {
@@ -1009,15 +1083,14 @@ td {
                 }
             } catch (e) {
                 console.error("Failed to load session:", e);
-                localStorage.removeItem('m3uEditorSession'); // Clear corrupted data
+                localStorage.removeItem('m3uEditorSession');
             }
         }
-        // END: SESSION MANAGEMENT
         
         function openModal(modalId) {
             const modal = document.getElementById(modalId);
             if (modal) {
-                modal.style.zIndex = '1000'; // Reset z-index
+                modal.style.zIndex = '1000';
                 modal.style.display = 'flex';
             }
             
@@ -1070,54 +1143,110 @@ td {
         
         function handleDrop(e) {
             e.preventDefault();
-            const dropTargetRow = e.currentTarget;
+            const isFilterActive = document.getElementById('searchInput').value !== '' || document.getElementById('groupFilter').value !== 'all';
+            
+            if (!isFilterActive) {
+                performDrop('sortInPlace', e.currentTarget);
+            } else {
+                if (filterDragMode === null) {
+                    latestDropTargetRow = e.currentTarget;
+                    openModal('dragDropChoiceModal');
+                } else {
+                    performDrop(filterDragMode, e.currentTarget);
+                }
+            }
+        }
+
+        function performDrop(mode, dropTargetRow) {
             dropTargetRow.classList.remove('drag-over-indicator');
+            const dropIndexInFullList = parseInt(dropTargetRow.dataset.index);
 
-            const dropIndex = parseInt(dropTargetRow.dataset.index);
-
-            if (draggedIndices.length === 0 || draggedIndices.includes(dropIndex)) {
+            if (draggedIndices.length === 0 || draggedIndices.includes(dropIndexInFullList)) {
                 draggedIndices = [];
                 return;
             }
 
-            const isDraggingDown = draggedIndices[0] < dropIndex;
-            const draggedItems = draggedIndices.map(index => channelsData[index]);
-            const remainingChannels = channelsData.filter(channel => !draggedItems.includes(channel));
+            const draggedChannels = draggedIndices.map(i => channelsData[i]);
 
-            const dropTargetChannel = channelsData[dropIndex];
-            let newDropIndex = remainingChannels.indexOf(dropTargetChannel);
+            if (mode === 'group') {
+                const remainingDisplayed = displayedChannels.filter(c => !draggedChannels.includes(c));
+                const dropTargetChannel = channelsData[dropIndexInFullList];
+                let insertionIndex = remainingDisplayed.indexOf(dropTargetChannel);
+                const isDraggingDown = displayedChannels.indexOf(draggedChannels[0]) < displayedChannels.indexOf(dropTargetChannel);
+                if (isDraggingDown && insertionIndex !== -1) insertionIndex++;
+                if (insertionIndex === -1) insertionIndex = remainingDisplayed.length;
 
-            if (isDraggingDown && newDropIndex !== -1) {
-                newDropIndex++;
+                remainingDisplayed.splice(insertionIndex, 0, ...draggedChannels);
+                const newOrderedFilteredChannels = remainingDisplayed;
+                
+                const originalFilteredChannelsSet = new Set(displayedChannels);
+                const firstOriginalIndex = channelsData.findIndex(ch => originalFilteredChannelsSet.has(ch));
+                
+                if (firstOriginalIndex > -1) {
+                    const mainListWithoutFiltered = channelsData.filter(ch => !originalFilteredChannelsSet.has(ch));
+                    mainListWithoutFiltered.splice(firstOriginalIndex, 0, ...newOrderedFilteredChannels);
+                    channelsData = mainListWithoutFiltered;
+                    showToast('تم تجميع وإعادة ترتيب المجموعة بنجاح.', 'success');
+                }
+            } else { // mode === 'sortInPlace'
+                const tempChannelList = [...channelsData];
+                
+                draggedIndices.sort((a,b)=>b-a).forEach(index => tempChannelList.splice(index, 1));
+
+                let newDropIndex = tempChannelList.findIndex(ch => ch === channelsData[dropIndexInFullList]);
+                const isDraggingDown = draggedIndices[0] < dropIndexInFullList;
+
+                if (isDraggingDown) {
+                    newDropIndex++;
+                }
+                
+                tempChannelList.splice(newDropIndex, 0, ...draggedChannels);
+                channelsData = tempChannelList;
+                showToast(`تم نقل القنوات بنجاح.`, 'success');
             }
 
-            if (newDropIndex === -1) {
-                newDropIndex = remainingChannels.length;
-            }
-
-            remainingChannels.splice(newDropIndex, 0, ...draggedItems);
-
-            channelsData = remainingChannels;
-            
             draggedIndices = [];
             selectedIndices.clear();
-            updateBulkActionsUI();
             updateAndRefreshUI();
-            showToast(`تم نقل القنوات بنجاح`, 'success');
         }
 
 
         document.addEventListener('DOMContentLoaded', () => { 
-            loadSession(); // Attempt to load a saved session first
+            document.getElementById('executeDragDropChoice').onclick = () => {
+                const selectedMode = document.querySelector('input[name="dragDropChoice"]:checked').value;
+                filterDragMode = selectedMode;
+                if (latestDropTargetRow) {
+                    performDrop(filterDragMode, latestDropTargetRow);
+                }
+                closeModal('dragDropChoiceModal');
+                latestDropTargetRow = null;
+            };
+
+            loadSession();
             if(channelsData.length === 0) {
                 document.getElementById('uploadArea').style.display = 'block'; 
                 document.getElementById('urlLoadContainer').style.display = 'block'; 
-                document.getElementById('saveAddRow').style.display = 'none'; 
                 document.getElementById('toolsMergeRow').style.display = 'none'; 
                 ['openExportModalButton', 'addChannelButton', 'openSortModalButton', 'manageGroupsButton', 'openMergeModalButton', 'removeDuplicatesButton', 'bulkActionsButton'].forEach(id => { const button = document.getElementById(id); if (button) button.style.display = 'none'; }); 
                 document.getElementById('results').innerHTML = '';
             }
+            
+            const advancedToolsBtn = document.getElementById('advancedToolsButton');
+            if (advancedToolsBtn) {
+                advancedToolsBtn.addEventListener('click', function(event) {
+                    event.stopPropagation();
+                    document.getElementById('advancedToolsDropdown').classList.toggle('show');
+                });
+            }
         });
+
+        function cancelDragOperation() {
+            draggedIndices = [];
+            latestDropTargetRow = null;
+            closeModal('dragDropChoiceModal');
+            displayPaginatedChannels();
+        }
+
         document.getElementById('fileInput').addEventListener('change', handleFileSelect);
         document.getElementById('mergeFileInput').addEventListener('change', mergePlaylists);
         
@@ -1214,7 +1343,7 @@ td {
                 const allNewChannels = (await Promise.all(parsePromises)).flat();
 
                 if (allNewChannels.length > 0) {
-                    channelsData = []; // Start fresh
+                    channelsData = [];
                     const numChannels = allNewChannels.length;
                     const numFiles = validFiles.length;
                     
@@ -1253,11 +1382,13 @@ td {
             const tbody = document.createElement('tbody'); 
             
             table.innerHTML = `<thead><tr><th>رقم</th><th>اسم القناة</th><th>المجموعة</th></tr></thead>`; 
-            
+
             channels.forEach((channel, index) => { 
                 const originalIndex = channelsData.indexOf(channel); 
                 const row = tbody.insertRow(); 
-                row.setAttribute('draggable', 'true'); 
+
+                row.setAttribute('draggable', 'true');
+                
                 row.dataset.index = originalIndex; 
                 if (selectedIndices.has(originalIndex)) { 
                     row.classList.add('selected'); 
@@ -1296,7 +1427,9 @@ td {
 
         function setupPaginationControls(totalPages) { const container = document.getElementById('paginationControls'); container.innerHTML = ''; if (totalPages <= 1) return; container.innerHTML = `<button id="prevPage" onclick="changePage(-1)" ${currentPage === 1 ? 'disabled' : ''}>السابق</button><span id="pageInfo">صفحة ${currentPage} من ${totalPages}</span><button id="nextPage" onclick="changePage(1)" ${currentPage === totalPages ? 'disabled' : ''}>التالي</button>`; }
         function changePage(direction) { currentPage += direction; displayPaginatedChannels(); }
-        function searchChannels() { const searchTerm = document.getElementById('searchInput').value.toLowerCase(); const selectedGroup = document.getElementById('groupFilter').value; let tempChannels = channelsData; if (selectedGroup !== 'all') { tempChannels = channelsData.filter(ch => { if (selectedGroup === 'uncategorized') { return !ch.groups || ch.groups.length === 0; } return ch.groups && ch.groups.includes(selectedGroup); }); } if (searchTerm) { displayedChannels = tempChannels.filter(ch => (ch.name || '').toLowerCase().includes(searchTerm) || (ch.groups && ch.groups.join(' ').toLowerCase().includes(searchTerm))); } else { displayedChannels = [...tempChannels]; } currentPage = 1; isFilterActiveForButton = (searchTerm !== '' || selectedGroup !== 'all'); displayPaginatedChannels(); }
+        function searchChannels() { 
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase(); const selectedGroup = document.getElementById('groupFilter').value; let tempChannels = channelsData; if (selectedGroup !== 'all') { tempChannels = channelsData.filter(ch => { if (selectedGroup === 'uncategorized') { return !ch.groups || ch.groups.length === 0; } return ch.groups && ch.groups.includes(selectedGroup); }); } if (searchTerm) { displayedChannels = tempChannels.filter(ch => (ch.name || '').toLowerCase().includes(searchTerm) || (ch.groups && ch.groups.join(' ').toLowerCase().includes(searchTerm))); } else { displayedChannels = [...tempChannels]; } currentPage = 1; isFilterActiveForButton = (searchTerm !== '' || selectedGroup !== 'all'); displayPaginatedChannels(); 
+        }
         function populateGroupFilter(targetSelectId = 'groupFilter') {
             const groupFilter = document.getElementById(targetSelectId);
             const savedValue = groupFilter.value;
@@ -1374,7 +1507,7 @@ td {
                     chno: item.chno || 0,
                     originalExtinf: item.originalExtinf || '',
                     status: 'unchecked'
-                })).filter(ch => ch.url); // Ensure channel has a URL
+                })).filter(ch => ch.url);
             } catch (e) {
                 showToast("خطأ في تحليل ملف JSON.", "error");
                 return [];
@@ -1399,7 +1532,6 @@ td {
 
                 const channels = [];
                 for (let i = 1; i < lines.length; i++) {
-                    // Simple split, doesn't handle commas within quotes
                     const data = lines[i].split(','); 
                     const name = data[nameIndex] || 'قناة غير معروفة';
                     const url = data[urlIndex] || '';
@@ -1429,7 +1561,6 @@ td {
             } else if (extension === 'csv') {
                 return parseCsvPlaylist(content);
             }
-            // Fallback for files without extension but with M3U header
             if (content.trim().startsWith('#EXTM3U')) {
                 return parseM3uPlaylist(content);
             }
@@ -1584,7 +1715,7 @@ td {
         
         function showDuplicateInfo(index) {
             document.getElementById('removeDuplicatesModal').style.zIndex = '999';
-            openEditModal(index, true); // Open in read-only mode
+            openEditModal(index, true);
             document.getElementById('editModal').style.zIndex = '1001';
         }
 
@@ -1658,20 +1789,16 @@ td {
         }
         
         function createNewPlaylist() {
-            // لا يوجد تأكيد، يتم التنفيذ مباشرة
             document.body.classList.remove('show-status-dots');
             
-            // 1. مسح جميع البيانات الحالية
             channelsData = [];
             displayedChannels = [];
             selectedIndices.clear();
-            localStorage.removeItem('m3uEditorSession'); // مسح الجلسة المحفوظة
+            localStorage.removeItem('m3uEditorSession');
 
-            // 2. تحديث الواجهة لعرض قائمة فارغة وأدوات التحرير
-            showPlaylistControls(); // إظهار أزرار الحفظ والإضافة والأدوات
-            updateAndRefreshUI(false); // إعادة رسم الواجهة (ستظهر رسالة "القائمة فارغة")
+            showPlaylistControls();
+            updateAndRefreshUI(false);
 
-            // 3. إعطاء رسالة تأكيد للمستخدم
             showToast('تم إنشاء قائمة جديدة فارغة بنجاح.', 'success');
         }
         
@@ -1890,7 +2017,7 @@ td {
         function updateAndRefreshUI(closeModals = true) {
             updateTvgChnoInAllChannels();
             searchChannels();
-            saveSession(); // Save session on every major UI update
+            saveSession();
             if (closeModals) {
                  if (document.getElementById('manageGroupsModal').style.display === 'flex') {
                     closeModal('manageGroupsModal');
@@ -2153,11 +2280,12 @@ td {
         function showPlaylistControls() {
             document.getElementById('uploadArea').style.display = 'none';
             document.getElementById('urlLoadContainer').style.display = 'none';
-            document.getElementById('saveAddRow').style.display = 'flex';
             document.getElementById('toolsMergeRow').style.display = 'flex';
-            ['openExportModalButton', 'addChannelButton', 'openSortModalButton', 'manageGroupsButton', 'openMergeModalButton', 'removeDuplicatesButton', 'openChannelCheckerButton', 'openFindReplaceButton', 'openSearchFilterModalButton', 'bulkActionsButton'].forEach(id => {
+            ['openSortModalButton', 'manageGroupsButton', 'openSearchFilterModalButton', 'bulkActionsButton'].forEach(id => {
                 const button = document.getElementById(id);
-                if (button) button.style.display = 'inline-block';
+                if (button) {
+                     button.style.display = 'inline-block';
+                }
             });
             updateBulkActionsUI();
         }
@@ -2216,8 +2344,8 @@ td {
 
         const createPlaylistContent = (type, channelsToExport = channelsData) => { if (channelsToExport.length === 0) { showToast("لا يوجد قنوات للحفظ", "error"); return null; } if (type === 'pls') { return '[playlist]\nNumberOfEntries=' + channelsToExport.length + '\nVersion=2\n' + channelsToExport.map((ch, i) => `File${i+1}=${ch.url}\nTitle${i+1}=${ch.name}\nLength${i+1}=-1`).join('\n'); } return '#EXTM3U\n' + channelsToExport.map(ch => `${buildUpdatedExtinf(ch.originalExtinf, ch.groups, ch.logo, ch.name, ch.chno)}\n${ch.url}`).join('\n\n'); }
         function savePlaylist(channelsToExport = channelsData) { const c = createPlaylistContent('m3u', channelsToExport); if(c) downloadFile(c, 'playlist.m3u', 'text/plain;charset=utf-8'); }
-        function savePlaylistAsM3u8(channelsToExport = channelsData) { const c = createPlaylistContent('m3u8', channelsToExport); if(c) downloadFile(c, 'playlist.m3u8', 'application/x-mpegurl;charset=utf-8'); }
-        function savePlaylistAsPls(channelsToExport = channelsData) { const c = createPlaylistContent('pls', channelsToExport); if(c) downloadFile(c, 'playlist.pls', 'audio/x-scpls;charset=utf-8'); }
+        function savePlaylistAsM3u8(channelsToExport = channelsData) { const c = createPlaylistContent('m3u8', channelsToExport); if(c) downloadFile(c, 'application/x-mpegurl;charset=utf-8'); }
+        function savePlaylistAsPls(channelsToExport = channelsData) { const c = createPlaylistContent('pls', channelsToExport); if(c) downloadFile(c, 'audio/x-scpls;charset=utf-8'); }
 
         function savePlaylistAsJson(channelsToExport = channelsData) {
             const content = JSON.stringify(channelsToExport, null, 2);
@@ -2303,7 +2431,6 @@ td {
                 if (target < 1 || target > maxIndex + 1) { return showToast(`الموضع الهدف خارج نطاق القائمة (1 - ${maxIndex})`, 'error'); }
                 
                 closeModal('bulkActionsModal');
-                const targetIndex = target - 1;
                 const sortedIndices = Array.from(selectedIndices).sort((a, b) => b - a);
                 const blockToMove = [];
                 sortedIndices.forEach(index => {
@@ -2467,16 +2594,29 @@ td {
         function toggleCheckerActions() {
             document.getElementById("checker-actions-dropdown").classList.toggle("show");
         }
-        window.onclick = function(event) {
+        
+        function closeAdvancedToolsDropdown() {
+            const dropdown = document.getElementById('advancedToolsDropdown');
+            if (dropdown) {
+                dropdown.classList.remove('show');
+            }
+        }
+
+        window.addEventListener('click', function(event) {
+            if (!event.target.closest('.advanced-tools-dropdown')) {
+                closeAdvancedToolsDropdown();
+            }
+            
             if (!event.target.matches('.dropdown-btn')) {
-                document.querySelectorAll(".dropdown-content.show").forEach(openDropdown => {
+                document.querySelectorAll("#checker-actions-dropdown.show").forEach(openDropdown => {
                     openDropdown.classList.remove('show');
                 });
             }
+
             document.querySelectorAll('.modal').forEach(m => {
                 if (event.target === m) closeModal(m.id);
             });
-        };
+        });
 
         function deleteFailedChannels() {
             toggleCheckerActions();
