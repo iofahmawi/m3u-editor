@@ -1188,7 +1188,7 @@
                                 location.reload();
                             }
                         };
-                        showToast('لبدء جلسة جديدة، اضغط', 'info', -1, action);
+                        showToast('لبدء جلسة جديدة، اضغط', document.body.classList.contains('dark-mode') ? 'success' : 'info', -1, action);
                     }
                 }
             } catch (e) {
