@@ -26,6 +26,24 @@
             --row-alt-color: #f7f7f7;
             --selected-row-color: #fdebd0; /* Light Orange */
         }
+        
+        /* --- START: Screenshot Matched Night Mode --- */
+        body.dark-mode {
+            --primary-color: #f08c2a;
+            --primary-hover: #d35400;
+            --secondary-color: #3a3a3c; /* <-- اللون الجديد للأزرار */
+            --secondary-hover: #4a4a4c;  /* <-- اللون الجديد عند التمرير */
+            --button-delete-color: #3a3a3c; /* <-- اللون الجديد للأزرار */
+            --button-delete-hover: #4a4a4c; /* <-- اللون الجديد عند التمرير */
+            --background-color: #1c1c1e; 
+            --container-bg-color: #1c1c1e; 
+            --text-color: #ffffff; 
+            --text-light-color: #ffffff;
+            --border-color: #444444; 
+            --row-alt-color: #1c1c1e; 
+            --selected-row-color: rgba(240, 140, 42, 0.2);
+        }
+        /* --- END: Screenshot Matched Night Mode --- */
 
         html {
             height: 100%;
@@ -42,6 +60,7 @@
             flex-direction: column;
             min-height: 100vh;
             box-sizing: border-box;
+            transition: background-color 0.3s, color 0.3s;
         }
 
         button, a, [onclick], .upload-area {
@@ -55,7 +74,47 @@
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
             box-sizing: border-box;
             border: 1px solid var(--border-color);
+            transition: background-color 0.3s, border-color 0.3s;
+            position: relative; /* Context for the icon */
         }
+        body.dark-mode .container {
+             border: 1px solid #1c1c1e; /* Hide border in dark mode to match image */
+        }
+        
+        /* --- START: Final Theme Icon Styling --- */
+        #theme-toggle {
+            position: absolute;
+            top: 7px;
+            left: 7px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 5px;
+            display: flex;
+            color: #e0e0e0; /* <-- اللون الجديد، الأفتح والمتناسق */
+            transition: opacity 0.2s;
+        }
+        
+        body.dark-mode #theme-toggle {
+            color: #EAEAEA; /* Moon is white */
+        }
+
+        #theme-toggle:hover {
+           opacity: 0.8; /* No transform, just a subtle hover effect */
+        }
+
+        #theme-toggle svg {
+            width: 24px;
+            height: 24px;
+        }
+
+        .moon-icon { display: none; }
+        .sun-icon { display: block; }
+        
+        body.dark-mode .moon-icon { display: block; }
+        body.dark-mode .sun-icon { display: none; }
+        /* --- END: Final Theme Icon Styling --- */
+        
         h1 { color: var(--primary-color); text-align: center; margin-bottom: 20px; }
         .page-title a {
             color: inherit;
@@ -67,11 +126,14 @@
             text-align: center; padding: 20px;
             border: 2px dashed var(--border-color);
             border-radius: 12px; margin-bottom: 20px; cursor: pointer;
-            transition: border-color 0.3s; box-sizing: border-box;
+            transition: border-color 0.3s, background-color 0.3s; box-sizing: border-box;
         }
         .upload-area:hover, .upload-area.dragging {
             border-color: var(--primary-color);
             background-color: #fffaf5;
+        }
+        body.dark-mode .upload-area:hover, body.dark-mode .upload-area.dragging {
+            background-color: rgba(240, 140, 42, 0.1);
         }
         .upload-label {
             background-color: var(--primary-color);
@@ -79,7 +141,7 @@
             padding: 0 25px;
             height: 40px;
             line-height: 40px;
-            border-radius: 8px; cursor: pointer;
+            border-radius: 10px; cursor: pointer;
             font-weight: bold; display: inline-block;
             transition: background-color 0.3s; border: none; margin-top: 10px;
         }
@@ -89,16 +151,19 @@
             background-color: var(--secondary-color);
             color: white; 
             padding: 7.5px 20px; 
-            border-radius: 8px;
+            border-radius: 10px; /* Matched screenshot's rounded corners */
             cursor: pointer; font-weight: bold; border: none;
             transition: background-color 0.3s, opacity 0.3s;
             margin: 10px 5px; flex-shrink: 0;
             white-space: nowrap;
         }
+        body.dark-mode .action-btn {
+            color: var(--text-light-color); /* Ensure text is white */
+        }
         .action-btn:hover:not(:disabled) { background-color: var(--secondary-hover); }
         .action-btn.delete-btn { background-color: var(--button-delete-color); }
         .action-btn.delete-btn:hover { background-color: var(--button-delete-hover); }
-        .action-btn.export-btn { background-color: var(--primary-color); }
+        .action-btn.export-btn { background-color: var(--primary-color); color: var(--text-light-color); }
         .action-btn.export-btn:hover { background-color: var(--primary-hover); }
 
         .action-btn:disabled {
@@ -111,7 +176,6 @@
         #mainControls { text-align: center; margin-bottom: 20px; }
         .button-row { display: flex; justify-content: center; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 10px; }
         
-        /* --- START: تعديل Media Queries لضمان تطابق حجم زر الأدوات المتقدمة --- */
         @media (max-width: 768px) {
             #toolsMergeRow > .action-btn, 
             #toolsMergeRow > .advanced-tools-dropdown {
@@ -119,13 +183,13 @@
                 margin: 5px 0;
             }
         }
-        /* --- END: تعديل Media Queries --- */
 
         #searchInput, #groupFilter {
             padding: 10px; border: 1px solid var(--border-color);
             border-radius: 4px; box-sizing: border-box; font-size: 16px;
             outline: none; transition: border-color 0.3s, box-shadow 0.3s;
             background-color: var(--container-bg-color); width: 100%; margin-bottom: 15px;
+            color: var(--text-color);
         }
         
         input[type="text"]:focus,
@@ -134,8 +198,8 @@
         textarea:focus,
         select:focus {
             outline: none;
-            border-color: var(--button-delete-color);
-            box-shadow: inset 0 0 0 2px rgba(84, 110, 122, 0.25);
+            border-color: var(--primary-color);
+            box-shadow: inset 0 0 0 2px rgba(240, 140, 42, 0.25);
         }
 
         #groupFilter { text-align: center; text-align-last: center; }
@@ -153,6 +217,14 @@
         }
         th, td { border: 1px solid var(--border-color); padding: 12px; text-align: center; box-sizing: border-box; overflow: hidden; vertical-align: middle; word-wrap: break-word; }
         th { background-color: var(--primary-color); color: white; }
+        body.dark-mode th {
+            color: #1a1a1a;
+            font-weight: bold;
+        }
+        
+        body.dark-mode td {
+            color: #ffffff;
+        }
         
         th:first-child { border-top-right-radius: 8px; }
         th:last-child { border-top-left-radius: 8px; }
@@ -160,6 +232,11 @@
         tbody tr:last-child td:last-child { border-bottom-left-radius: 8px; }
 
         tr:nth-child(even) { background-color: var(--row-alt-color); }
+        /* Remove alternating row color in dark mode to match screenshot */
+        body.dark-mode tr:nth-child(even) {
+            background-color: var(--container-bg-color);
+        }
+        
         tbody tr { 
             cursor: grab; 
             -webkit-tap-highlight-color: transparent;
@@ -184,14 +261,9 @@
         table th:nth-child(2), table td:nth-child(2) { width: 60%; min-width: 150px;} /* اسم القناة + الصورة */
         table th:nth-child(3), table td:nth-child(3) { width: 25%; min-width: 80px; } /* المجموعة */
 
-        table th:nth-child(4), table td:nth-child(4) {
-            display: none;
-        }
+        table th:nth-child(4), table td:nth-child(4) { display: none; }
         
-        td.channel-name {
-            position: relative; 
-            padding-left: 45px;
-        }
+        td.channel-name { position: relative; padding-left: 45px; }
 
         td.channel-name img,
         td.channel-name .placeholder {
@@ -214,7 +286,6 @@
         }
         
         td.channel-group { direction: ltr; }
-
 
         .action-button-icon { background: none; border: none; cursor: pointer; font-size: 1.2em; margin: 0 1px; padding: 5px 3px; display: inline-block; text-align: center; color: var(--secondary-color); font-weight: bold; transition: color 0.3s; }
         .action-button-icon:hover { color: var(--secondary-hover); }
@@ -256,6 +327,10 @@
             border-left: 5px solid #ccc;
             box-sizing: border-box;
         }
+        body.dark-mode .toast {
+            background-color: #333;
+            color: #fff;
+        }
         .toast.success { border-left-color: var(--primary-color); }
         .toast.error { border-left-color: var(--delete-color); }
         .toast.info { border-left-color: var(--secondary-color); }
@@ -276,6 +351,9 @@
         .toast-close:hover {
             color: #333;
         }
+        body.dark-mode .toast-close:hover {
+            color: #fff;
+        }
         .toast-action {
             color: var(--primary-color);
             text-decoration: underline;
@@ -286,27 +364,47 @@
         
         #paginationControls { display: flex; justify-content: center; align-items: center; margin-top: 20px; gap: 10px; } 
         #paginationControls button { background-color: #f0f0f0; border: 1px solid var(--border-color); padding: 7.5px 16px; border-radius: 4px; cursor: pointer; }
-        #paginationControls button:disabled { background-color: #e9ecef; cursor: not-allowed; } #pageInfo { font-weight: bold; } #confirmModal .modal-content { max-width: 400px; text-align: center; } #confirmMessage { margin: 20px 0; font-size: 1.1em; } 
+        #paginationControls button:disabled { background-color: #e9ecef; cursor: not-allowed; }
+        body.dark-mode #paginationControls button {
+            background-color: #444;
+            color: var(--text-color);
+        }
+        body.dark-mode #paginationControls button:disabled {
+            background-color: #333;
+            color: #888;
+        }
+        #pageInfo { font-weight: bold; } #confirmModal .modal-content { max-width: 400px; text-align: center; } #confirmMessage { margin: 20px 0; font-size: 1.1em; } 
         
         .modal { 
             display: none; 
             position: fixed; 
-            z-index: 1000; 
+            z-index: 2000; /* Higher than theme toggle */
             left: 0; top: 0; 
             width: 100%; 
             height: 100%; 
             overflow: auto; 
-            background-color: rgba(0,0,0,0.4); 
+            background-color: rgba(0,0,0,0.7); 
             align-items: center;
             justify-content: center; 
             padding-top: 0;
         } 
 
         .modal-content { padding: 20px; border: 1px solid var(--border-color); width: auto; max-width: 500px; border-radius: 10px; position: relative; box-sizing: border-box; overflow-y: auto; max-height: 90vh; margin: auto; } .modal-content textarea { width: 95%; min-height: 150px; padding: 8px; margin: 10px auto; display: block; border: 1px solid var(--border-color); border-radius: 4px; box-sizing: border-box; resize: vertical; } #multiUrlTextarea { direction: ltr; text-align: left; } .close { color: #aaa; float: left; font-size: 28px; font-weight: bold; } .close:hover, .close:focus { color: #000; text-decoration: none; cursor: pointer; } 
+        body.dark-mode .close { color: #ccc; } 
+        body.dark-mode .close:hover { color: #fff; }
         .modal-content input[type="text"], .modal-content input[type="url"], .modal-content input[type="number"], .modal-content select { 
             width: 95%; padding: 8px; margin: 10px 0; display: inline-block; border: 1px solid var(--border-color); border-radius: 4px; box-sizing: border-box; 
             transition: border-color 0.3s, box-shadow 0.3s;
         } 
+        body.dark-mode .modal-content input[type="text"], 
+        body.dark-mode .modal-content input[type="url"], 
+        body.dark-mode .modal-content input[type="number"], 
+        body.dark-mode .modal-content select,
+        body.dark-mode .modal-content textarea {
+            background-color: #3a3a3a;
+            color: var(--text-color);
+            border-color: #555;
+        }
         .modal-content input[type="radio"], .modal-content input[type="checkbox"] { 
             margin: 10px 5px;
             accent-color: var(--primary-color);
@@ -317,16 +415,16 @@
         }
         .modal-content button {
             background-color: var(--primary-color);
-            color: white; border: none;
+            color: var(--text-light-color); border: none;
             padding: 7.5px 20px;
-            border-radius: 8px;
+            border-radius: 10px;
             font-weight: bold;
             cursor: pointer;
             margin-left: 3px;
             box-sizing: border-box;
             min-width: 80px;
         }
-        .modal-content button.cancel { background-color: var(--button-delete-color); } 
+        .modal-content button.cancel { background-color: var(--button-delete-color); color: white; } 
         .modal-content button:hover { opacity: 0.8; } 
         .modal-row { display: flex; align-items: center; margin-bottom: 10px; } 
         .modal-row label { margin-left: 5px; cursor: pointer; } 
@@ -387,7 +485,7 @@
             margin-bottom: 0;
             border: 1px solid var(--border-color);
             padding: 10px;
-            border-radius: 6px;
+            border-radius: 10px;
             flex-wrap: wrap;
         }
         
@@ -429,7 +527,7 @@
             font-size: 1em;
             font-weight: bold;
             border: none;
-            border-radius: 6px;
+            border-radius: 10px;
             cursor: pointer;
             text-align: center;
             transition: background-color: 0.3s;
@@ -444,7 +542,7 @@
             min-width: 100%;
             box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
             z-index: 1;
-            border-radius: 6px;
+            border-radius: 8px;
             overflow: hidden;
             bottom: 100%;
             margin-bottom: 5px;
@@ -538,11 +636,11 @@
 
 
         #loadingIndicator { font-weight: bold; color: var(--primary-color); text-align: center; margin: 20px; } #logoPreview img, #addPreviewImage { max-width: 50px; max-height: 50px; display: none; } #mergeModal .modal-content-body { padding: 15px; text-align: center; } #mergeOptionSelector { width: 100%; padding: 10px; font-size: 1em; margin-bottom: 20px; } .merge-option-container { padding: 10px; } .merge-option-container p { margin-bottom: 20px; color: #666; } 
-        .merge-option-container button { background-color: var(--primary-color); color: white; padding: 7.5px 25px; font-size: 1em; border: none; border-radius: 6px; cursor: pointer; }
+        body.dark-mode .merge-option-container p { color: #ccc; }
+        .merge-option-container button { background-color: var(--primary-color); color: white; padding: 7.5px 25px; font-size: 1em; border: none; border-radius: 10px; cursor: pointer; }
         .merge-option-container button:hover { background-color: var(--primary-hover); } 
-        .status-dot { height: 10px; width: 10px; border-radius: 50%; display: none; margin-left: 5px; } body.show-status-dots .status-dot { display: inline-block; } .status-dot.unchecked { background-color: #bbb; } .status-dot.checking { background-color: #f0ad4e; animation: blinker 1s linear infinite; } .status-dot.checked-ok { background-color: #5cb85c; } .status-dot.checked-fail { background-color: var(--delete-color); } @keyframes blinker { 50% { opacity: 0.5; } } #checker-progress-bar-container { width: 100%; background-color: #f3f3f3; border-radius: 5px; margin: 15px 0; } #checker-progress-bar { width: 0%; height: 20px; background-color: var(--primary-color); border-radius: 5px; text-align: center; line-height: 20px; color: white; transition: width 0.3s; } .find-replace-options div { margin-bottom: 5px; }
+        .status-dot { height: 10px; width: 10px; border-radius: 50%; display: none; margin-left: 5px; } body.show-status-dots .status-dot { display: inline-block; } .status-dot.unchecked { background-color: #bbb; } .status-dot.checking { background-color: #f0ad4e; animation: blinker 1s linear infinite; } .status-dot.checked-ok { background-color: #5cb85c; } .status-dot.checked-fail { background-color: var(--delete-color); } @keyframes blinker { 50% { opacity: 0.5; } } #checker-progress-bar-container { width: 100%; background-color: #e0e0e0; border-radius: 5px; margin: 15px 0; } body.dark-mode #checker-progress-bar-container { background-color: #444; } #checker-progress-bar { width: 0%; height: 20px; background-color: var(--primary-color); border-radius: 5px; text-align: center; line-height: 20px; color: white; transition: width 0.3s; } .find-replace-options div { margin-bottom: 5px; }
         
-        /* --- START: Advanced Tools Dropdown --- */
         .advanced-tools-dropdown {
             position: relative;
             display: flex;
@@ -566,7 +664,12 @@
             overflow: hidden;
             text-align: right;
         }
-
+        
+        body.dark-mode .advanced-tools-dropdown-content {
+            background-color: #3a3a3a;
+            border-color: #555;
+        }
+        
         .advanced-tools-dropdown-content a {
             color: var(--text-color);
             padding: 12px 16px;
@@ -584,7 +687,10 @@
         .advanced-tools-dropdown-content a:hover {
             background-color: var(--row-alt-color);
         }
-
+        body.dark-mode .advanced-tools-dropdown-content a:hover {
+            background-color: #4f4f4f;
+        }
+        
         .advanced-tools-dropdown-content.show {
             display: block;
         }
@@ -593,7 +699,6 @@
             width: 100%;
             margin: 0;
         }
-        /* --- END: Advanced Tools Dropdown --- */
         
         @media (max-width: 600px) {
             h1.page-title {
@@ -656,6 +761,9 @@
             text-decoration: none;
             font-weight: bold;
         }
+        body.dark-mode .site-footer a {
+            color: var(--primary-color);
+        }
         .site-footer a:hover {
             text-decoration: underline;
         }
@@ -671,22 +779,28 @@
             margin-top: 150px;
         }
 
-        /* --- تعديل لصفحة البداية: جعل كل زر في سطر منفصل --- */
         #initialButtonsRow {
-            flex-direction: column; /* يجعل الأزرار مصفوفة عمودياً */
-            align-items: center;    /* يضمن توسط الأزرار في الحاوية */
-            gap: 15px;              /* يضيف مسافة أكبر بين الزرين */
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
         }
 
         #initialButtonsRow .action-btn {
-            width: 100%;             /* يحدد عرضًا مناسبًا للأزرار */
-            margin: 0;              /* نلغي الهوامش السابقة */
+            width: 100%;
+            margin: 0;
         }
 
     </style>
 </head>
 <body>
     <div class="container">
+        <button id="theme-toggle" title="تبديل الوضع">
+            <svg class="sun-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.25a.75.75 0 0 1 .75.75v1.5a.75.75 0 0 1-1.5 0v-1.5A.75.75 0 0 1 12 2.25Zm0 18a.75.75 0 0 1 .75.75v1.5a.75.75 0 0 1-1.5 0v-1.5a.75.75 0 0 1 .75-.75ZM5.336 5.336a.75.75 0 0 1 1.06-1.06l1.06 1.06a.75.75 0 0 1-1.06 1.06l-1.06-1.06Zm12.268 12.268a.75.75 0 0 1 1.06-1.06l1.06 1.06a.75.75 0 0 1-1.06 1.06l-1.06-1.06ZM2.25 12a.75.75 0 0 1 .75-.75h1.5a.75.75 0 0 1 0 1.5h-1.5a.75.75 0 0 1-.75-.75Zm18 0a.75.75 0 0 1 .75-.75h1.5a.75.75 0 0 1 0 1.5h-1.5a.75.75 0 0 1-.75-.75ZM5.336 18.664a.75.75 0 0 1-1.06 1.06l-1.06-1.06a.75.75 0 0 1 1.06-1.06l1.06 1.06Zm12.268-12.268a.75.75 0 0 1-1.06 1.06l-1.06-1.06a.75.75 0 1 1 1.06-1.06l1.06 1.06ZM12 7a5 5 0 1 0 0 10 5 5 0 0 0 0-10Z"/></svg>
+           <svg class="moon-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+    <path d="M21.752 15.002A9.718 9.718 0 0118 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 003 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 009.002-5.998z" />
+</svg>
+        </button>
+
         <h1 class="page-title"><a href="">محرر قوائم تشغيل M3U/M3U8</a></h1>
         
         <div id="loadingIndicator" style="display: none;"><p>جارٍ التحميل...</p></div>
@@ -705,7 +819,6 @@
             </div>
             
             <div class="button-row" id="toolsMergeRow">
-                <!-- الترتيب الجديد المقترح -->
                 <button class="action-btn" onclick="openModal('exportModal')">تصدير القائمة</button>
                 <button class="action-btn" id="manageGroupsButton" onclick="openManageGroupsModal()">إدارة المجموعات</button>
                 <button class="action-btn" id="openSortModalButton" onclick="openSortModal()">فرز وترتيب</button>
@@ -733,30 +846,27 @@
     </div>
 
     <!-- All Modals -->
-    <!-- All Modals -->
-<div id="dragDropChoiceModal" class="modal modal-small-top">
-    <div class="modal-content">
-        <span class="close" onclick="cancelDragOperation()">&times;</span>
-        <h2>كيف تريد تطبيق الترتيب؟</h2>
-        <div style="margin: 20px 0;">
-            <!-- تم تبديل هذا الخيار ليصبح الأول -->
-            <div class="modal-row">
-                <input type="radio" id="dragChoiceGroup" name="dragDropChoice" value="group" checked>
-                <label for="dragChoiceGroup">تجميع المجموعة وترتيبها</label>
+    <div id="dragDropChoiceModal" class="modal modal-small-top">
+        <div class="modal-content">
+            <span class="close" onclick="cancelDragOperation()">&times;</span>
+            <h2>كيف تريد تطبيق الترتيب؟</h2>
+            <div style="margin: 20px 0;">
+                <div class="modal-row">
+                    <input type="radio" id="dragChoiceGroup" name="dragDropChoice" value="group" checked>
+                    <label for="dragChoiceGroup">تجميع المجموعة وترتيبها</label>
+                </div>
+                <div class="modal-row">
+                    <input type="radio" id="dragChoiceInPlace" name="dragDropChoice" value="sortInPlace">
+                    <label for="dragChoiceInPlace">الترتيب في الأماكن الحالية فقط</label>
+                </div>
             </div>
-            <!-- وهذا الخيار أصبح الثاني -->
-            <div class="modal-row">
-                <input type="radio" id="dragChoiceInPlace" name="dragDropChoice" value="sortInPlace">
-                <label for="dragChoiceInPlace">الترتيب في الأماكن الحالية فقط</label>
+            <div class="modal-buttons">
+                <button id="executeDragDropChoice">تنفيذ</button>
+                <button class="cancel" onclick="cancelDragOperation()">إلغاء</button>
             </div>
-        </div>
-        <div class="modal-buttons">
-            <button id="executeDragDropChoice">تنفيذ</button>
-            <button class="cancel" onclick="cancelDragOperation()">إلغاء</button>
         </div>
     </div>
-</div>
-
+    
     <div id="searchFilterModal" class="modal modal-small-top"><div class="modal-content"><span class="close" onclick="closeModal('searchFilterModal')">&times;</span><h2>بحث وتصفية القنوات</h2><input type="text" id="searchInput" placeholder="ابحث عن قناة..."><select id="groupFilter"><option value="all">كل المجموعات</option></select><div class="modal-buttons"><button id="searchFilterActionButton">إغلاق</button></div></div></div>
     
     <div id="bulkActionsModal" class="modal">
@@ -1090,7 +1200,7 @@
         function openModal(modalId) {
             const modal = document.getElementById(modalId);
             if (modal) {
-                modal.style.zIndex = '1000';
+                modal.style.zIndex = '2000';
                 modal.style.display = 'flex';
             }
             
@@ -1112,7 +1222,7 @@
             if(modal) modal.style.display = 'none'; 
             
             if (modalId === 'editModal' && document.getElementById('removeDuplicatesModal').style.display === 'flex') {
-                document.getElementById('removeDuplicatesModal').style.zIndex = '1000';
+                document.getElementById('removeDuplicatesModal').style.zIndex = '2000';
             }
         }
 
@@ -1716,7 +1826,7 @@
         function showDuplicateInfo(index) {
             document.getElementById('removeDuplicatesModal').style.zIndex = '999';
             openEditModal(index, true);
-            document.getElementById('editModal').style.zIndex = '1001';
+            document.getElementById('editModal').style.zIndex = '2001';
         }
 
         function executeDuplicateDeletion() {
@@ -2090,7 +2200,7 @@
             cancelButton.textContent = readOnly ? 'إغلاق' : 'إلغاء';
             
             if (readOnly) {
-                modal.style.zIndex = '1001';
+                modal.style.zIndex = '2001';
             }
             openModal('editModal');
         }
@@ -2437,7 +2547,7 @@
                     blockToMove.unshift(channelsData.splice(index, 1)[0]);
                 });
                 
-                channelsData.splice(targetIndex, 0, ...blockToMove);
+                channelsData.splice(target - 1, 0, ...blockToMove);
                 const countStr = generateCountString(blockToMove.length, {singular: 'قناة', dualGenitive: 'قناتين', plural: 'قنوات', gender: 'f'});
                 showToast(`تم نقل ${countStr} محددة إلى الموضع ${target} بنجاح`, 'success');
                 selectedIndices.clear();
@@ -2824,6 +2934,39 @@
             const قناةStr = generateCountString(affectedChannels, {singular: 'قناة', dualGenitive: 'قناتين', plural: 'قنوات', gender: 'f'});
             showToast(`تم استبدال النص ${مرهStr} في ${قناةStr}.`, 'success');
         }
+
+        // --- START: Night Mode Logic ---
+        const themeToggle = document.getElementById('theme-toggle');
+        const currentTheme = localStorage.getItem('theme');
+
+        function applyTheme(theme) {
+            if (theme === 'dark') {
+                document.body.classList.add('dark-mode');
+            } else {
+                document.body.classList.remove('dark-mode');
+            }
+        }
+
+        function toggleTheme() {
+            if (document.body.classList.contains('dark-mode')) {
+                document.body.classList.remove('dark-mode');
+                localStorage.setItem('theme', 'light');
+            } else {
+                document.body.classList.add('dark-mode');
+                localStorage.setItem('theme', 'dark');
+            }
+        }
+
+        if (currentTheme) {
+            applyTheme(currentTheme);
+        } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            applyTheme('dark');
+        }
+
+        if (themeToggle) {
+            themeToggle.addEventListener('click', toggleTheme);
+        }
+        // --- END: Night Mode Logic ---
     </script>
 </body>
 </html>
