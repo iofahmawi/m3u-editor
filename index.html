@@ -1667,9 +1667,16 @@
         function togglePlayMode() {
             isPlayMode = !isPlayMode;
             document.body.classList.toggle('play-mode-enabled', isPlayMode);
+            
             const toggleButton = document.getElementById('playModeToggle');
-            const playToastMsg = isPlayMode ? 'تم تفعيل وضع التشغيل.' : 'تم إيقاف وضع التشغيل.';
-            showToast(playToastMsg, 'play', 3000);
+            
+            if (isPlayMode) {
+                toggleButton.textContent = 'إيقاف وضع التشغيل';
+                showToast('تم تفعيل وضع التشغيل.', 'play', 3000);
+            } else {
+                toggleButton.textContent = 'تفعيل وضع التشغيل';
+                showToast('تم إيقاف وضع التشغيل.', 'play', 3000);
+            }
         }
 
         // --- START: New Player Functions ---
