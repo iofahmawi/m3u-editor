@@ -36,10 +36,10 @@
         body.dark-mode {
             --primary-color: #f08c2a;
             --primary-hover: #d35400;
-            --secondary-color: #3a3a3c; /* <-- اللون الجديد للأزرار */
-            --secondary-hover: #4a4a4c;  /* <-- اللون الجديد عند التمرير */
-            --button-delete-color: #3a3a3c; /* <-- اللون الجديد للأزرار */
-            --button-delete-hover: #4a4a4c; /* <-- اللون الجديد عند التمرير */
+            --secondary-color: #3a3a3c;
+            --secondary-hover: #4a4a4c;
+            --button-delete-color: #3a3a3c;
+            --button-delete-hover: #4a4a4c;
             --background-color: #282828; 
             --container-bg-color: #282828; 
             --text-color: #ffffff; 
@@ -80,13 +80,12 @@
             box-sizing: border-box;
             border: 1px solid var(--border-color);
             transition: background-color 0.3s, border-color 0.3s;
-            position: relative; /* Context for the icon */
+            position: relative;
         }
         body.dark-mode .container {
-             border: 1px solid #1c1c1e; /* Hide border in dark mode to match image */
+             border: 1px solid #1c1c1e;
         }
         
-        /* --- START: Final Theme Icon Styling --- */
         #theme-toggle {
             position: absolute;
             top: 7px;
@@ -96,16 +95,16 @@
             cursor: pointer;
             padding: 5px;
             display: flex;
-            color: #e0e0e0; /* <-- اللون الجديد، الأفتح والمتناسق */
+            color: #e0e0e0;
             transition: opacity 0.2s;
         }
         
         body.dark-mode #theme-toggle {
-            color: #EAEAEA; /* Moon is white */
+            color: #EAEAEA;
         }
 
         #theme-toggle:hover {
-           opacity: 0.8; /* No transform, just a subtle hover effect */
+           opacity: 0.8;
         }
 
         #theme-toggle svg {
@@ -118,7 +117,6 @@
         
         body.dark-mode .moon-icon { display: block; }
         body.dark-mode .sun-icon { display: none; }
-        /* --- END: Final Theme Icon Styling --- */
         
         h1 { color: var(--primary-color); text-align: center; margin-bottom: 20px; }
         .page-title a {
@@ -156,14 +154,14 @@
             background-color: var(--secondary-color);
             color: white; 
             padding: 7.5px 20px; 
-            border-radius: 10px; /* Matched screenshot's rounded corners */
+            border-radius: 10px;
             cursor: pointer; font-weight: bold; border: none;
             transition: background-color 0.3s, opacity 0.3s;
             margin: 10px 5px; flex-shrink: 0;
             white-space: nowrap;
         }
         body.dark-mode .action-btn {
-            color: var(--text-light-color); /* Ensure text is white */
+            color: var(--text-light-color);
         }
         .action-btn:hover:not(:disabled) { background-color: var(--secondary-hover); }
         .action-btn.delete-btn { background-color: var(--button-delete-color); }
@@ -237,7 +235,6 @@
         tbody tr:last-child td:last-child { border-bottom-left-radius: 8px; }
 
         tr:nth-child(even) { background-color: var(--row-alt-color); }
-        /* Remove alternating row color in dark mode to match screenshot */
         body.dark-mode tr:nth-child(even) {
             background-color: var(--container-bg-color);
         }
@@ -262,10 +259,9 @@
             background-color: var(--row-alt-color) !important;
         }
 
-        table th:nth-child(1), table td:nth-child(1) { width: 15%; min-width: 80px; } /* رقم */
-        table th:nth-child(2), table td:nth-child(2) { width: 60%; min-width: 150px;} /* اسم القناة + الصورة */
-        table th:nth-child(3), table td:nth-child(3) { width: 25%; min-width: 80px; } /* المجموعة */
-
+        table th:nth-child(1), table td:nth-child(1) { width: 15%; min-width: 80px; }
+        table th:nth-child(2), table td:nth-child(2) { width: 60%; min-width: 150px;}
+        table th:nth-child(3), table td:nth-child(3) { width: 25%; min-width: 80px; }
         table th:nth-child(4), table td:nth-child(4) { display: none; }
         
         .channel-index-cell {
@@ -304,18 +300,15 @@
         .delete-btn-icon { color: var(--button-delete-color); }
         .delete-btn-icon:hover { color: var(--button-delete-hover); }
         
-        /* Style for the new Play button */
         .play-btn-icon {
             color: #5cb85c;
             font-size: 1.1em;
             vertical-align: middle;
-            display: none; /* Hidden by default */
+            display: none;
         }
         .play-btn-icon:hover {
             color: #4cae4c;
         }
-
-        /* Show play button when play mode is enabled on the body */
         body.play-mode-enabled .play-btn-icon {
             display: inline-block;
         }
@@ -362,7 +355,7 @@
         .toast.success { border-left-color: var(--primary-color); }
         .toast.error { border-left-color: var(--delete-color); }
         .toast.info { border-left-color: var(--secondary-color); }
-        .toast.play { border-left-color: #5cb85c; } /* <-- أضف هذا السطر */
+        .toast.play { border-left-color: #5cb85c; }
         .toast-content {
             text-align: right;
             overflow: hidden;
@@ -407,7 +400,7 @@
         .modal { 
             display: none; 
             position: fixed; 
-            z-index: 2000; /* Higher than theme toggle */
+            z-index: 2000;
             left: 0; top: 0; 
             width: 100%; 
             height: 100%; 
@@ -493,10 +486,9 @@
             padding-left: 5px;
         }
         
-        /* --- START: New Player Styles --- */
         .popup { 
             position: fixed; 
-            z-index: 3000; /* أعلى من النوافذ الأخرى */
+            z-index: 3000;
             inset: 0; 
             background-color: rgba(0,0,0,0.8); 
             backdrop-filter: blur(5px); 
@@ -523,7 +515,6 @@
         #player-container .plyr { 
             border-radius: var(--border-radius); 
         }
-        /* --- END: New Player Styles --- */
         
         #duplicate-results-list { margin-top: 15px; }
         .duplicate-group { border: 1px solid var(--border-color); border-radius: 6px; margin-bottom: 10px; padding: 10px; }
@@ -681,26 +672,16 @@
             width: 100px;
         }
         
-        .modal-content.compact-layout .modal-row {
-            margin-bottom: 2px;
-        }
-        .modal-content.compact-layout .move-block-row {
-            margin-bottom: 4px;
-        }
-        .modal-content.compact-layout .modal-buttons {
-            margin-top: 10px;
-        }
-        .modal-content.compact-layout #moveBlockInputContainer {
-            padding-top: 5px;
-            padding-bottom: 5px;
-        }
-
+        .modal-content.compact-layout .modal-row { margin-bottom: 2px; }
+        .modal-content.compact-layout .move-block-row { margin-bottom: 4px; }
+        .modal-content.compact-layout .modal-buttons { margin-top: 10px; }
+        .modal-content.compact-layout #moveBlockInputContainer { padding-top: 5px; padding-bottom: 5px; }
 
         #loadingIndicator { font-weight: bold; color: var(--primary-color); text-align: center; margin: 20px; } #logoPreview img, #addPreviewImage { max-width: 50px; max-height: 50px; display: none; } #mergeModal .modal-content-body { padding: 15px; text-align: center; } #mergeOptionSelector { width: 100%; padding: 10px; font-size: 1em; margin-bottom: 20px; } .merge-option-container { padding: 10px; } .merge-option-container p { margin-bottom: 20px; color: #666; } 
         body.dark-mode .merge-option-container p { color: #ccc; }
         .merge-option-container button { background-color: var(--primary-color); color: white; padding: 7.5px 25px; font-size: 1em; border: none; border-radius: 10px; cursor: pointer; }
         .merge-option-container button:hover { background-color: var(--primary-hover); } 
-        .status-dot { height: 10px; width: 10px; border-radius: 50%; display: none; margin-left: 5px; } body.show-status-dots .status-dot { display: inline-block; } .status-dot.unchecked { background-color: #bbb; } .status-dot.checking { background-color: #f0ad4e; animation: blinker 1s linear infinite; } .status-dot.checked-ok { background-color: #5cb85c; } .status-dot.checked-fail { background-color: var(--delete-color); } @keyframes blinker { 50% { opacity: 0.5; } } #checker-progress-bar-container { width: 100%; background-color: #e0e0e0; border-radius: 5px; margin: 15px 0; } body.dark-mode #checker-progress-bar-container { background-color: #444; } #checker-progress-bar { width: 0%; height: 20px; background-color: var(--primary-color); border-radius: 5px; text-align: center; line-height: 20px; color: white; transition: width 0.3s; } .find-replace-options div { margin-bottom: 5px; }
+        .status-dot { height: 10px; width: 10px; border-radius: 50%; display: none; margin-left: 5px; } .status-dot.unchecked { background-color: #bbb; } .status-dot.checking { background-color: #f0ad4e; animation: blinker 1s linear infinite; } .status-dot.checked-ok { background-color: #5cb85c; } .status-dot.checked-fail { background-color: var(--delete-color); } @keyframes blinker { 50% { opacity: 0.5; } } #checker-progress-bar-container { width: 100%; background-color: #e0e0e0; border-radius: 5px; margin: 15px 0; } body.dark-mode #checker-progress-bar-container { background-color: #444; } #checker-progress-bar { width: 0%; height: 20px; background-color: var(--primary-color); border-radius: 5px; text-align: center; line-height: 20px; color: white; transition: width 0.3s; } .find-replace-options div { margin-bottom: 5px; }
         
         .advanced-tools-dropdown {
             position: relative;
@@ -868,7 +849,7 @@
         <div id="mainControls">
             <label for="fileInput" id="uploadArea" class="upload-area">
                 <p style="font-size: 1.1em; font-weight: bold;">اضغط لرفع ملف قائمة التشغيل</p>
-                <span class="upload-label">اختيار ملف CSV JSON PLS M3U</span>
+                <span class="upload-label">اختيار ملف PLS, M3U8, M3U</span>
             </label>
             
             <div id="urlLoadContainer">
@@ -907,310 +888,33 @@
     </div>
 
     <!-- All Modals -->
-
-    <!-- تم حذف المشغل القديم من هنا -->
-    
-    <div id="dragDropChoiceModal" class="modal modal-small-top">
-        <div class="modal-content">
-            <span class="close" onclick="cancelDragOperation()">&times;</span>
-            <h2>كيف تريد تطبيق الترتيب؟</h2>
-            <div style="margin: 20px 0;">
-                <div class="modal-row">
-                    <input type="radio" id="dragChoiceGroup" name="dragDropChoice" value="group" checked>
-                    <label for="dragChoiceGroup">تجميع المجموعة وترتيبها</label>
-                </div>
-                <div class="modal-row">
-                    <input type="radio" id="dragChoiceInPlace" name="dragDropChoice" value="sortInPlace">
-                    <label for="dragChoiceInPlace">الترتيب في الأماكن الحالية فقط</label>
-                </div>
-            </div>
-            <div class="modal-buttons">
-                <button id="executeDragDropChoice">تنفيذ</button>
-                <button class="cancel" onclick="cancelDragOperation()">إلغاء</button>
-            </div>
-        </div>
-    </div>
-    
+    <div id="dragDropChoiceModal" class="modal modal-small-top"><div class="modal-content"><span class="close" onclick="cancelDragOperation()">&times;</span><h2>كيف تريد تطبيق الترتيب؟</h2><div style="margin: 20px 0;"><div class="modal-row"><input type="radio" id="dragChoiceGroup" name="dragDropChoice" value="group" checked><label for="dragChoiceGroup">تجميع المجموعة وترتيبها</label></div><div class="modal-row"><input type="radio" id="dragChoiceInPlace" name="dragDropChoice" value="sortInPlace"><label for="dragChoiceInPlace">الترتيب في الأماكن الحالية فقط</label></div></div><div class="modal-buttons"><button id="executeDragDropChoice">تنفيذ</button><button class="cancel" onclick="cancelDragOperation()">إلغاء</button></div></div></div>
     <div id="searchFilterModal" class="modal modal-small-top"><div class="modal-content"><span class="close" onclick="closeModal('searchFilterModal')">&times;</span><h2>بحث وتصفية القنوات</h2><input type="text" id="searchInput" placeholder="ابحث عن قناة..."><select id="groupFilter"><option value="all">كل المجموعات</option></select><div class="modal-buttons"><button id="searchFilterActionButton">إغلاق</button></div></div></div>
-    
-    <div id="bulkActionsModal" class="modal">
-        <div class="modal-content">
-            <span class="close" onclick="closeModal('bulkActionsModal')">&times;</span>
-            <h2>إجراءات على القنوات المحددة</h2>
-            <div id="bulk-actions-list">
-                <div class="modal-row">
-                    <input type="radio" id="bulk-action-sort" name="bulkAction" value="sort" checked>
-                    <label for="bulk-action-sort">فرز المحدد أبجدياً</label>
-                </div>
-                <div class="modal-row">
-                    <input type="radio" id="bulk-action-move" name="bulkAction" value="move">
-                    <label for="bulk-action-move">نقل المحدد إلى موضع</label>
-                    <div id="bulk-move-input-container">
-                        <label for="bulk-move-target-index">رقم:</label>
-                        <input type="number" id="bulk-move-target-index" min="1" placeholder="مثال: 1">
-                    </div>
-                </div>
-                <div class="modal-row">
-                    <input type="radio" id="bulk-action-group" name="bulkAction" value="group">
-                    <label for="bulk-action-group">تعديل المجموعة</label>
-                </div>
-                <div class="modal-row">
-                    <input type="radio" id="bulk-action-remove-group" name="bulkAction" value="removeGroup">
-                    <label for="bulk-action-remove-group">إزالة التصنيف عن المحدد</label>
-                </div>
-                <div class="modal-row">
-                    <input type="radio" id="bulk-action-delete" name="bulkAction" value="delete">
-                    <label for="bulk-action-delete">حذف المحدد</label>
-                </div>
-                <div class="modal-row">
-                    <input type="radio" id="bulk-action-export" name="bulkAction" value="export">
-                    <label for="bulk-action-export">تصدير المحدد</label>
-                </div>
-            </div>
-            <div class="modal-buttons">
-                <button onclick="executeBulkAction()">تنفيذ</button>
-                <button onclick="closeModal('bulkActionsModal')" class="cancel">إلغاء</button>
-            </div>
-        </div>
-    </div>
-    
+    <div id="bulkActionsModal" class="modal"><div class="modal-content"><span class="close" onclick="closeModal('bulkActionsModal')">&times;</span><h2>إجراءات على القنوات المحددة</h2><div id="bulk-actions-list"><div class="modal-row"><input type="radio" id="bulk-action-sort" name="bulkAction" value="sort" checked><label for="bulk-action-sort">فرز المحدد أبجدياً</label></div><div class="modal-row"><input type="radio" id="bulk-action-move" name="bulkAction" value="move"><label for="bulk-action-move">نقل المحدد إلى موضع</label><div id="bulk-move-input-container"><label for="bulk-move-target-index">رقم:</label><input type="number" id="bulk-move-target-index" min="1" placeholder="مثال: 1"></div></div><div class="modal-row"><input type="radio" id="bulk-action-group" name="bulkAction" value="group"><label for="bulk-action-group">تعديل المجموعة</label></div><div class="modal-row"><input type="radio" id="bulk-action-remove-group" name="bulkAction" value="removeGroup"><label for="bulk-action-remove-group">إزالة التصنيف عن المحدد</label></div><div class="modal-row"><input type="radio" id="bulk-action-delete" name="bulkAction" value="delete"><label for="bulk-action-delete">حذف المحدد</label></div><div class="modal-row"><input type="radio" id="bulk-action-export" name="bulkAction" value="export"><label for="bulk-action-export">تصدير المحدد</label></div></div><div class="modal-buttons"><button onclick="executeBulkAction()">تنفيذ</button><button onclick="closeModal('bulkActionsModal')" class="cancel">إلغاء</button></div></div></div>
     <div id="channelCheckerModal" class="modal modal-small-top"><div class="modal-content"><span class="close" onclick="closeModal('channelCheckerModal')">&times;</span><h2>مدقق حالة القنوات</h2><p>سيقوم هذا الإجراء بالتحقق من كل قناة لتحديد ما إذا كانت تعمل. قد يستغرق هذا بعض الوقت للقوائم الكبيرة.</p><div id="checker-progress-container"><p id="checker-progress-text">اضغط على زر 'بدء الفحص' للتحقق من حالة القنوات.</p><div id="checker-progress-bar-container"><div id="checker-progress-bar">0%</div></div></div><p id="checker-summary-text" style="font-weight: bold;"></p><div class="modal-buttons"><button id="start-check-btn" onclick="executeChannelCheck()">بدء الفحص</button><button id="stop-check-btn" onclick="stopChannelCheck()" class="cancel" style="display:none;">إيقاف الفحص</button><button id="checker-cancel-btn" onclick="closeModal('channelCheckerModal')" class="cancel">إغلاق</button></div><div class="dropdown-container" id="checker-actions-container" style="display: none;"><button onclick="toggleCheckerActions()" class="dropdown-btn">إجراءات &#9662;</button><div id="checker-actions-dropdown" class="dropdown-content"><a href="#" id="export-working-btn" onclick="exportWorkingChannels()">تصدير القنوات التي تعمل</a><a href="#" id="select-failed-btn" onclick="selectFailedChannels()">تحديد القنوات التي لا تعمل</a><a href="#" id="delete-failed-btn" class="delete-option" onclick="deleteFailedChannels()">حذف القنوات التي لا تعمل</a></div></div></div></div>
-
-    <div id="findReplaceModal" class="modal"><div class="modal-content"><span class="close" onclick="closeModal('findReplaceModal')">&times;</span><h2>بحث واستبدال</h2>
-        <div class="find-replace-options" style="margin-bottom: 15px;">
-            <label for="replace-scope-selector" style="display:block; margin-bottom: 5px;"><strong>النطاق:</strong></label>
-            <select id="replace-scope-selector" style="width: 95%;"></select>
-        </div>
-        <label for="find-text">بحث عن:</label><input type="text" id="find-text">
-        <label for="replace-text">استبدال بـ:</label><input type="text" id="replace-text">
-        <div class="find-replace-options"><p style="margin-top: 15px; margin-bottom: 5px;"><strong>بحث في:</strong></p>
-            <div><input type="checkbox" id="find-in-name" checked> <label for="find-in-name">اسم القناة</label></div>
-            <div><input type="checkbox" id="find-in-group"> <label for="find-in-group">المجموعة</label></div>
-            <div><input type="checkbox" id="find-in-url"> <label for="find-in-url">رابط التشغيل</label></div>
-        </div>
-        <div class="modal-buttons"><button onclick="executeFindAndReplace()">تنفيذ</button><button onclick="closeModal('findReplaceModal')" class="cancel">إلغاء</button></div>
-    </div></div>
-
+    <div id="findReplaceModal" class="modal"><div class="modal-content"><span class="close" onclick="closeModal('findReplaceModal')">&times;</span><h2>بحث واستبدال</h2><div class="find-replace-options" style="margin-bottom: 15px;"><label for="replace-scope-selector" style="display:block; margin-bottom: 5px;"><strong>النطاق:</strong></label><select id="replace-scope-selector" style="width: 95%;"></select></div><label for="find-text">بحث عن:</label><input type="text" id="find-text"><label for="replace-text">استبدال بـ:</label><input type="text" id="replace-text"><div class="find-replace-options"><p style="margin-top: 15px; margin-bottom: 5px;"><strong>بحث في:</strong></p><div><input type="checkbox" id="find-in-name" checked> <label for="find-in-name">اسم القناة</label></div><div><input type="checkbox" id="find-in-group"> <label for="find-in-group">المجموعة</label></div><div><input type="checkbox" id="find-in-url"> <label for="find-in-url">رابط التشغيل</label></div></div><div class="modal-buttons"><button onclick="executeFindAndReplace()">تنفيذ</button><button onclick="closeModal('findReplaceModal')" class="cancel">إلغاء</button></div></div></div>
     <div id="multiUrlModal" class="modal modal-medium-top"><div class="modal-content"><span class="close" onclick="closeModal('multiUrlModal')">&times;</span><h2>تحميل من عدة روابط</h2><p>ألصق الروابط هنا، كل رابط في سطر جديد. سيتم دمجها بالترتيب.</p><textarea id="multiUrlTextarea" placeholder="https://example.com/playlist1.m3u&#10;https://example.com/playlist2.m3u8"></textarea><div class="modal-buttons"><button onclick="processMultiUrlLoad()">تحميل</button><button onclick="closeModal('multiUrlModal')" class="cancel">إلغاء</button></div></div></div>
     <div id="bulkEditGroupModal" class="modal modal-small-top"><div class="modal-content"><span class="close" onclick="closeModal('bulkEditGroupModal')">&times;</span><h2>تعديل مجموعة القنوات المحددة</h2><label for="bulkNewGroupName">اسم المجموعة الجديد:</label><input type="text" id="bulkNewGroupName" placeholder="أدخل اسمًا جديدًا أو اتركه فارغًا"><div class="modal-buttons"><button onclick="executeBulkEditGroup()">تطبيق</button><button onclick="closeModal('bulkEditGroupModal')" class="cancel">إلغاء</button></div></div></div>
-
-    <div id="editModal" class="modal modal-medium-top">
-        <div class="modal-content">
-            <span class="close" onclick="closeModal('editModal')">&times;</span>
-            <h2>تحرير القناة</h2>
-            <div class="modal-form-row">
-                <label for="editIndexField">رقم القناة:</label>
-                <input type="number" id="editIndexField" min="1">
-            </div>
-            <div class="modal-form-row">
-                <label for="editName">اسم القناة:</label>
-                <input type="text" id="editName">
-            </div>
-            <div class="modal-form-row">
-                <label for="editGroup">المجموعة:</label>
-                <input type="text" id="editGroup">
-            </div>
-            <div class="modal-form-row">
-                <label for="editLogo">رابط الصورة:</label>
-                <input type="url" id="editLogo">
-                <div id="logoPreview"><img id="previewImage"></div>
-            </div>
-            <div class="modal-form-row">
-                <label for="editUrl">رابط التشغيل:</label>
-                <input type="url" id="editUrl">
-            </div>
-            <input type="hidden" id="editOriginalIndex">
-            <div class="modal-buttons">
-                <button onclick="saveEdit()">حفظ</button>
-                <button onclick="closeModal('editModal')" class="cancel">إلغاء</button>
-            </div>
-        </div>
-    </div>
-
-    <div id="addModal" class="modal modal-medium-top">
-        <div class="modal-content">
-            <span class="close" onclick="closeModal('addModal')">&times;</span>
-            <h2>إضافة قناة جديدة</h2>
-            <div class="modal-form-row">
-                <label for="addIndexField">رقم القناة:</label>
-                <input type="number" id="addIndexField" min="1">
-            </div>
-            <div class="modal-form-row">
-                <label for="addName">اسم القناة:</label>
-                <input type="text" id="addName" required>
-            </div>
-            <div class="modal-form-row">
-                <label for="addGroup">المجموعة:</label>
-                <input type="text" id="addGroup">
-            </div>
-            <div class="modal-form-row">
-                <label for="addLogo">رابط الصورة:</label>
-                <input type="url" id="addLogo">
-                <div id="addLogoPreview"><img id="addPreviewImage"></div>
-            </div>
-            <div class="modal-form-row">
-                <label for="addUrl">رابط التشغيل:</label>
-                <input type="url" id="addUrl" required>
-            </div>
-            <div class="modal-buttons">
-                <button onclick="saveNewChannel()">إضافة</button>
-                <button onclick="closeModal('addModal')" class="cancel">إلغاء</button>
-            </div>
-        </div>
-    </div>
-    
-    <div id="removeDuplicatesModal" class="modal modal-small-top">
-        <div class="modal-content">
-            <span class="close" onclick="closeModal('removeDuplicatesModal')">&times;</span>
-            <h2>إزالة التكرار</h2>
-            <div id="duplicate-criteria-step">
-                <label>اختر الشرط:</label>
-                <div class="modal-row"><input type="radio" id="crit-name" name="duplicateCriteria" value="name"><label for="crit-name">الاسم فقط</label></div>
-                <div class="modal-row"><input type="radio" id="crit-name-url" name="duplicateCriteria" value="name-url" checked><label for="crit-name-url">الاسم + الرابط</label></div>
-                <div class="modal-row"><input type="radio" id="crit-name-url-group" name="duplicateCriteria" value="name-url-group"><label for="crit-name-url-group">الاسم + الرابط + المجموعة</label></div>
-                <div class="modal-buttons">
-                    <button onclick="findDuplicates()">البحث عن التكرار</button>
-                    <button onclick="closeModal('removeDuplicatesModal')" class="cancel">إلغاء</button>
-                </div>
-            </div>
-            <div id="duplicate-results-step" style="display: none;">
-                 <p><strong>اختر النسخة التي تريد الإبقاء عليها:</strong></p>
-                <div id="duplicate-results-list"></div>
-                <div class="modal-buttons">
-                    <button onclick="executeDuplicateDeletion()">حذف التكرار</button>
-                    <button onclick="showDuplicateCriteriaStep()" class="cancel">رجوع</button>
-                </div>
-            </div>
-        </div>
-    </div>
-    
-    <div id="sortModal" class="modal modal-medium-top"><div class="modal-content">
-        <span class="close" onclick="closeModal('sortModal')">&times;</span>
-        <h2>فرز وترتيب القنوات</h2>
-        <div id="sort-scope-container" style="display: none; margin-bottom: 15px;">
-            <label for="sort-scope-selector" style="display:block; margin-bottom: 5px;"><strong>نطاق الفرز:</strong></label>
-            <select id="sort-scope-selector" style="width: 95%;"></select>
-        </div>
-        <div class="modal-row"><input type="radio" id="sort-alpha" name="sortCriteria" value="alphabetical" checked onchange="handleSortCriteriaChange()"><label for="sort-alpha">أبجدي</label></div>
-        <div class="modal-row"><input type="radio" id="sort-chno" name="sortCriteria" value="tvg-chno" onchange="handleSortCriteriaChange()"><label for="sort-chno">حسب الرقم الأصلي (tvg-chno)</label></div>
-        <div class="modal-row"><input type="radio" id="sort-name" name="sortCriteria" value="name" onchange="handleSortCriteriaChange()"><label for="sort-name">حسب اسم القناة</label></div>
-        <div id="sortByNameInputContainer"><input type="text" id="sortByNameField" placeholder="أدخل اسم القناة (مثال: mbc)"></div>
-        <div class="modal-row"><input type="radio" id="sort-group" name="sortCriteria" value="group" onchange="handleSortCriteriaChange()"><label for="sort-group">حسب اسم المجموعة</label></div>
-        <div id="sortByGroupInputContainer"><input type="text" id="sortByGroupField" placeholder="أدخل اسم المجموعة"></div>
-        <div class="modal-row" id="sort-move-row">
-            <input type="radio" id="sort-move" name="sortCriteria" value="moveBlock" onchange="handleSortCriteriaChange()">
-            <label for="sort-move">نقل مجموعة قنوات إلى موضع جديد</label>
-        </div>
-        <div id="moveBlockInputContainer">
-            <div class="move-block-row">
-                <label for="moveFromIndex">نقل من رقم:</label>
-                <input type="number" id="moveFromIndex" min="1" placeholder="مثال: 50">
-            </div>
-            <div class="move-block-row">
-                <label for="moveToIndex">إلى رقم:</label>
-                <input type="number" id="moveToIndex" min="1" placeholder="مثال: 100">
-            </div>
-             <div class="move-block-row">
-                <label for="moveTargetIndex">إلى الموضع رقم:</label>
-                <input type="number" id="moveTargetIndex" min="1" placeholder="مثال: 1">
-            </div>
-        </div>
-        <div class="modal-row" style="margin-top: 15px; padding-top: 10px; border-top: 1px solid var(--border-color);">
-            <input type="checkbox" id="sort-descending">
-            <label for="sort-descending">ترتيب تنازلي</label>
-        </div>
-        <div class="modal-buttons"><button onclick="executeSort()">تنفيذ</button><button onclick="closeModal('sortModal')" class="cancel">إلغاء</button></div>
-    </div></div>
-    
-    <div id="manageGroupsModal" class="modal"><div class="modal-content">
-        <span class="close" onclick="closeModal('manageGroupsModal')">&times;</span>
-        <h2>إدارة المجموعات</h2>
-        <div style="padding: 5px; margin: 0 -5px 15px -5px;">
-            <label for="groupSelector">اختر المجموعة:</label>
-            <select id="groupSelector" onchange="handleGroupSelectorChange()"></select>
-            <label>اختر الإجراء:</label>
-            <div class="modal-row">
-                <input type="radio" id="action-rename" name="groupAction" value="rename" checked onchange="handleGroupActionChange()">
-                <label for="action-rename">إعادة تسمية</label>
-            </div>
-            <div id="renameGroupInputContainer">
-                <input type="text" id="newGroupNameField" placeholder="أدخل اسمًا جديدًا أو اتركه فارغًا">
-                <div class="modal-row" style="font-size: 0.9em; margin-top: 5px;">
-                    <input type="checkbox" id="rename-add-as-new">
-                    <label for="rename-add-as-new">إضافة دون حذف التصنيفات الحالية</label>
-                </div>
-            </div>
-            <div class="modal-row">
-                <input type="radio" id="action-merge" name="groupAction" value="merge" onchange="handleGroupActionChange()">
-                <label for="action-merge">دمج المجموعة المحددة</label>
-            </div>
-            <div id="mergeGroupInputContainer">
-                <label for="mergeTargetSelector" style="display: block;">مع المجموعة:</label>
-                <select id="mergeTargetSelector"></select>
-            </div>
-            <div class="modal-row">
-                <input type="radio" id="action-remove-all-groups" name="groupAction" value="removeAll" onchange="handleGroupActionChange()">
-                <label for="action-remove-all-groups">إزالة كل التصنيفات</label>
-            </div>
-            <div class="modal-row">
-                <input type="radio" id="action-delete" name="groupAction" value="delete" onchange="handleGroupActionChange()">
-                <label for="action-delete">حذف المجموعة</label>
-            </div>
-            <div class="modal-row">
-                <input type="radio" id="action-export-group" name="groupAction" value="exportGroup" onchange="handleGroupActionChange()">
-                <label for="action-export-group">تصدير قنوات المجموعة</label>
-            </div>
-        </div>
-        <div class="modal-buttons">
-            <button onclick="executeGroupAction()">تنفيذ</button>
-            <button onclick="closeModal('manageGroupsModal')" class="cancel">إلغاء</button>
-        </div>
-    </div></div>
-    
-    <div id="mergeModal" class="modal modal-small-top"><div class="modal-content"><span class="close" onclick="closeModal('mergeModal')">&times;</span><h2>خيارات الدمج</h2>
-        <div class="modal-content-body">
-            <label for="mergeOptionSelector" style="display:block; margin-bottom: 5px; text-align: right;">اختر طريقة الدمج:</label>
-            <select id="mergeOptionSelector" onchange="handleMergeOptionChange()">
-                <option value="file" selected>من ملف</option>
-                <option value="url">من رابط</option>
-            </select>
-            <div id="mergeFileOption" class="merge-option-container" style="display: block;">
-                <p>اختر ملف أو أكثر لدمجه مع القائمة الحالية.</p>
-                <button onclick="document.getElementById('mergeFileInput').click()">اختيار ملفات</button>
-            </div>
-            <div id="mergeUrlOption" class="merge-option-container" style="display: none;">
-                <p>ألصق الروابط هنا، كل رابط في سطر جديد.</p>
-                <textarea id="mergeUrlTextarea" placeholder="https://example.com/playlist.m3u" style="width: 100%; min-height: 120px; margin-bottom: 20px; direction: ltr; text-align: left;"></textarea>
-                <button onclick="executeMerge()">دمج الروابط</button>
-            </div>
-        </div>
-    </div></div>
-
-    <div id="exportModal" class="modal modal-medium-top"><div class="modal-content"><span class="close" onclick="closeModal('exportModal')">&times;</span><h2>تصدير قائمة التشغيل</h2><p>اختر الصيغة المطلوبة للحفظ:</p>
-        <div class="modal-row"><input type="radio" id="export-m3u" name="exportFormat" value="m3u" checked><label for="export-m3u">M3U</label></div>
-        <div class="modal-row"><input type="radio" id="export-m3u8" name="exportFormat" value="m3u8"><label for="export-m3u8">M3U8</label></div>
-        <div class="modal-row"><input type="radio" id="export-pls" name="exportFormat" value="pls"><label for="export-pls">PLS</label></div>
-        <div class="modal-row"><input type="radio" id="export-json" name="exportFormat" value="json"><label for="export-json">JSON</label></div>
-        <div class="modal-row"><input type="radio" id="export-csv" name="exportFormat" value="csv"><label for="export-csv">CSV</label></div>
-        <div class="modal-row"><input type="radio" id="export-enigma2" name="exportFormat" value="enigma2"><label for="export-enigma2">Enigma2</label></div>
-        <div class="modal-buttons"><button onclick="executeExport()">تصدير</button><button onclick="closeModal('exportModal')" class="cancel">إلغاء</button></div>
-    </div></div>
+    <div id="editModal" class="modal modal-medium-top"><div class="modal-content"><span class="close" onclick="closeModal('editModal')">&times;</span><h2>تحرير القناة</h2><div class="modal-form-row"><label for="editIndexField">رقم القناة:</label><input type="number" id="editIndexField" min="1"></div><div class="modal-form-row"><label for="editName">اسم القناة:</label><input type="text" id="editName"></div><div class="modal-form-row"><label for="editGroup">المجموعة:</label><input type="text" id="editGroup"></div><div class="modal-form-row"><label for="editLogo">رابط الصورة:</label><input type="url" id="editLogo"><div id="logoPreview"><img id="previewImage"></div></div><div class="modal-form-row"><label for="editUrl">رابط التشغيل:</label><input type="url" id="editUrl"></div><input type="hidden" id="editOriginalIndex"><div class="modal-buttons"><button onclick="saveEdit()">حفظ</button><button onclick="closeModal('editModal')" class="cancel">إلغاء</button></div></div></div>
+    <div id="addModal" class="modal modal-medium-top"><div class="modal-content"><span class="close" onclick="closeModal('addModal')">&times;</span><h2>إضافة قناة جديدة</h2><div class="modal-form-row"><label for="addIndexField">رقم القناة:</label><input type="number" id="addIndexField" min="1"></div><div class="modal-form-row"><label for="addName">اسم القناة:</label><input type="text" id="addName" required></div><div class="modal-form-row"><label for="addGroup">المجموعة:</label><input type="text" id="addGroup"></div><div class="modal-form-row"><label for="addLogo">رابط الصورة:</label><input type="url" id="addLogo"><div id="addLogoPreview"><img id="addPreviewImage"></div></div><div class="modal-form-row"><label for="addUrl">رابط التشغيل:</label><input type="url" id="addUrl" required></div><div class="modal-buttons"><button onclick="saveNewChannel()">إضافة</button><button onclick="closeModal('addModal')" class="cancel">إلغاء</button></div></div></div>
+    <div id="removeDuplicatesModal" class="modal modal-small-top"><div class="modal-content"><span class="close" onclick="closeModal('removeDuplicatesModal')">&times;</span><h2>إزالة التكرار</h2><div id="duplicate-criteria-step"><label>اختر الشرط:</label><div class="modal-row"><input type="radio" id="crit-name" name="duplicateCriteria" value="name"><label for="crit-name">الاسم فقط</label></div><div class="modal-row"><input type="radio" id="crit-name-url" name="duplicateCriteria" value="name-url" checked><label for="crit-name-url">الاسم + الرابط</label></div><div class="modal-row"><input type="radio" id="crit-name-url-group" name="duplicateCriteria" value="name-url-group"><label for="crit-name-url-group">الاسم + الرابط + المجموعة</label></div><div class="modal-buttons"><button onclick="findDuplicates()">البحث عن التكرار</button><button onclick="closeModal('removeDuplicatesModal')" class="cancel">إلغاء</button></div></div><div id="duplicate-results-step" style="display: none;"><p><strong>اختر النسخة التي تريد الإبقاء عليها:</strong></p><div id="duplicate-results-list"></div><div class="modal-buttons"><button onclick="executeDuplicateDeletion()">حذف التكرار</button><button onclick="showDuplicateCriteriaStep()" class="cancel">رجوع</button></div></div></div></div>
+    <div id="sortModal" class="modal modal-medium-top"><div class="modal-content"><span class="close" onclick="closeModal('sortModal')">&times;</span><h2>فرز وترتيب القنوات</h2><div id="sort-scope-container" style="display: none; margin-bottom: 15px;"><label for="sort-scope-selector" style="display:block; margin-bottom: 5px;"><strong>نطاق الفرز:</strong></label><select id="sort-scope-selector" style="width: 95%;"></select></div><div class="modal-row"><input type="radio" id="sort-alpha" name="sortCriteria" value="alphabetical" checked onchange="handleSortCriteriaChange()"><label for="sort-alpha">أبجدي</label></div><div class="modal-row"><input type="radio" id="sort-chno" name="sortCriteria" value="tvg-chno" onchange="handleSortCriteriaChange()"><label for="sort-chno">حسب الرقم الأصلي (tvg-chno)</label></div><div class="modal-row"><input type="radio" id="sort-name" name="sortCriteria" value="name" onchange="handleSortCriteriaChange()"><label for="sort-name">حسب اسم القناة</label></div><div id="sortByNameInputContainer"><input type="text" id="sortByNameField" placeholder="أدخل اسم القناة (مثال: mbc)"></div><div class="modal-row"><input type="radio" id="sort-group" name="sortCriteria" value="group" onchange="handleSortCriteriaChange()"><label for="sort-group">حسب اسم المجموعة</label></div><div id="sortByGroupInputContainer"><input type="text" id="sortByGroupField" placeholder="أدخل اسم المجموعة"></div><div class="modal-row" id="sort-move-row"><input type="radio" id="sort-move" name="sortCriteria" value="moveBlock" onchange="handleSortCriteriaChange()"><label for="sort-move">نقل مجموعة قنوات إلى موضع جديد</label></div><div id="moveBlockInputContainer"><div class="move-block-row"><label for="moveFromIndex">نقل من رقم:</label><input type="number" id="moveFromIndex" min="1" placeholder="مثال: 50"></div><div class="move-block-row"><label for="moveToIndex">إلى رقم:</label><input type="number" id="moveToIndex" min="1" placeholder="مثال: 100"></div><div class="move-block-row"><label for="moveTargetIndex">إلى الموضع رقم:</label><input type="number" id="moveTargetIndex" min="1" placeholder="مثال: 1"></div></div><div class="modal-row" style="margin-top: 15px; padding-top: 10px; border-top: 1px solid var(--border-color);"><input type="checkbox" id="sort-descending"><label for="sort-descending">ترتيب تنازلي</label></div><div class="modal-buttons"><button onclick="executeSort()">تنفيذ</button><button onclick="closeModal('sortModal')" class="cancel">إلغاء</button></div></div></div>
+    <div id="manageGroupsModal" class="modal"><div class="modal-content"><span class="close" onclick="closeModal('manageGroupsModal')">&times;</span><h2>إدارة المجموعات</h2><div style="padding: 5px; margin: 0 -5px 15px -5px;"><label for="groupSelector">اختر المجموعة:</label><select id="groupSelector" onchange="handleGroupSelectorChange()"></select><label>اختر الإجراء:</label><div class="modal-row"><input type="radio" id="action-rename" name="groupAction" value="rename" checked onchange="handleGroupActionChange()"><label for="action-rename">إعادة تسمية</label></div><div id="renameGroupInputContainer"><input type="text" id="newGroupNameField" placeholder="أدخل اسمًا جديدًا أو اتركه فارغًا"><div class="modal-row" style="font-size: 0.9em; margin-top: 5px;"><input type="checkbox" id="rename-add-as-new"><label for="rename-add-as-new">إضافة دون حذف التصنيفات الحالية</label></div></div><div class="modal-row"><input type="radio" id="action-merge" name="groupAction" value="merge" onchange="handleGroupActionChange()"><label for="action-merge">دمج المجموعة المحددة</label></div><div id="mergeGroupInputContainer"><label for="mergeTargetSelector" style="display: block;">مع المجموعة:</label><select id="mergeTargetSelector"></select></div><div class="modal-row"><input type="radio" id="action-remove-all-groups" name="groupAction" value="removeAll" onchange="handleGroupActionChange()"><label for="action-remove-all-groups">إزالة كل التصنيفات</label></div><div class="modal-row"><input type="radio" id="action-delete" name="groupAction" value="delete" onchange="handleGroupActionChange()"><label for="action-delete">حذف المجموعة</label></div><div class="modal-row"><input type="radio" id="action-export-group" name="groupAction" value="exportGroup" onchange="handleGroupActionChange()"><label for="action-export-group">تصدير قنوات المجموعة</label></div></div><div class="modal-buttons"><button onclick="executeGroupAction()">تنفيذ</button><button onclick="closeModal('manageGroupsModal')" class="cancel">إلغاء</button></div></div></div>
+    <div id="mergeModal" class="modal modal-small-top"><div class="modal-content"><span class="close" onclick="closeModal('mergeModal')">&times;</span><h2>خيارات الدمج</h2><div class="modal-content-body"><label for="mergeOptionSelector" style="display:block; margin-bottom: 5px; text-align: right;">اختر طريقة الدمج:</label><select id="mergeOptionSelector" onchange="handleMergeOptionChange()"><option value="file" selected>من ملف</option><option value="url">من رابط</option></select><div id="mergeFileOption" class="merge-option-container" style="display: block;"><p>اختر ملف أو أكثر لدمجه مع القائمة الحالية.</p><button onclick="document.getElementById('mergeFileInput').click()">اختيار ملفات</button></div><div id="mergeUrlOption" class="merge-option-container" style="display: none;"><p>ألصق الروابط هنا، كل رابط في سطر جديد.</p><textarea id="mergeUrlTextarea" placeholder="https://example.com/playlist.m3u" style="width: 100%; min-height: 120px; margin-bottom: 20px; direction: ltr; text-align: left;"></textarea><button onclick="executeMerge()">دمج الروابط</button></div></div></div></div>
+    <div id="exportModal" class="modal modal-medium-top"><div class="modal-content"><span class="close" onclick="closeModal('exportModal')">&times;</span><h2>تصدير قائمة التشغيل</h2><p>اختر الصيغة المطلوبة للحفظ:</p><div class="modal-row"><input type="radio" id="export-m3u" name="exportFormat" value="m3u" checked><label for="export-m3u">M3U</label></div><div class="modal-row"><input type="radio" id="export-m3u8" name="exportFormat" value="m3u8"><label for="export-m3u8">M3U8</label></div><div class="modal-row"><input type="radio" id="export-pls" name="exportFormat" value="pls"><label for="export-pls">PLS</label></div><div class="modal-row"><input type="radio" id="export-json" name="exportFormat" value="json"><label for="export-json">JSON</label></div><div class="modal-row"><input type="radio" id="export-csv" name="exportFormat" value="csv"><label for="export-csv">CSV</label></div><div class="modal-row"><input type="radio" id="export-enigma2" name="exportFormat" value="enigma2"><label for="export-enigma2">Enigma2</label></div><div class="modal-buttons"><button onclick="executeExport()">تصدير</button><button onclick="closeModal('exportModal')" class="cancel">إلغاء</button></div></div></div>
     <div id="confirmModal" class="modal modal-small-top"><div class="modal-content"><span class="close" onclick="closeModal('confirmModal')">&times;</span><h2 id="confirmTitle">تأكيد الإجراء</h2><p id="confirmMessage">هل أنت متأكد؟</p><div class="modal-buttons"><button id="confirmBtn" class="action-btn">تأكيد</button><button onclick="closeModal('confirmModal')" class="action-btn delete-btn">إلغاء</button></div></div></div>
     <div id="toastContainer"></div>
 
-    <!-- START: New Draggable Player HTML -->
     <div id="video-popup" class="popup">
         <div class="popup-content" id="popup-content">
             <div id="player-container"></div>
         </div>
     </div>
-    <!-- END: New Draggable Player HTML -->
     
     <footer class="site-footer">
         <p>تم التطوير بواسطة <a href="https://github.com/iofahmawi" target="_blank" rel="noopener noreferrer">iofahmawi</a></p>
     </footer>
 
-    <!-- Plyr.io JS (جديد) -->
     <script src="https://cdn.plyr.io/3.7.8/plyr.js"></script>
 
     <script>
@@ -1218,11 +922,8 @@
         let filterDragMode = null;
         let latestDropTargetRow = null;
         let isPlayMode = false;
-        
-        // --- START: New Player Variables ---
         let player;
         let hls;
-        // --- END: New Player Variables ---
         
         function generateCountString(count, words) {
             if (count === 1) {
@@ -1321,7 +1022,6 @@
                 updateBulkActionsUI();
             }
             draggedIndices = Array.from(selectedIndices).sort((a, b) => a - b);
-            
             document.body.classList.add('is-dragging');
         }
 
@@ -1431,7 +1131,6 @@
                 });
             }
 
-            // --- START: New Player Logic ---
             const popup = document.getElementById('video-popup');
             const popupContent = document.getElementById('popup-content');
             
@@ -1473,7 +1172,6 @@
             popup.addEventListener('click', (event) => {
                 if (event.target === popup) stopPlayer(false);
             });
-            // --- END: New Player Logic ---
         });
 
         function cancelDragOperation() {
@@ -1558,7 +1256,6 @@
         }
         
         async function handleFileSelect(event) {
-            document.body.classList.remove('show-status-dots');
             const files = event.target.files;
             if (files.length === 0) return;
 
@@ -1599,7 +1296,6 @@
                 event.target.value = '';
             }
         }
-
 
         function displayPaginatedChannels() { const totalPages = Math.ceil(displayedChannels.length / rowsPerPage); currentPage = Math.max(1, Math.min(currentPage, totalPages)); const startIndex = (currentPage - 1) * rowsPerPage; const endIndex = startIndex + rowsPerPage; const pagedChannels = displayedChannels.slice(startIndex, endIndex); renderTable(pagedChannels, startIndex); setupPaginationControls(totalPages); updateBulkActionsUI(); }
         
@@ -1679,8 +1375,6 @@
             }
         }
 
-        // --- START: New Player Functions ---
-
         function triggerPlay(event, index) {
             event.stopPropagation();
             const channel = channelsData[index];
@@ -1691,7 +1385,7 @@
         }
 
         function playChannel(url) {
-            stopPlayer(true); // Stop previous player instance before starting a new one
+            stopPlayer(true);
             
             const playerContainer = document.getElementById('player-container');
             const popup = document.getElementById('video-popup');
@@ -1756,7 +1450,6 @@
             playerContainer.innerHTML = '';
             popupContent.style.transform = 'translateY(0)';
             
-            // Reset the vertical translation for the draggable UI
             const dragEndEvent = new Event('mouseup');
             document.dispatchEvent(dragEndEvent);
 
@@ -1764,8 +1457,6 @@
                 popup.classList.remove('active');
             }
         }
-        // --- END: New Player Functions ---
-
 
         function setupPaginationControls(totalPages) { const container = document.getElementById('paginationControls'); container.innerHTML = ''; if (totalPages <= 1) return; container.innerHTML = `<button id="prevPage" onclick="changePage(-1)" ${currentPage === 1 ? 'disabled' : ''}>السابق</button><span id="pageInfo">صفحة ${currentPage} من ${totalPages}</span><button id="nextPage" onclick="changePage(1)" ${currentPage === totalPages ? 'disabled' : ''}>التالي</button>`; }
         function changePage(direction) { currentPage += direction; displayPaginatedChannels(); }
@@ -2099,7 +1790,6 @@
         }
 
         async function processMultiUrlLoad() { 
-            document.body.classList.remove('show-status-dots'); 
             const urlsText = document.getElementById('multiUrlTextarea').value; 
             const urls = urlsText.split('\n').map(u => u.trim()).filter(u => u); 
             if (urls.length === 0) { return showToast("يرجى إدخال رابط واحد على الأقل", "error"); } 
@@ -2131,8 +1821,6 @@
         }
         
         function createNewPlaylist() {
-            document.body.classList.remove('show-status-dots');
-            
             channelsData = [];
             displayedChannels = [];
             selectedIndices.clear();
@@ -2864,10 +2552,48 @@
 
         function stopChannelCheck() { isChecking = false; showToast("تم إيقاف فحص القنوات.", "info"); }
         
+        function resetAllStatusDots() {
+            channelsData.forEach(channel => {
+                channel.status = 'unchecked';
+            });
+            const allDots = document.querySelectorAll('#results .status-dot');
+            allDots.forEach(dot => {
+                dot.style.display = 'none';
+                dot.className = 'status-dot unchecked';
+            });
+        }
+
+        function updateStatusDot(originalIndex, status) {
+            const dot = document.querySelector(`.status-dot[data-index="${originalIndex}"]`);
+            if (dot) {
+                dot.className = `status-dot ${status}`;
+                dot.style.display = 'inline-block';
+            }
+        }
+
         async function executeChannelCheck() {
             isChecking = true;
-            document.body.classList.add('show-status-dots');
-            displayPaginatedChannels();
+            resetAllStatusDots();
+
+            let channelsToCheck;
+            const isFiltered = displayedChannels.length < channelsData.length;
+            const hasSelection = selectedIndices.size > 0;
+
+            if (hasSelection) {
+                channelsToCheck = Array.from(selectedIndices).map(index => channelsData[index]);
+                showToast(`سيتم فحص القنوات المحددة فقط (${channelsToCheck.length}).`, 'info');
+            } else if (isFiltered) {
+                channelsToCheck = displayedChannels;
+                showToast(`سيتم فحص القنوات التي تم تصفيتها فقط (${channelsToCheck.length}).`, 'info');
+            } else {
+                channelsToCheck = channelsData;
+            }
+
+            if (channelsToCheck.length === 0) {
+                showToast("لا توجد قنوات لفحصها في النطاق المحدد.", "error");
+                isChecking = false;
+                return;
+            }
 
             const topButtonRow = document.querySelector('#channelCheckerModal .modal-buttons');
             topButtonRow.style.display = 'flex';
@@ -2881,19 +2607,27 @@
             const summaryText = document.getElementById('checker-summary-text');
             let okCount = 0;
             let failCount = 0;
-            const total = channelsData.length;
+            const total = channelsToCheck.length;
 
             for (let i = 0; i < total; i++) {
                 if (!isChecking) break;
-                const channel = channelsData[i];
+                
+                const channel = channelsToCheck[i];
+                const originalIndex = channelsData.indexOf(channel);
+
+                if (originalIndex === -1) continue;
+
                 channel.status = 'checking';
-                updateStatusDot(i, 'checking');
+                updateStatusDot(originalIndex, 'checking');
+                
                 const progress = Math.round(((i + 1) / total) * 100);
                 progressText.textContent = `جاري فحص القناة ${i + 1} من ${total}...`;
                 progressBar.style.width = `${progress}%`;
                 progressBar.textContent = `${progress}%`;
+                
                 const controller = new AbortController();
                 const timeoutId = setTimeout(() => controller.abort(), 5000);
+                
                 try {
                     const response = await fetch(channel.url, { method: 'HEAD', signal: controller.signal, mode: 'no-cors' });
                     channel.status = 'checked-ok';
@@ -2903,9 +2637,10 @@
                     failCount++;
                 } finally {
                     clearTimeout(timeoutId);
-                    updateStatusDot(i, channel.status);
+                    updateStatusDot(originalIndex, channel.status);
                 }
             }
+            
             isChecking = false;
             const channelWords = {singular: 'قناة', dualGenitive: 'قناتين', plural: 'قنوات', gender: 'f'};
             const okStr = generateCountString(okCount, channelWords);
@@ -3012,8 +2747,6 @@
             showToast(`تم عرض وتحديد ${countStr} لا تعمل.`, 'info');
         }
 
-        function updateStatusDot(originalIndex, status) { const dot = document.querySelector(`.status-dot[data-index="${originalIndex}"]`); if (dot) { dot.className = `status-dot ${status}`; } }
-        
         function setupSearchFilterModal() {
             const searchInput = document.getElementById('searchInput');
             const groupFilter = document.getElementById('groupFilter');
@@ -3167,7 +2900,6 @@
             showToast(`تم استبدال النص ${مرهStr} في ${قناةStr}.`, 'success');
         }
 
-        // --- START: Night Mode Logic ---
         const themeToggle = document.getElementById('theme-toggle');
         const currentTheme = localStorage.getItem('theme');
 
@@ -3198,7 +2930,6 @@
         if (themeToggle) {
             themeToggle.addEventListener('click', toggleTheme);
         }
-        // --- END: Night Mode Logic ---
     </script>
 </body>
 </html>
