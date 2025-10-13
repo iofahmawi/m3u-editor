@@ -924,6 +924,7 @@
         let isPlayMode = false;
         let player;
         let hls;
+        let isCheckPerformed = false;
         
         function generateCountString(count, words) {
             if (count === 1) {
@@ -1333,10 +1334,12 @@
                     <span class="placeholder" style="${channel.logo ? 'display:none;' : ''}" onclick="event.stopPropagation(); openEditModal(${originalIndex});">📺</span>
                 `;
                 
+                const statusDotDisplay = (channel.status && channel.status !== 'unchecked') ? 'inline-block' : 'none';
+
                 row.innerHTML = `
                     <td>
                         <div class="channel-index-cell">
-                             <span class="status-dot ${channel.status || 'unchecked'}" data-index="${originalIndex}"></span>
+                             <span class="status-dot ${channel.status || 'unchecked'}" data-index="${originalIndex}" style="display: ${statusDotDisplay};"></span>
                              <span>${startIndex + index + 1}</span>
                              <button class="action-button-icon play-btn-icon" onclick="triggerPlay(event, ${originalIndex})" title="تشغيل القناة">▶</button>
                         </div>
@@ -1634,6 +1637,8 @@
 
             isMerged = !isInitialLoad;
             isSorted = false;
+            isCheckPerformed = false; 
+            updateChannelCheckMenu(); 
             updateAndRefreshUI(false);
         }
         
@@ -1823,6 +1828,9 @@
             displayedChannels = [];
             selectedIndices.clear();
             localStorage.removeItem('m3uEditorSession');
+            
+            isCheckPerformed = false;
+            updateChannelCheckMenu();
 
             showPlaylistControls();
             updateAndRefreshUI(false);
@@ -2550,6 +2558,29 @@
 
         function stopChannelCheck() { isChecking = false; showToast("تم إيقاف فحص القنوات.", "info"); }
         
+        function updateChannelCheckMenu() {
+            const checkerMenuItem = document.querySelector('#advancedToolsDropdown a[onclick*="openChannelCheckerModal"], #advancedToolsDropdown a[onclick*="clearChannelCheckBadges"]');
+            if (checkerMenuItem) {
+                if (isCheckPerformed) {
+                    checkerMenuItem.textContent = 'إلغاء شارات الفحص';
+                    checkerMenuItem.onclick = function() { clearChannelCheckBadges(); closeAdvancedToolsDropdown(); return false; };
+                } else {
+                    checkerMenuItem.textContent = 'فحص حالة القنوات';
+                    checkerMenuItem.onclick = function() { openChannelCheckerModal(); closeAdvancedToolsDropdown(); return false; };
+                }
+            }
+        }
+
+        function clearChannelCheckBadges() {
+            isCheckPerformed = false;
+            channelsData.forEach(channel => {
+                channel.status = 'unchecked';
+            });
+            displayPaginatedChannels();
+            updateChannelCheckMenu();
+            showToast('تم إلغاء شارات الفحص.', 'info');
+        }
+
         function resetAllStatusDots() {
             channelsData.forEach(channel => {
                 channel.status = 'unchecked';
@@ -2640,6 +2671,12 @@
             }
             
             isChecking = false;
+            const checkedCount = okCount + failCount;
+            if (checkedCount > 0) {
+                isCheckPerformed = true;
+                updateChannelCheckMenu();
+            }
+
             const channelWords = {singular: 'قناة', dualGenitive: 'قناتين', plural: 'قنوات', gender: 'f'};
             const okStr = generateCountString(okCount, channelWords);
             const failStr = generateCountString(failCount, channelWords);
