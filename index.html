@@ -5,6 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>محرر قوائم تشغيل M3U/M3U8</title>
 
+    <!-- Plyr.io CSS (جديد) -->
+    <link rel="stylesheet" href="https://cdn.plyr.io/3.7.8/plyr.css" />
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
     
@@ -26,6 +29,7 @@
             --border-color: #e0e0e0;
             --row-alt-color: #f7f7f7;
             --selected-row-color: #fdebd0; /* Light Orange */
+            --border-radius: 12px; /* تمت إضافته لتوافق المشغل الجديد */
         }
         
         /* --- START: Screenshot Matched Night Mode --- */
@@ -356,9 +360,9 @@
             color: #fff;
         }
         .toast.success { border-left-color: var(--primary-color); }
-.toast.error { border-left-color: var(--delete-color); }
-.toast.info { border-left-color: var(--secondary-color); }
-.toast.play { border-left-color: #5cb85c; } /* <-- أضف هذا السطر */
+        .toast.error { border-left-color: var(--delete-color); }
+        .toast.info { border-left-color: var(--secondary-color); }
+        .toast.play { border-left-color: #5cb85c; } /* <-- أضف هذا السطر */
         .toast-content {
             text-align: right;
             overflow: hidden;
@@ -489,41 +493,38 @@
             padding-left: 5px;
         }
         
-        /* Player Modal Styles */
-#playerModal .modal-content {
-    max-width: 900px;
-    /* استخدم متغير اللون الأبيض من تصميمك ليتناسق مع الوضع الليلي/النهاري */
-    background-color: var(--container-bg-color); 
-    border-color: var(--border-color);
-    padding: 15px;
-}
-#playerModal .close {
-    position: absolute;
-    top: 6px;
-    left: 15px;
-    float: none;
-    color: #000; /* <-- تم التغيير إلى اللون الأسود الصريح */
-    opacity: 0.8;
-    text-shadow: none;
-}
-#playerModal h2 {
-    color: #000; /* اللون الافتراضي (النهاري) هو الأسود */
-    text-align: center;
-    margin-top: 0;
-    margin-bottom: 10px;
-    font-size: 1.2em;
-}
-#videoContainer {
-    width: 100%;
-    /* تغيير خلفية الفيديو إلى الأسود للحفاظ على تركيز المشاهدة */
-    background-color: #000; 
-}
-        #videoContainer video {
-            width: 100%;
-            height: auto;
-            max-height: 70vh;
+        /* --- START: New Player Styles --- */
+        .popup { 
+            position: fixed; 
+            z-index: 3000; /* أعلى من النوافذ الأخرى */
+            inset: 0; 
+            background-color: rgba(0,0,0,0.8); 
+            backdrop-filter: blur(5px); 
+            display: none; 
+            align-items: flex-start; 
+            justify-content: center; 
+            padding-top: 29vh;
+        }
+        .popup.active { display: flex; }
+        .popup-content, .plyr, .plyr--video .plyr__controls { overflow: visible !important; }
+        
+        .popup-content { 
+            position: relative; 
+            background-color: transparent; 
+            width: 95%; 
+            max-width: 800px; 
+            touch-action: none;
+        }
+        .popup-content.dragging {
+            cursor: grabbing;
+            user-select: none;
         }
 
+        #player-container .plyr { 
+            border-radius: var(--border-radius); 
+        }
+        /* --- END: New Player Styles --- */
+        
         #duplicate-results-list { margin-top: 15px; }
         .duplicate-group { border: 1px solid var(--border-color); border-radius: 6px; margin-bottom: 10px; padding: 10px; }
         .duplicate-group h4 { margin: 0 0 10px 0; font-size: 1.1em; color: var(--primary-color); }
@@ -849,21 +850,6 @@
             width: 100%;
             margin: 0;
         }
-body.dark-mode #playerModal h2 {
-    color: #fff; /* تغيير اللون إلى الأبيض في الوضع الليلي */
-}
-body.dark-mode #playerModal .close {
-    color: #fff; /* <-- هذا السطر سيجعل لون الزر أبيضًا في الوضع الليلي */
-}
-/* --- START: Player Modal Position Tweak --- */
-#playerModal {
-    align-items: flex-start; /* يوقف التوسيط العمودي ويجعلها تبدأ من الأعلى */
-}
-
-#playerModal .modal-content {
-    margin-top: 25vh; /* يضيف مسافة صغيرة (5% من ارتفاع الشاشة) من الحافة العلوية */
-}
-/* --- END: Player Modal Position Tweak --- */
     </style>
 </head>
 <body>
@@ -921,13 +907,8 @@ body.dark-mode #playerModal .close {
     </div>
 
     <!-- All Modals -->
-    <div id="playerModal" class="modal">
-        <div class="modal-content">
-            <span class="close" onclick="closePlayerModal()">&times;</span>
-            <h2 id="playerChannelName"></h2>
-            <div id="videoContainer"></div>
-        </div>
-    </div>
+
+    <!-- تم حذف المشغل القديم من هنا -->
     
     <div id="dragDropChoiceModal" class="modal modal-small-top">
         <div class="modal-content">
@@ -1216,17 +1197,32 @@ body.dark-mode #playerModal .close {
     </div></div>
     <div id="confirmModal" class="modal modal-small-top"><div class="modal-content"><span class="close" onclick="closeModal('confirmModal')">&times;</span><h2 id="confirmTitle">تأكيد الإجراء</h2><p id="confirmMessage">هل أنت متأكد؟</p><div class="modal-buttons"><button id="confirmBtn" class="action-btn">تأكيد</button><button onclick="closeModal('confirmModal')" class="action-btn delete-btn">إلغاء</button></div></div></div>
     <div id="toastContainer"></div>
+
+    <!-- START: New Draggable Player HTML -->
+    <div id="video-popup" class="popup">
+        <div class="popup-content" id="popup-content">
+            <div id="player-container"></div>
+        </div>
+    </div>
+    <!-- END: New Draggable Player HTML -->
     
     <footer class="site-footer">
         <p>تم التطوير بواسطة <a href="https://github.com/iofahmawi" target="_blank" rel="noopener noreferrer">iofahmawi</a></p>
     </footer>
+
+    <!-- Plyr.io JS (جديد) -->
+    <script src="https://cdn.plyr.io/3.7.8/plyr.js"></script>
 
     <script>
         let channelsData = []; let displayedChannels = []; let isMerged = false, isSorted = false; let draggedIndices = []; let selectedIndices = new Set(); let currentPage = 1; const rowsPerPage = 100; let isChecking = false; let isFilterActiveForButton = false;
         let filterDragMode = null;
         let latestDropTargetRow = null;
         let isPlayMode = false;
-        let hlsPlayer = null;
+        
+        // --- START: New Player Variables ---
+        let player;
+        let hls;
+        // --- END: New Player Variables ---
         
         function generateCountString(count, words) {
             if (count === 1) {
@@ -1303,7 +1299,6 @@ body.dark-mode #playerModal .close {
 
         function closeModal(modalId) { 
             if(modalId === 'channelCheckerModal' && isChecking) { stopChannelCheck(); } 
-            if(modalId === 'playerModal') { closePlayerModal(); return; }
             
             const modal = document.getElementById(modalId); 
             if(modal) modal.style.display = 'none'; 
@@ -1435,6 +1430,50 @@ body.dark-mode #playerModal .close {
                     document.getElementById('advancedToolsDropdown').classList.toggle('show');
                 });
             }
+
+            // --- START: New Player Logic ---
+            const popup = document.getElementById('video-popup');
+            const popupContent = document.getElementById('popup-content');
+            
+            let isDragging = false;
+            let startY;
+            let currentTranslateY = 0;
+
+            const dragStart = (e) => {
+                if (e.target.closest('.plyr__controls')) return;
+                isDragging = true;
+                startY = e.pageY || e.touches[0].pageY;
+                popupContent.classList.add('dragging');
+            };
+
+            const dragMove = (e) => {
+                if (!isDragging) return;
+                e.preventDefault();
+                const currentY = e.pageY || e.touches[0].pageY;
+                const deltaY = currentY - startY;
+                const newTranslateY = currentTranslateY + deltaY;
+                popupContent.style.transform = `translateY(${newTranslateY}px)`;
+            };
+
+            const dragEnd = (e) => {
+                if (!isDragging) return;
+                isDragging = false;
+                popupContent.classList.remove('dragging');
+                const currentY = e.pageY || e.changedTouches[0].pageY;
+                currentTranslateY += (currentY - startY);
+            };
+
+            popupContent.addEventListener('mousedown', dragStart);
+            popupContent.addEventListener('touchstart', dragStart, { passive: false });
+            document.addEventListener('mousemove', dragMove);
+            document.addEventListener('touchmove', dragMove, { passive: false });
+            document.addEventListener('mouseup', dragEnd);
+            document.addEventListener('touchend', dragEnd);
+
+            popup.addEventListener('click', (event) => {
+                if (event.target === popup) stopPlayer(false);
+            });
+            // --- END: New Player Logic ---
         });
 
         function cancelDragOperation() {
@@ -1603,7 +1642,7 @@ body.dark-mode #playerModal .close {
                         <div class="channel-index-cell">
                              <span class="status-dot ${channel.status || 'unchecked'}" data-index="${originalIndex}"></span>
                              <span>${startIndex + index + 1}</span>
-                             <button class="action-button-icon play-btn-icon" onclick="playChannel(event, ${originalIndex})" title="تشغيل القناة">▶</button>
+                             <button class="action-button-icon play-btn-icon" onclick="triggerPlay(event, ${originalIndex})" title="تشغيل القناة">▶</button>
                         </div>
                     </td>
                     <td class="channel-name">
@@ -1629,54 +1668,96 @@ body.dark-mode #playerModal .close {
             isPlayMode = !isPlayMode;
             document.body.classList.toggle('play-mode-enabled', isPlayMode);
             const toggleButton = document.getElementById('playModeToggle');
-            // الكود الجديد
-if (isPlayMode) {
-    //...
-    showToast('تم تفعيل وضع التشغيل.', 'play', 3000);
-} else {
-    //...
-    showToast('تم إيقاف وضع التشغيل.', 'play', 3000);
-}
+            const playToastMsg = isPlayMode ? 'تم تفعيل وضع التشغيل.' : 'تم إيقاف وضع التشغيل.';
+            showToast(playToastMsg, 'play', 3000);
         }
 
-        function playChannel(event, index) {
-            event.stopPropagation(); 
+        // --- START: New Player Functions ---
+
+        function triggerPlay(event, index) {
+            event.stopPropagation();
             const channel = channelsData[index];
             if (!channel || !channel.url) {
                 return showToast("لا يوجد رابط تشغيل لهذه القناة.", "error");
             }
-            
-            document.getElementById('playerChannelName').textContent = channel.name;
-            const videoContainer = document.getElementById('videoContainer');
-            
-            videoContainer.innerHTML = `<video id="videoPlayer" controls autoplay></video>`;
-            const video = videoContainer.querySelector('video');
-            const videoSrc = channel.url;
+            playChannel(channel.url);
+        }
 
-            if (Hls.isSupported() && (videoSrc.includes('.m3u8') || videoSrc.includes('.m3u'))) {
-                if (hlsPlayer) hlsPlayer.destroy();
-                hlsPlayer = new Hls();
-                hlsPlayer.loadSource(videoSrc);
-                hlsPlayer.attachMedia(video);
-                hlsPlayer.on(Hls.Events.MANIFEST_PARSED, () => video.play());
-            } else {
-                video.src = videoSrc;
-                video.addEventListener('canplay', () => video.play());
-            }
-            openModal('playerModal');
-        }
-        
-        function closePlayerModal() {
-            if (hlsPlayer) {
-                hlsPlayer.destroy();
-                hlsPlayer = null;
-            }
-            const videoContainer = document.getElementById('videoContainer');
-            videoContainer.innerHTML = ''; // This stops native video playback
+        function playChannel(url) {
+            stopPlayer(true); // Stop previous player instance before starting a new one
             
-            const modal = document.getElementById('playerModal');
-            if(modal) modal.style.display = 'none';
+            const playerContainer = document.getElementById('player-container');
+            const popup = document.getElementById('video-popup');
+            
+            const video = document.createElement('video');
+            video.id = 'player';
+            video.playsinline = true;
+            video.controls = true;
+            playerContainer.appendChild(video);
+            popup.classList.add('active');
+            
+            if (url.endsWith('.m3u8') && Hls.isSupported()) {
+                hls = new Hls({ autoLevelEnabled: false });
+                hls.loadSource(url);
+                hls.attachMedia(video);
+                hls.on(Hls.Events.MANIFEST_PARSED, (event, data) => {
+                    const plyrOptions = {
+                        i18n: {
+                            qualityLabel: {
+                                ...[...data.levels].reduce((labels, level) => {
+                                    const bitrate = level.bitrate;
+                                    labels[bitrate] = bitrate >= 1000000
+                                        ? `${(bitrate / 1000000).toFixed(1)} Mbps`
+                                        : `${Math.round(bitrate / 1000)} Kbps`;
+                                    return labels;
+                                }, {})
+                            }
+                        }
+                    };
+                    if (data.levels.length > 1) {
+                        plyrOptions.quality = {
+                            default: data.levels[0].bitrate,
+                            options: [...data.levels].reverse().map(level => level.bitrate),
+                            forced: true,
+                            onChange: (selectedBitrate) => {
+                                hls.levels.forEach((level, levelIndex) => {
+                                    if (level.bitrate === selectedBitrate) {
+                                        hls.currentLevel = levelIndex;
+                                    }
+                                });
+                            },
+                        };
+                    }
+                    player = new Plyr(video, plyrOptions);
+                    player.play();
+                });
+            } else {
+                video.src = url;
+                player = new Plyr(video, {});
+                player.play();
+            }
         }
+
+        function stopPlayer(isSwitchingChannel = false) {
+            const playerContainer = document.getElementById('player-container');
+            const popup = document.getElementById('video-popup');
+            const popupContent = document.getElementById('popup-content');
+
+            if (player) { player.destroy(); player = null; }
+            if (hls) { hls.destroy(); hls = null; }
+            
+            playerContainer.innerHTML = '';
+            popupContent.style.transform = 'translateY(0)';
+            
+            // Reset the vertical translation for the draggable UI
+            const dragEndEvent = new Event('mouseup');
+            document.dispatchEvent(dragEndEvent);
+
+            if (!isSwitchingChannel) {
+                popup.classList.remove('active');
+            }
+        }
+        // --- END: New Player Functions ---
 
 
         function setupPaginationControls(totalPages) { const container = document.getElementById('paginationControls'); container.innerHTML = ''; if (totalPages <= 1) return; container.innerHTML = `<button id="prevPage" onclick="changePage(-1)" ${currentPage === 1 ? 'disabled' : ''}>السابق</button><span id="pageInfo">صفحة ${currentPage} من ${totalPages}</span><button id="nextPage" onclick="changePage(1)" ${currentPage === totalPages ? 'disabled' : ''}>التالي</button>`; }
