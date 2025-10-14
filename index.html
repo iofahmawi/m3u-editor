@@ -356,6 +356,9 @@
             background-color: #333;
             color: #fff;
         }
+        body.dark-mode .toast.info {
+            border-left-color: #85c1e9;
+        }
         .toast.success { border-left-color: var(--primary-color); }
         .toast.error { border-left-color: var(--delete-color); }
         .toast.info { border-left-color: var(--secondary-color); }
@@ -975,7 +978,7 @@
                                 location.reload();
                             }
                         };
-                        showToast('لبدء جلسة جديدة، اضغط', document.body.classList.contains('dark-mode') ? 'success' : 'info', -1, action);
+                        showToast('لبدء جلسة جديدة، اضغط', 'info', -1, action);
                     }
                 }
             } catch (e) {
@@ -2103,7 +2106,25 @@
         }
         
         function deleteChannel(index) { showConfirm('تأكيد الحذف', `هل أنت متأكد من حذف: ${channelsData[index].name}؟`, () => { channelsData.splice(index, 1); updateAndRefreshUI(); showToast('تم حذف القناة بنجاح', 'success'); }); }
-        function saveEdit() { const originalIndex = parseInt(document.getElementById('editOriginalIndex').value); let newIndex = parseInt(document.getElementById('editIndexField').value) - 1; if (!document.getElementById('editName').value || !document.getElementById('editUrl').value) return showToast("الاسم والرابط مطلوبان", 'error'); const groups = document.getElementById('editGroup').value.split(';').map(g => g.trim()).filter(g => g); const channel = { name: document.getElementById('editName').value, groups: groups, logo: document.getElementById('editLogo').value, url: document.getElementById('editUrl').value, originalExtinf: channelsData[originalIndex].originalExtinf, status: channelsData[originalIndex].status }; if (newIndex !== originalIndex && newIndex < channelsData.length) { channelsData.splice(originalIndex, 1); channelsData.splice(newIndex, 0, channel); } else { channelsData[originalIndex] = channel; } updateAndRefreshUI(); closeModal('editModal'); populateGroupFilter(); }
+        
+        function saveEdit() { 
+            const originalIndex = parseInt(document.getElementById('editOriginalIndex').value); 
+            let newIndex = parseInt(document.getElementById('editIndexField').value) - 1; 
+            if (!document.getElementById('editName').value || !document.getElementById('editUrl').value) return showToast("الاسم والرابط مطلوبان", 'error'); 
+            const groups = document.getElementById('editGroup').value.split(';').map(g => g.trim()).filter(g => g); 
+            const channel = { name: document.getElementById('editName').value, groups: groups, logo: document.getElementById('editLogo').value, url: document.getElementById('editUrl').value, originalExtinf: channelsData[originalIndex].originalExtinf, status: channelsData[originalIndex].status }; 
+            if (newIndex !== originalIndex && newIndex < channelsData.length) { 
+                channelsData.splice(originalIndex, 1); 
+                channelsData.splice(newIndex, 0, channel); 
+            } else { 
+                channelsData[originalIndex] = channel; 
+            } 
+            updateAndRefreshUI(); 
+            closeModal('editModal'); 
+            populateGroupFilter(); 
+            showToast('تم حفظ التعديلات بنجاح.', 'success'); 
+        }
+
         function saveNewChannel() { if (!document.getElementById('addName').value || !document.getElementById('addUrl').value) return showToast("الاسم والرابط مطلوبان", 'error'); let newIndex = parseInt(document.getElementById('addIndexField').value) - 1; const groups = document.getElementById('addGroup').value.split(';').map(g => g.trim()).filter(g => g); const newChannel = { name: document.getElementById('addName').value, groups: groups, logo: document.getElementById('addLogo').value, url: document.getElementById('addUrl').value, status: 'unchecked' }; if (newIndex >= 0 && newIndex <= channelsData.length) { channelsData.splice(newIndex, 0, newChannel); } else { channelsData.push(newChannel); } updateAndRefreshUI(); closeModal('addModal'); populateGroupFilter(); showToast('تمت إضافة القناة بنجاح', 'success'); }
         function openAddModal() { document.getElementById('addIndexField').value = channelsData.length + 1; ['addName', 'addGroup', 'addLogo', 'addUrl'].forEach(id => document.getElementById(id).value = ''); updateLogoPreview('addPreviewImage', ''); openModal('addModal'); }
         
