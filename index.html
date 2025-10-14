@@ -456,7 +456,7 @@
         .modal-content button.cancel { background-color: var(--button-delete-color); color: white; } 
         .modal-content button:hover { opacity: 0.8; } 
         .modal-row { display: flex; align-items: center; margin-bottom: 10px; } 
-        .modal-row label { margin-left: 5px; cursor: pointer; } 
+        .modal-row label { margin-left: 5px; cursor: pointer; flex-shrink: 0; }
         .modal-buttons {
             display: flex;
             justify-content: center;
@@ -715,6 +715,47 @@
             background-color: var(--secondary-hover);
         }
         
+        .library-tabs {
+    overflow: hidden;
+    border: 1px solid var(--border-color);
+    background-color: var(--row-alt-color);
+    display: flex;
+    border-radius: 8px;
+    margin-top: 15px;
+    width: 95%; /* <--- أضف هذا السطر فقط */
+}
+        .library-tabs button {
+            background-color: inherit;
+            flex-grow: 1;
+            border: none;
+            outline: none;
+            cursor: pointer;
+            padding: 5px 12px;
+            transition: background-color 0.3s;
+            font-size: 0.9em;
+            color: var(--text-color);
+            font-weight: bold;
+        }
+        .library-tabs button:hover {
+            background-color: var(--border-color);
+        }
+        .library-tabs button.active {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        body.dark-mode .library-tabs button.active {
+            color: #1a1a1a;
+        }
+        .library-tab-pane {
+            display: none;
+            padding: 15px 0 0 0;
+            border-top: none;
+        }
+        .library-select {
+            width: 100%;
+            padding: 8px;
+        }
+        
         @media (max-width: 600px) {
             h1.page-title {
                 font-size: 1.9em;
@@ -804,7 +845,14 @@
             width: 100%;
             margin: 0;
         }
-    </style>
+    #libraryImportModal h2 {
+    color: #333333; /* لون رمادي داكن جدًا (قريب للأسود) */
+}
+
+body.dark-mode #libraryImportModal h2 {
+    color: var(--text-color); /* للتأكد من أنه يبقى أبيض في الوضع الليلي */
+}
+</style>
 </head>
 <body>
     <div class="container">
@@ -883,7 +931,55 @@
                 <button onclick="removeDuplicatesManually(); closeModal('advancedOptionsModal');">إزالة التكرار</button>
                 <button onclick="openFindReplaceModal(); closeModal('advancedOptionsModal');">بحث واستبدال</button>
                 <button onclick="handleChannelCheckClick(); closeModal('advancedOptionsModal');">فحص حالة القنوات</button>
+                <button onclick="openLibraryImportModal(); closeModal('advancedOptionsModal');">استيراد من iptv-org</button>
                 <button id="modalPlayModeToggle" onclick="togglePlayMode(); closeModal('advancedOptionsModal');">تفعيل وضع التشغيل</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Modal for Library Import -->
+    <div id="libraryImportModal" class="modal modal-medium-top">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('libraryImportModal')">&times;</span>
+            <h2>استيراد من iptv-org</h2>
+            <p>اختر طريقة التصنيف ثم حدد القائمة المطلوبة.</p>
+            
+            <!-- Tab buttons -->
+            <div class="library-tabs">
+                <button class="library-tab-btn active" onclick="openLibraryTab(event, 'Country')" id="defaultOpenTab">حسب البلد</button>
+                <button class="library-tab-btn" onclick="openLibraryTab(event, 'Language')">حسب اللغة</button>
+                <button class="library-tab-btn" onclick="openLibraryTab(event, 'Category')">حسب المجال</button>
+            </div>
+
+            <div id="library-loading-indicator" style="text-align: center; margin: 20px 0;">جارٍ جلب القوائم...</div>
+
+            <!-- Tab content -->
+            <div id="Country" class="library-tab-pane" style="display: block;">
+                <select id="libraryCountryFilter" class="library-select">
+                    <option value="">-- اختر بلدًا --</option>
+                </select>
+            </div>
+            <div id="Language" class="library-tab-pane">
+                <select id="libraryLanguageFilter" class="library-select">
+                    <option value="">-- اختر لغة --</option>
+                </select>
+            </div>
+            <div id="Category" class="library-tab-pane">
+                <select id="libraryCategoryFilter" class="library-select">
+                    <option value="">-- اختر مجالاً --</option>
+                </select>
+            </div>
+
+            <div style="margin-top: 11px; margin-bottom: 24px;">
+                <div class="modal-row" style="justify-content: flex-start; gap: 60px;">
+                    <label for="import-action-merge" style="display: flex; align-items: center; cursor: pointer; margin: 0;"><input type="radio" id="import-action-merge" name="importAction" value="merge" checked style="margin: 0 0 0 5px;">دمج مع الحالي</label>
+                    <label for="import-action-replace" style="display: flex; align-items: center; cursor: pointer; margin: 0;"><input type="radio" id="import-action-replace" name="importAction" value="replace" style="margin: 0 0 0 5px;">استبدال الحالي</label>
+                </div>
+            </div>
+
+            <div class="modal-buttons">
+                <button onclick="executeLibraryImport()">استيراد</button>
+                <button class="cancel" onclick="closeModal('libraryImportModal')">إلغاء</button>
             </div>
         </div>
     </div>
@@ -2697,11 +2793,6 @@
         }
         
         window.addEventListener('click', function(event) {
-            if (!event.target.closest('.advanced-tools-dropdown')) {
-                const dropdown = document.getElementById('advancedToolsDropdown');
-                if (dropdown) dropdown.classList.remove('show');
-            }
-            
             if (!event.target.matches('.dropdown-btn')) {
                 document.querySelectorAll("#checker-actions-dropdown.show").forEach(openDropdown => {
                     openDropdown.classList.remove('show');
@@ -2916,6 +3007,133 @@
             const مرهStr = generateCountString(replacedCount, {singular: 'مرة', dualGenitive: 'مرتين', plural: 'مرات', gender: 'f'});
             const قناةStr = generateCountString(affectedChannels, {singular: 'قناة', dualGenitive: 'قناتين', plural: 'قنوات', gender: 'f'});
             showToast(`تم استبدال النص ${مرهStr} في ${قناةStr}.`, 'success');
+        }
+
+        function openLibraryTab(evt, tabName) {
+            let i, tabcontent, tablinks;
+            tabcontent = document.getElementsByClassName("library-tab-pane");
+            for (i = 0; i < tabcontent.length; i++) {
+                tabcontent[i].style.display = "none";
+            }
+            tablinks = document.getElementsByClassName("library-tab-btn");
+            for (i = 0; i < tablinks.length; i++) {
+                tablinks[i].className = tablinks[i].className.replace(" active", "");
+            }
+            document.getElementById(tabName).style.display = "block";
+            evt.currentTarget.className += " active";
+        }
+
+        async function openLibraryImportModal() {
+            openModal('libraryImportModal');
+            // Click the default tab to ensure it's active
+            document.getElementById('defaultOpenTab').click();
+
+            const countryFilter = document.getElementById('libraryCountryFilter');
+            // Do not fetch again if the list is already populated
+            if (countryFilter.options.length > 1) return; 
+
+            const loadingIndicator = document.getElementById('library-loading-indicator');
+            const tabPanes = document.querySelectorAll('.library-tab-pane');
+            
+            loadingIndicator.style.display = 'block';
+            tabPanes.forEach(pane => pane.style.display = 'none');
+
+            try {
+                // Fetch all data sources in parallel
+                const [countriesRes, languagesRes, categoriesRes] = await Promise.all([
+                    fetch('https://iptv-org.github.io/api/countries.json'),
+                    fetch('https://iptv-org.github.io/api/languages.json'),
+                    fetch('https://iptv-org.github.io/api/categories.json')
+                ]);
+
+                if (!countriesRes.ok || !languagesRes.ok || !categoriesRes.ok) {
+                    throw new Error('فشل جلب إحدى قوائم المكتبة');
+                }
+
+                // Parse all responses
+                const countries = await countriesRes.json();
+                const languages = await languagesRes.json();
+                const categories = await categoriesRes.json();
+                
+                // Get references to the other select elements
+                const languageFilter = document.getElementById('libraryLanguageFilter');
+                const categoryFilter = document.getElementById('libraryCategoryFilter');
+
+                // Correctly populate each select element
+                countries.forEach(c => countryFilter.add(new Option(c.name, c.code)));
+                languages.forEach(l => languageFilter.add(new Option(l.name, l.code)));
+                categories.forEach(c => categoryFilter.add(new Option(c.name, c.id)));
+
+            } catch (error) {
+                console.error("Error fetching library data:", error);
+                showToast("حدث خطأ أثناء جلب قوائم المكتبة.", "error");
+                closeModal('libraryImportModal');
+            } finally {
+                loadingIndicator.style.display = 'none';
+                // Ensure the default tab content is visible after loading
+                document.getElementById('Country').style.display = 'block';
+            }
+        }
+
+        async function executeLibraryImport() {
+            const importAction = document.querySelector('input[name="importAction"]:checked').value;
+            let url = '', selectedValue = '';
+
+            const activeTab = document.querySelector('.library-tab-pane[style*="block"]');
+            if (!activeTab) return showToast("حدث خطأ غير متوقع.", "error");
+
+            const selectElement = activeTab.querySelector('select');
+            selectedValue = selectElement.value;
+            
+            if (!selectedValue) {
+                return showToast("يرجى اختيار عنصر من القائمة أولاً.", "error");
+            }
+            
+            switch(activeTab.id) {
+                case 'Country':
+                    // الإصلاح الثاني: تحويل كود البلد إلى أحرف صغيرة
+                    url = `https://iptv-org.github.io/iptv/countries/${selectedValue.toLowerCase()}.m3u`;
+                    break;
+                case 'Language':
+                    url = `https://iptv-org.github.io/iptv/languages/${selectedValue}.m3u`;
+                    break;
+                case 'Category':
+                    url = `https://iptv-org.github.io/iptv/categories/${selectedValue}.m3u`;
+                    break;
+            }
+
+            closeModal('libraryImportModal');
+            document.getElementById('loadingIndicator').style.display = 'block';
+
+            try {
+                const response = await fetch(url);
+                if (!response.ok) throw new Error('فشل تحميل قائمة القنوات');
+                const content = await response.text();
+                const channelsFromLibrary = parseM3uPlaylist(content);
+
+                if (channelsFromLibrary.length === 0) {
+                    showToast("لم يتم العثور على قنوات في الاختيار المحدد.", "info");
+                    return;
+                }
+
+                if (importAction === 'replace') {
+                    channelsData = [];
+                    isCheckPerformed = false;
+                    updateChannelCheckMenu();
+                }
+                
+                const countStr = generateCountString(channelsFromLibrary.length, {singular: 'قناة', dualGenitive: 'قناتين', plural: 'قنوات', gender: 'f'});
+                const actionText = importAction === 'replace' ? 'استبدال القائمة بـ' : 'دمج';
+                
+                processNewChannels(channelsFromLibrary, `تم ${actionText} ${countStr} بنجاح.`);
+                showPlaylistControls();
+
+            } catch (error) {
+                console.error("Error importing from library:", error);
+                showToast("حدث خطأ أثناء استيراد القنوات.", "error");
+            } finally {
+                document.getElementById('loadingIndicator').style.display = 'none';
+            }
         }
 
         const themeToggle = document.getElementById('theme-toggle');
