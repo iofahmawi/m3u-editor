@@ -505,7 +505,16 @@
             padding-top: 29vh;
         }
         .popup.active { display: flex; }
-        .popup-content, .plyr, .plyr--video .plyr__controls { overflow: visible !important; }
+        /* هذا السطر يسمح للنافذة المنبثقة بالحركة بحرية */
+.popup-content { 
+    overflow: visible; 
+}
+
+/* هذا السطر الجديد يصلح مشكلة شريط الأدوات */
+.plyr--video {
+    overflow: hidden;
+    border-radius: var(--border-radius); 
+}
         
         .popup-content { 
             position: relative; 
