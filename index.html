@@ -878,6 +878,20 @@
 body.dark-mode #libraryImportModal h2 {
     color: var(--text-color); /* للتأكد من أنه يبقى أبيض في الوضع الليلي */
 }
+
+    .sort-options-container {
+        display: flex;
+        justify-content: flex-start;
+        align-items: center;
+        gap: 25px;
+        margin-top: 10px;
+        padding-top: 15px;
+        border-top: 1px solid var(--border-color);
+        margin-bottom: 20px;
+    }
+    .sort-options-container .modal-row {
+        margin-bottom: 0;
+    }
 </style>
 </head>
 <body>
@@ -933,7 +947,7 @@ body.dark-mode #libraryImportModal h2 {
     <div id="editModal" class="modal modal-medium-top"><div class="modal-content"><span class="close" onclick="closeModal('editModal')">&times;</span><h2>تحرير القناة</h2><div class="modal-form-row"><label for="editIndexField">رقم القناة:</label><input type="number" id="editIndexField" min="1"></div><div class="modal-form-row"><label for="editName">اسم القناة:</label><input type="text" id="editName"></div><div class="modal-form-row"><label for="editGroup">المجموعة:</label><input type="text" id="editGroup"></div><div class="modal-form-row"><label for="editLogo">رابط الصورة:</label><input type="url" id="editLogo"><div id="logoPreview"><img id="previewImage"></div></div><div class="modal-form-row"><label for="editUrl">رابط التشغيل:</label><input type="url" id="editUrl"></div><input type="hidden" id="editOriginalIndex"><div class="modal-buttons"><button onclick="saveEdit()">حفظ</button><button onclick="closeModal('editModal')" class="cancel">إلغاء</button></div></div></div>
     <div id="addModal" class="modal modal-medium-top"><div class="modal-content"><span class="close" onclick="closeModal('addModal')">&times;</span><h2>إضافة قناة جديدة</h2><div class="modal-form-row"><label for="addIndexField">رقم القناة:</label><input type="number" id="addIndexField" min="1"></div><div class="modal-form-row"><label for="addName">اسم القناة:</label><input type="text" id="addName" required></div><div class="modal-form-row"><label for="addGroup">المجموعة:</label><input type="text" id="addGroup"></div><div class="modal-form-row"><label for="addLogo">رابط الصورة:</label><input type="url" id="addLogo"><div id="addLogoPreview"><img id="addPreviewImage"></div></div><div class="modal-form-row"><label for="addUrl">رابط التشغيل:</label><input type="url" id="addUrl" required></div><div class="modal-buttons"><button onclick="saveNewChannel()">إضافة</button><button onclick="closeModal('addModal')" class="cancel">إلغاء</button></div></div></div>
     <div id="removeDuplicatesModal" class="modal modal-small-top"><div class="modal-content"><span class="close" onclick="closeModal('removeDuplicatesModal')">&times;</span><h2>إزالة التكرار</h2><div id="duplicate-criteria-step"><label>اختر الشرط:</label><div class="modal-row"><input type="radio" id="crit-name" name="duplicateCriteria" value="name"><label for="crit-name">الاسم فقط</label></div><div class="modal-row"><input type="radio" id="crit-name-url" name="duplicateCriteria" value="name-url" checked><label for="crit-name-url">الاسم + الرابط</label></div><div class="modal-row"><input type="radio" id="crit-name-url-group" name="duplicateCriteria" value="name-url-group"><label for="crit-name-url-group">الاسم + الرابط + المجموعة</label></div><div class="modal-buttons"><button onclick="findDuplicates()">البحث عن التكرار</button><button onclick="closeModal('removeDuplicatesModal')" class="cancel">إلغاء</button></div></div><div id="duplicate-results-step" style="display: none;"><p><strong>اختر النسخة التي تريد الإبقاء عليها:</strong></p><div id="duplicate-results-list"></div><div class="modal-buttons"><button onclick="executeDuplicateDeletion()">حذف التكرار</button><button onclick="showDuplicateCriteriaStep()" class="cancel">رجوع</button></div></div></div></div>
-    <div id="sortModal" class="modal modal-medium-top"><div class="modal-content"><span class="close" onclick="closeModal('sortModal')">&times;</span><h2>فرز وترتيب القنوات</h2><div id="sort-scope-container" style="display: none; margin-bottom: 15px;"><label for="sort-scope-selector" style="display:block; margin-bottom: 5px;"><strong>نطاق الفرز:</strong></label><select id="sort-scope-selector" style="width: 95%;"></select></div><div class="modal-row"><input type="radio" id="sort-alpha" name="sortCriteria" value="alphabetical" checked onchange="handleSortCriteriaChange()"><label for="sort-alpha">أبجدي</label></div><div class="modal-row"><input type="radio" id="sort-chno" name="sortCriteria" value="tvg-chno" onchange="handleSortCriteriaChange()"><label for="sort-chno">حسب الرقم الأصلي (tvg-chno)</label></div><div class="modal-row"><input type="radio" id="sort-name" name="sortCriteria" value="name" onchange="handleSortCriteriaChange()"><label for="sort-name">حسب اسم القناة</label></div><div id="sortByNameInputContainer"><input type="text" id="sortByNameField" placeholder="أدخل اسم القناة (مثال: mbc)"></div><div class="modal-row"><input type="radio" id="sort-group" name="sortCriteria" value="group" onchange="handleSortCriteriaChange()"><label for="sort-group">حسب اسم المجموعة</label></div><div id="sortByGroupInputContainer"><input type="text" id="sortByGroupField" placeholder="أدخل اسم المجموعة"></div><div class="modal-row" id="sort-move-row"><input type="radio" id="sort-move" name="sortCriteria" value="moveBlock" onchange="handleSortCriteriaChange()"><label for="sort-move">نقل مجموعة قنوات إلى موضع جديد</label></div><div id="moveBlockInputContainer"><div class="move-block-row"><label for="moveFromIndex">نقل من رقم:</label><input type="number" id="moveFromIndex" min="1" placeholder="مثال: 50"></div><div class="move-block-row"><label for="moveToIndex">إلى رقم:</label><input type="number" id="moveToIndex" min="1" placeholder="مثال: 100"></div><div class="move-block-row"><label for="moveTargetIndex">إلى الموضع رقم:</label><input type="number" id="moveTargetIndex" min="1" placeholder="مثال: 1"></div></div><div class="modal-row" style="margin-top: 15px; padding-top: 10px; border-top: 1px solid var(--border-color);"><input type="checkbox" id="sort-descending"><label for="sort-descending">ترتيب تنازلي</label></div><div class="modal-buttons"><button onclick="executeSort()">تنفيذ</button><button onclick="closeModal('sortModal')" class="cancel">إلغاء</button></div></div></div>
+    <div id="sortModal" class="modal"><div class="modal-content"><span class="close" onclick="closeModal('sortModal')">&times;</span><h2>فرز وترتيب القنوات</h2><div id="sort-scope-container" style="display: none; margin-bottom: 15px;"><label for="sort-scope-selector" style="display:block; margin-bottom: 5px;"><strong>نطاق الفرز:</strong></label><select id="sort-scope-selector" style="width: 95%;"></select></div><div class="modal-row"><input type="radio" id="sort-alpha" name="sortCriteria" value="alphabetical" checked onchange="handleSortCriteriaChange()"><label for="sort-alpha">أبجدي</label></div><div class="modal-row"><input type="radio" id="sort-chno" name="sortCriteria" value="tvg-chno" onchange="handleSortCriteriaChange()"><label for="sort-chno">حسب الرقم الأصلي (tvg-chno)</label></div><div class="modal-row"><input type="radio" id="sort-name" name="sortCriteria" value="name" onchange="handleSortCriteriaChange()"><label for="sort-name">حسب اسم القناة</label></div><div id="sortByNameInputContainer"><input type="text" id="sortByNameField" placeholder="أدخل اسم القناة (مثال: mbc)"></div><div class="modal-row"><input type="radio" id="sort-group" name="sortCriteria" value="group" onchange="handleSortCriteriaChange()"><label for="sort-group">حسب اسم المجموعة</label></div><div id="sortByGroupInputContainer"><input type="text" id="sortByGroupField" placeholder="أدخل اسم المجموعة"></div><div class="modal-row" id="sort-move-row"><input type="radio" id="sort-move" name="sortCriteria" value="moveBlock" onchange="handleSortCriteriaChange()"><label id="sort-move-label" for="sort-move">نقل قنوات إلى موضع جديد</label></div><div id="moveBlockInputContainer"><div id="moveBlockRangeContainer"><div class="move-block-row"><label for="moveFromIndex">نقل من رقم:</label><input type="number" id="moveFromIndex" min="1" placeholder="مثال: 50"></div><div class="move-block-row"><label for="moveToIndex">إلى رقم:</label><input type="number" id="moveToIndex" min="1" placeholder="مثال: 100"></div></div><div class="move-block-row"><label for="moveTargetIndex">إلى الموضع رقم:</label><input type="number" id="moveTargetIndex" min="1" placeholder="مثال: 1"></div></div><div class="sort-options-container"><div class="modal-row"><input type="checkbox" id="sort-descending"><label for="sort-descending">ترتيب تنازلي</label></div><div class="modal-row" id="sort-grouping-container"><input type="checkbox" id="sort-grouping"><label for="sort-grouping">تجميع</label></div></div><div class="modal-buttons"><button onclick="executeSort()">تنفيذ</button><button onclick="closeModal('sortModal')" class="cancel">إلغاء</button></div></div></div>
     <div id="manageGroupsModal" class="modal"><div class="modal-content"><span class="close" onclick="closeModal('manageGroupsModal')">&times;</span><h2>إدارة المجموعات</h2><div style="padding: 5px; margin: 0 -5px 15px -5px;"><label for="groupSelector">اختر المجموعة:</label><select id="groupSelector" onchange="handleGroupSelectorChange()"></select><label>اختر الإجراء:</label><div class="modal-row"><input type="radio" id="action-rename" name="groupAction" value="rename" checked onchange="handleGroupActionChange()"><label for="action-rename">إعادة تسمية</label></div><div id="renameGroupInputContainer"><input type="text" id="newGroupNameField" placeholder="أدخل اسمًا جديدًا أو اتركه فارغًا"><div class="modal-row" style="font-size: 0.9em; margin-top: 5px;"><input type="checkbox" id="rename-add-as-new"><label for="rename-add-as-new">إضافة دون حذف التصنيفات الحالية</label></div></div><div class="modal-row"><input type="radio" id="action-merge" name="groupAction" value="merge" onchange="handleGroupActionChange()"><label for="action-merge">دمج المجموعة المحددة</label></div><div id="mergeGroupInputContainer"><label for="mergeTargetSelector" style="display: block;">مع المجموعة:</label><select id="mergeTargetSelector"></select></div><div class="modal-row"><input type="radio" id="action-remove-all-groups" name="groupAction" value="removeAll" onchange="handleGroupActionChange()"><label for="action-remove-all-groups">إزالة كل التصنيفات</label></div><div class="modal-row"><input type="radio" id="action-delete" name="groupAction" value="delete" onchange="handleGroupActionChange()"><label for="action-delete">حذف المجموعة</label></div><div class="modal-row"><input type="radio" id="action-export-group" name="groupAction" value="exportGroup" onchange="handleGroupActionChange()"><label for="action-export-group">تصدير قنوات المجموعة</label></div></div><div class="modal-buttons"><button onclick="executeGroupAction()">تنفيذ</button><button onclick="closeModal('manageGroupsModal')" class="cancel">إلغاء</button></div></div></div>
     <div id="mergeModal" class="modal modal-small-top"><div class="modal-content"><span class="close" onclick="closeModal('mergeModal')">&times;</span><h2>خيارات الدمج</h2><div class="modal-content-body"><label for="mergeOptionSelector" style="display:block; margin-bottom: 5px; text-align: right;">اختر طريقة الدمج:</label><select id="mergeOptionSelector" onchange="handleMergeOptionChange()"><option value="file" selected>من ملف</option><option value="url">من رابط</option></select><div id="mergeFileOption" class="merge-option-container" style="display: block;"><p>اختر ملف أو أكثر لدمجه مع القائمة الحالية.</p><button onclick="document.getElementById('mergeFileInput').click()">اختيار ملفات</button></div><div id="mergeUrlOption" class="merge-option-container" style="display: none;"><p>ألصق الروابط هنا، كل رابط في سطر جديد.</p><textarea id="mergeUrlTextarea" placeholder="https://example.com/playlist.m3u" style="width: 100%; min-height: 120px; margin-bottom: 20px; direction: ltr; text-align: left;"></textarea><button onclick="executeMerge()">دمج الروابط</button></div></div></div></div>
     <div id="exportModal" class="modal modal-medium-top"><div class="modal-content"><span class="close" onclick="closeModal('exportModal')">&times;</span><h2>تصدير قائمة التشغيل</h2><p>اختر الصيغة المطلوبة للحفظ:</p><div class="modal-row"><input type="radio" id="export-m3u" name="exportFormat" value="m3u" checked><label for="export-m3u">M3U</label></div><div class="modal-row"><input type="radio" id="export-m3u8" name="exportFormat" value="m3u8"><label for="export-m3u8">M3U8</label></div><div class="modal-row"><input type="radio" id="export-pls" name="exportFormat" value="pls"><label for="export-pls">PLS</label></div><div class="modal-row"><input type="radio" id="export-json" name="exportFormat" value="json"><label for="export-json">JSON</label></div><div class="modal-row"><input type="radio" id="export-csv" name="exportFormat" value="csv"><label for="export-csv">CSV</label></div><div class="modal-row"><input type="radio" id="export-enigma2" name="exportFormat" value="enigma2"><label for="export-enigma2">Enigma2</label></div><div class="modal-buttons"><button onclick="executeExport()">تصدير</button><button onclick="closeModal('exportModal')" class="cancel">إلغاء</button></div></div></div>
@@ -1940,29 +1954,44 @@ body.dark-mode #libraryImportModal h2 {
         function executeSort() {
             const criteria = document.querySelector('input[name="sortCriteria"]:checked').value;
             const isDescending = document.getElementById('sort-descending').checked;
-            
+            const isGroupingEnabled = document.getElementById('sort-grouping').checked;
+
             if (criteria === 'moveBlock') {
-                const from = parseInt(document.getElementById('moveFromIndex').value);
-                const to = parseInt(document.getElementById('moveToIndex').value);
                 const target = parseInt(document.getElementById('moveTargetIndex').value);
-
-                if (isNaN(from) || isNaN(to) || isNaN(target)) { return showToast('يرجى ملء جميع حقول النقل بأرقام صحيحة', 'error'); }
-                if (from > to) { return showToast('رقم البداية "من" يجب أن يكون أصغر من أو يساوي رقم النهاية "إلى"', 'error'); }
+                if (isNaN(target)) { return showToast('يرجى إدخال الموضع الهدف', 'error'); }
                 const maxIndex = channelsData.length;
-                if (from < 1 || to > maxIndex || target < 1 || target > maxIndex + 1) { return showToast(`الأرقام المدخلة خارج نطاق القائمة (1 - ${maxIndex})`, 'error'); }
+                if (target < 1 || target > maxIndex + 1) { return showToast(`الموضع الهدف خارج نطاق القائمة (1 - ${maxIndex})`, 'error'); }
 
-                const fromIndex = from - 1;
-                const toIndex = to - 1;
-                const targetIndex = target - 1;
-                
-                const count = toIndex - fromIndex + 1;
-                const blockToMove = channelsData.splice(fromIndex, count);
-                channelsData.splice(targetIndex, 0, ...blockToMove);
-                const countStr = generateCountString(count, {singular: 'قناة', dualGenitive: 'قناتين', plural: 'قنوات', gender: 'f'});
-                showToast(`تم نقل ${countStr} إلى الموضع ${target} بنجاح`, 'success');
+                if (selectedIndices.size > 0) {
+                    // Move selected channels
+                    const sortedIndices = Array.from(selectedIndices).sort((a, b) => b - a);
+                    const blockToMove = [];
+                    sortedIndices.forEach(index => {
+                        blockToMove.unshift(channelsData.splice(index, 1)[0]);
+                    });
+                    
+                    channelsData.splice(target - 1, 0, ...blockToMove);
+                    const countStr = generateCountString(blockToMove.length, {singular: 'قناة', dualGenitive: 'قناتين', plural: 'قنوات', gender: 'f'});
+                    showToast(`تم نقل ${countStr} محددة إلى الموضع ${target} بنجاح`, 'success');
+                    selectedIndices.clear();
+                } else {
+                    // Move a range of channels
+                    const from = parseInt(document.getElementById('moveFromIndex').value);
+                    const to = parseInt(document.getElementById('moveToIndex').value);
+                    if (isNaN(from) || isNaN(to)) { return showToast('يرجى ملء حقلي "من" و "إلى"', 'error'); }
+                    if (from > to) { return showToast('رقم البداية "من" يجب أن يكون أصغر من أو يساوي رقم النهاية "إلى"', 'error'); }
+                    if (from < 1 || to > maxIndex) { return showToast(`الأرقام المدخلة خارج نطاق القائمة (1 - ${maxIndex})`, 'error'); }
+
+                    const fromIndex = from - 1;
+                    const toIndex = to - 1;
+                    const count = toIndex - fromIndex + 1;
+                    const blockToMove = channelsData.splice(fromIndex, count);
+                    channelsData.splice(target - 1, 0, ...blockToMove);
+                    const countStr = generateCountString(count, {singular: 'قناة', dualGenitive: 'قناتين', plural: 'قنوات', gender: 'f'});
+                    showToast(`تم نقل ${countStr} إلى الموضع ${target} بنجاح`, 'success');
+                }
             } else {
-                const scopeContainer = document.getElementById('sort-scope-container');
-                const scope = (scopeContainer.style.display === 'none' || !document.getElementById('sort-scope-selector').value) ? 'all' : document.getElementById('sort-scope-selector').value;
+                const scope = document.getElementById('sort-scope-selector').value;
                 const sortFunction = (a, b) => (a.name || '').localeCompare(b.name || '', 'ar');
                 
                 let channelsToSort;
@@ -1976,6 +2005,12 @@ body.dark-mode #libraryImportModal h2 {
                     channelsToSort = originalIndices.map(index => channelsData[index]);
                 } else {
                     channelsToSort = [...channelsData];
+                    originalIndices = channelsData.map((_, i) => i);
+                }
+                
+                if (channelsToSort.length === 0) {
+                    closeModal('sortModal');
+                    return;
                 }
 
                 if (criteria === 'alphabetical') {
@@ -2000,13 +2035,23 @@ body.dark-mode #libraryImportModal h2 {
                     channelsToSort.reverse();
                 }
 
-                if (scope === 'all') {
-                    channelsData = channelsToSort;
-                } else {
-                    originalIndices.forEach((originalIndex, i) => {
+                if (scope === 'all' || !isGroupingEnabled) {
+                     originalIndices.forEach((originalIndex, i) => {
                         channelsData[originalIndex] = channelsToSort[i];
                     });
+                } else {
+                    // Grouping logic
+                    const insertionIndex = originalIndices[0];
+                    const indicesToRemove = originalIndices.sort((a, b) => b - a);
+                    
+                    indicesToRemove.forEach(index => {
+                        channelsData.splice(index, 1);
+                    });
+
+                    channelsData.splice(insertionIndex, 0, ...channelsToSort);
+                    selectedIndices.clear();
                 }
+                
                 const countStr = generateCountString(channelsToSort.length, {singular: 'قناة', dualGenitive: 'قناتين', plural: 'قنوات', gender: 'f'});
                 showToast(`تم فرز ${countStr} بنجاح`, 'success');
             }
@@ -2016,7 +2061,7 @@ body.dark-mode #libraryImportModal h2 {
             updateAndRefreshUI();
             closeModal('sortModal');
         }
-        
+
         function executeGroupAction() {
             const action = document.querySelector('input[name="groupAction"]:checked').value;
             const selectedTarget = document.getElementById('groupSelector').value;
@@ -2251,17 +2296,26 @@ body.dark-mode #libraryImportModal h2 {
         function openSortModal() {
             if (channelsData.length === 0) return showToast("لا توجد قنوات لفرزها", "error");
 
+            // --- بداية التعديل ---
+            // التحقق مما إذا كانت هناك تصفية نشطة
             const isFiltered = displayedChannels.length < channelsData.length;
+            const moveBlockRow = document.getElementById('sort-move-row');
+            
+            // إخفاء خيار النقل في حالة التصفية، وإظهاره في الحالة العادية
+            if (isFiltered) {
+                moveBlockRow.style.display = 'none';
+                
+                // للسلامة: إذا كان الخيار المخفي محدداً، نلغي تحديده ونختار الأول
+                if (document.getElementById('sort-move').checked) {
+                    document.getElementById('sort-alpha').checked = true;
+                }
+            } else {
+                moveBlockRow.style.display = 'flex'; // أو 'block' حسب التصميم الأصلي
+            }
+            // --- نهاية التعديل ---
+
             const hasSelection = selectedIndices.size > 0;
             const scopeSelector = document.getElementById('sort-scope-selector');
-            const moveBlockOptionRow = document.getElementById('sort-move-row');
-            
-            if (isFiltered || hasSelection) {
-                moveBlockOptionRow.style.display = 'none';
-                document.getElementById('sort-alpha').checked = true;
-            } else {
-                moveBlockOptionRow.style.display = 'flex';
-            }
             
             scopeSelector.innerHTML = '';
             
@@ -2275,18 +2329,27 @@ body.dark-mode #libraryImportModal h2 {
                 const countStr = generateCountString(selectedIndices.size, channelWords);
                 scopeSelector.innerHTML += `<option value="selected">فرز القنوات المحددة (${countStr})</option>`;
             }
-            if (!isFiltered) {
-                const countStr = generateCountString(channelsData.length, channelWords);
-                scopeSelector.innerHTML += `<option value="all">فرز كامل القائمة (${countStr})</option>`;
-            }
+            
+            const countStr = generateCountString(channelsData.length, channelWords);
+            scopeSelector.innerHTML += `<option value="all">فرز كامل القائمة (${countStr})</option>`;
 
             if (isFiltered) {
                 scopeSelector.value = 'filtered';
             } else if (hasSelection) {
                 scopeSelector.value = 'selected';
+            } else {
+                scopeSelector.value = 'all';
             }
             
+            const moveLabel = document.getElementById('sort-move-label');
+            if (hasSelection) {
+                moveLabel.textContent = `نقل المحدد (${selectedIndices.size}) إلى موضع`;
+            } else {
+                moveLabel.textContent = 'نقل قنوات إلى موضع جديد';
+            }
+
             document.getElementById('sort-descending').checked = false;
+            document.getElementById('sort-grouping').checked = false;
 
             handleSortCriteriaChange();
             
@@ -2305,20 +2368,21 @@ body.dark-mode #libraryImportModal h2 {
             groupContainer.classList.toggle('visible', criteria === 'group');
             moveContainer.classList.toggle('visible', criteria === 'moveBlock');
 
-            if (modalContent) {
-                modalContent.classList.toggle('compact-layout', criteria === 'moveBlock');
-            }
+            modalContent.classList.toggle('compact-layout', criteria === 'moveBlock');
             
             document.getElementById('sort-descending').disabled = (criteria === 'tvg-chno');
 
             const scopeContainer = document.getElementById('sort-scope-container');
-            const isFiltered = displayedChannels.length < channelsData.length;
-            const hasSelection = selectedIndices.size > 0;
+            const scopeIsSubSet = document.getElementById('sort-scope-selector').value !== 'all';
+            
+            const groupingContainer = document.getElementById('sort-grouping-container');
+            groupingContainer.style.display = (criteria !== 'moveBlock' && scopeIsSubSet) ? 'flex' : 'none';
 
-            if (criteria !== 'moveBlock' && (isFiltered || hasSelection)) {
-                scopeContainer.style.display = 'block';
-            } else {
-                scopeContainer.style.display = 'none';
+            scopeContainer.style.display = (criteria !== 'moveBlock') ? 'block' : 'none';
+            
+            const moveRangeContainer = document.getElementById('moveBlockRangeContainer');
+            if(moveRangeContainer) {
+                moveRangeContainer.style.display = (selectedIndices.size > 0 && criteria === 'moveBlock') ? 'none' : 'block';
             }
         }
         
