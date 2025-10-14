@@ -716,14 +716,14 @@
         }
         
         .library-tabs {
-    overflow: hidden;
-    border: 1px solid var(--border-color);
-    background-color: var(--row-alt-color);
-    display: flex;
-    border-radius: 8px;
-    margin-top: 15px;
-    width: 95%; /* <--- أضف هذا السطر فقط */
-}
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+            background-color: var(--row-alt-color);
+            display: flex;
+            border-radius: 8px;
+            margin-top: 15px;
+            width: 95%; /* <--- أضف هذا السطر فقط */
+        }
         .library-tabs button {
             background-color: inherit;
             flex-grow: 1;
@@ -751,6 +751,23 @@
             padding: 15px 0 0 0;
             border-top: none;
         }
+        
+        /* START: Added for library filter */
+        .library-search-input {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        body.dark-mode .library-search-input {
+            background-color: #3a3a3a;
+            color: var(--text-color);
+            border-color: #555;
+        }
+        /* END: Added for library filter */
+        
         .library-select {
             width: 100%;
             padding: 8px;
@@ -955,17 +972,20 @@ body.dark-mode #libraryImportModal h2 {
 
             <!-- Tab content -->
             <div id="Country" class="library-tab-pane" style="display: block;">
-                <select id="libraryCountryFilter" class="library-select">
+                <input type="text" id="countrySearchInput" class="library-search-input" placeholder="ابحث عن بلد...">
+                <select id="libraryCountryFilter" class="library-select" size="8">
                     <option value="">-- اختر بلدًا --</option>
                 </select>
             </div>
             <div id="Language" class="library-tab-pane">
-                <select id="libraryLanguageFilter" class="library-select">
+                <input type="text" id="languageSearchInput" class="library-search-input" placeholder="ابحث عن لغة...">
+                <select id="libraryLanguageFilter" class="library-select" size="8">
                     <option value="">-- اختر لغة --</option>
                 </select>
             </div>
             <div id="Category" class="library-tab-pane">
-                <select id="libraryCategoryFilter" class="library-select">
+                <input type="text" id="categorySearchInput" class="library-search-input" placeholder="ابحث عن مجال...">
+                <select id="libraryCategoryFilter" class="library-select" size="8">
                     <option value="">-- اختر مجالاً --</option>
                 </select>
             </div>
@@ -998,6 +1018,11 @@ body.dark-mode #libraryImportModal h2 {
         let player;
         let hls;
         let isCheckPerformed = false;
+        
+        // START: Added for debouncing library filter
+        let debounceTimeout = null;
+        let isLibraryDataFetched = false;
+        // END: Added for debouncing library filter
         
         function generateCountString(count, words) {
             if (count === 1) {
@@ -3022,15 +3047,48 @@ body.dark-mode #libraryImportModal h2 {
             document.getElementById(tabName).style.display = "block";
             evt.currentTarget.className += " active";
         }
+        
+        // START: New, more performant function for library filter
+        function debouncedFilterLibrary(input, select) {
+            clearTimeout(debounceTimeout);
+            debounceTimeout = setTimeout(() => {
+                performFilter(input, select);
+            }, 200); // 200ms delay
+        }
+
+        function performFilter(input, select) {
+            const searchTerm = input.value.toLowerCase().trim();
+            let firstVisibleIndex = -1;
+
+            for (let i = 0; i < select.options.length; i++) {
+                const option = select.options[i];
+                const optionText = option.text.toLowerCase();
+                const isPlaceholder = option.value === "";
+
+                if (isPlaceholder || optionText.includes(searchTerm)) {
+                    option.style.display = 'block';
+                    if (firstVisibleIndex === -1 && !isPlaceholder) {
+                        firstVisibleIndex = i;
+                    }
+                } else {
+                    option.style.display = 'none';
+                }
+            }
+
+            // Auto-select the first visible result
+            if (firstVisibleIndex !== -1) {
+                select.selectedIndex = firstVisibleIndex;
+            } else {
+                select.selectedIndex = 0; // Select the placeholder if no results
+            }
+        }
+        // END: New, more performant function for library filter
 
         async function openLibraryImportModal() {
             openModal('libraryImportModal');
-            // Click the default tab to ensure it's active
             document.getElementById('defaultOpenTab').click();
 
-            const countryFilter = document.getElementById('libraryCountryFilter');
-            // Do not fetch again if the list is already populated
-            if (countryFilter.options.length > 1) return; 
+            if (isLibraryDataFetched) return; 
 
             const loadingIndicator = document.getElementById('library-loading-indicator');
             const tabPanes = document.querySelectorAll('.library-tab-pane');
@@ -3039,7 +3097,6 @@ body.dark-mode #libraryImportModal h2 {
             tabPanes.forEach(pane => pane.style.display = 'none');
 
             try {
-                // Fetch all data sources in parallel
                 const [countriesRes, languagesRes, categoriesRes] = await Promise.all([
                     fetch('https://iptv-org.github.io/api/countries.json'),
                     fetch('https://iptv-org.github.io/api/languages.json'),
@@ -3050,19 +3107,29 @@ body.dark-mode #libraryImportModal h2 {
                     throw new Error('فشل جلب إحدى قوائم المكتبة');
                 }
 
-                // Parse all responses
                 const countries = await countriesRes.json();
                 const languages = await languagesRes.json();
                 const categories = await categoriesRes.json();
                 
-                // Get references to the other select elements
+                const countryFilter = document.getElementById('libraryCountryFilter');
                 const languageFilter = document.getElementById('libraryLanguageFilter');
                 const categoryFilter = document.getElementById('libraryCategoryFilter');
 
-                // Correctly populate each select element
                 countries.forEach(c => countryFilter.add(new Option(c.name, c.code)));
                 languages.forEach(l => languageFilter.add(new Option(l.name, l.code)));
                 categories.forEach(c => categoryFilter.add(new Option(c.name, c.id)));
+                
+                // Add event listeners using the debounced function
+                const countrySearchInput = document.getElementById('countrySearchInput');
+                countrySearchInput.addEventListener('input', () => debouncedFilterLibrary(countrySearchInput, countryFilter));
+
+                const languageSearchInput = document.getElementById('languageSearchInput');
+                languageSearchInput.addEventListener('input', () => debouncedFilterLibrary(languageSearchInput, languageFilter));
+
+                const categorySearchInput = document.getElementById('categorySearchInput');
+                categorySearchInput.addEventListener('input', () => debouncedFilterLibrary(categorySearchInput, categoryFilter));
+                
+                isLibraryDataFetched = true;
 
             } catch (error) {
                 console.error("Error fetching library data:", error);
@@ -3070,7 +3137,6 @@ body.dark-mode #libraryImportModal h2 {
                 closeModal('libraryImportModal');
             } finally {
                 loadingIndicator.style.display = 'none';
-                // Ensure the default tab content is visible after loading
                 document.getElementById('Country').style.display = 'block';
             }
         }
@@ -3091,7 +3157,6 @@ body.dark-mode #libraryImportModal h2 {
             
             switch(activeTab.id) {
                 case 'Country':
-                    // الإصلاح الثاني: تحويل كود البلد إلى أحرف صغيرة
                     url = `https://iptv-org.github.io/iptv/countries/${selectedValue.toLowerCase()}.m3u`;
                     break;
                 case 'Language':
