@@ -537,25 +537,28 @@
         #bulk-actions-list {
             display: flex;
             flex-direction: column;
-            gap: 15px;
+            gap: 10px;
             padding: 10px 0;
         }
         #bulk-actions-list .modal-row {
-            margin-bottom: 0;
-            border: 1px solid var(--border-color);
-            padding: 10px;
-            border-radius: 10px;
             flex-wrap: wrap;
         }
         
         #bulk-move-input-container {
-            display: none;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s ease-in-out, margin-top 0.4s ease-in-out;
             width: 100%;
-            padding-top: 10px;
-            margin-top: 10px;
-            border-top: 1px solid var(--border-color);
-            flex-wrap: nowrap;
+            margin-top: 0;
+            display: flex;
+            flex-wrap: wrap;
             align-items: center;
+            gap: 10px;
+            padding-right: 25px;
+        }
+        #bulk-move-input-container.visible {
+            max-height: 100px;
+            margin-top: 10px;
         }
         #bulk-move-input-container label {
             margin: 0 0 0 8px;
@@ -564,7 +567,7 @@
         #bulk-move-target-index {
             flex-grow: 1;
             margin: 0;
-            padding: 10px 8px;
+            padding: 8px;
             font-size: 1em;
             text-align: right;
             width: auto;
@@ -2479,7 +2482,7 @@
         
         function handleBulkActionChange() {
             const selectedAction = document.querySelector('input[name="bulkAction"]:checked').value;
-            document.getElementById('bulk-move-input-container').style.display = (selectedAction === 'move') ? 'flex' : 'none';
+            document.getElementById('bulk-move-input-container').classList.toggle('visible', selectedAction === 'move');
         }
 
         function executeBulkAction() {
