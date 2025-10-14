@@ -693,63 +693,26 @@
         .merge-option-container button:hover { background-color: var(--primary-hover); } 
         .status-dot { height: 10px; width: 10px; border-radius: 50%; display: none; margin-left: 5px; } .status-dot.unchecked { background-color: #bbb; } .status-dot.checking { background-color: #f0ad4e; animation: blinker 1s linear infinite; } .status-dot.checked-ok { background-color: #5cb85c; } .status-dot.checked-fail { background-color: var(--delete-color); } @keyframes blinker { 50% { opacity: 0.5; } } #checker-progress-bar-container { width: 100%; background-color: #e0e0e0; border-radius: 5px; margin: 15px 0; } body.dark-mode #checker-progress-bar-container { background-color: #444; } #checker-progress-bar { width: 0%; height: 20px; background-color: var(--primary-color); border-radius: 5px; text-align: center; line-height: 20px; color: white; transition: width 0.3s; } .find-replace-options div { margin-bottom: 5px; }
         
-        .advanced-tools-dropdown {
-            position: relative;
+        #modal-options-list {
             display: flex;
-            flex-shrink: 0;
-            box-sizing: border-box;
-            margin: 10px 5px;
+            flex-direction: column;
+            gap: 14px;
+            margin-top: 20px;
         }
-
-        .advanced-tools-dropdown-content {
-            display: none;
-            position: absolute;
-            background-color: var(--container-bg-color);
-            min-width: 100%;
-            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.15);
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            z-index: 100;
-            top: 100%;
-            left: 0;
-            margin-top: 5px;
-            overflow: hidden;
-            text-align: right;
-        }
-        
-        body.dark-mode .advanced-tools-dropdown-content {
-            background-color: #3a3a3a;
-            border-color: #555;
-        }
-        
-        .advanced-tools-dropdown-content a {
-            color: var(--text-color);
-            padding: 12px 16px;
-            text-decoration: none;
-            display: block;
-            border-bottom: 1px solid var(--border-color);
-            white-space: nowrap;
-            cursor: pointer;
-        }
-
-        .advanced-tools-dropdown-content a:last-child {
-            border-bottom: none;
-        }
-
-        .advanced-tools-dropdown-content a:hover {
-            background-color: var(--row-alt-color);
-        }
-        body.dark-mode .advanced-tools-dropdown-content a:hover {
-            background-color: #4f4f4f;
-        }
-        
-        .advanced-tools-dropdown-content.show {
-            display: block;
-        }
-        
-        .advanced-tools-dropdown > .action-btn {
+        #modal-options-list button {
             width: 100%;
-            margin: 0;
+            padding: 10px;
+            background-color: var(--secondary-color);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.9em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        #modal-options-list button:hover {
+            background-color: var(--secondary-hover);
         }
         
         @media (max-width: 600px) {
@@ -873,19 +836,7 @@
                 <button class="action-btn" onclick="openModal('exportModal')">تصدير القائمة</button>
                 <button class="action-btn" id="manageGroupsButton" onclick="openManageGroupsModal()">إدارة المجموعات</button>
                 <button class="action-btn" id="openSortModalButton" onclick="openSortModal()">فرز وترتيب</button>
-
-                <div class="advanced-tools-dropdown">
-                    <button class="action-btn" id="advancedToolsButton">خيارات إضافية</button>
-                    <div class="advanced-tools-dropdown-content" id="advancedToolsDropdown">
-                        <a href="#" onclick="openAddModal(); closeAdvancedToolsDropdown(); return false;">إضافة قناة</a>
-                        <a href="#" onclick="openMergeModal(); closeAdvancedToolsDropdown(); return false;">دمج قوائم</a>
-                        <a href="#" onclick="removeDuplicatesManually(); closeAdvancedToolsDropdown(); return false;">إزالة التكرار</a>
-                        <a href="#" onclick="openFindReplaceModal(); closeAdvancedToolsDropdown(); return false;">بحث واستبدال</a>
-                        <a href="#" onclick="openChannelCheckerModal(); closeAdvancedToolsDropdown(); return false;">فحص حالة القنوات</a>
-                        <a href="#" id="playModeToggle" onclick="togglePlayMode(); closeAdvancedToolsDropdown(); return false;">تفعيل وضع التشغيل</a>
-                    </div>
-                </div>
-
+                <button class="action-btn" id="advancedToolsButton" onclick="openModal('advancedOptionsModal')">خيارات إضافية</button>
                 <button class="action-btn" id="openSearchFilterModalButton" onclick="openModal('searchFilterModal')">بحث وتصفية</button>
                 <button class="action-btn" id="bulkActionsButton" onclick="openModal('bulkActionsModal')">إجراءات على المحدد</button>
             </div>
@@ -921,6 +872,22 @@
         </div>
     </div>
     
+    <!-- Modal for Advanced Options -->
+    <div id="advancedOptionsModal" class="modal modal-medium-top">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('advancedOptionsModal')">&times;</span>
+            <h2>خيارات إضافية</h2>
+            <div id="modal-options-list">
+                <button onclick="openAddModal(); closeModal('advancedOptionsModal');">إضافة قناة</button>
+                <button onclick="openMergeModal(); closeModal('advancedOptionsModal');">دمج قوائم</button>
+                <button onclick="removeDuplicatesManually(); closeModal('advancedOptionsModal');">إزالة التكرار</button>
+                <button onclick="openFindReplaceModal(); closeModal('advancedOptionsModal');">بحث واستبدال</button>
+                <button onclick="handleChannelCheckClick(); closeModal('advancedOptionsModal');">فحص حالة القنوات</button>
+                <button id="modalPlayModeToggle" onclick="togglePlayMode(); closeModal('advancedOptionsModal');">تفعيل وضع التشغيل</button>
+            </div>
+        </div>
+    </div>
+
     <footer class="site-footer">
         <p>تم التطوير بواسطة <a href="https://github.com/iofahmawi" target="_blank" rel="noopener noreferrer">iofahmawi</a></p>
     </footer>
@@ -1134,14 +1101,6 @@
                 document.getElementById('results').innerHTML = '';
             }
             
-            const advancedToolsBtn = document.getElementById('advancedToolsButton');
-            if (advancedToolsBtn) {
-                advancedToolsBtn.addEventListener('click', function(event) {
-                    event.stopPropagation();
-                    document.getElementById('advancedToolsDropdown').classList.toggle('show');
-                });
-            }
-
             const popup = document.getElementById('video-popup');
             const popupContent = document.getElementById('popup-content');
             
@@ -1376,15 +1335,15 @@
         function togglePlayMode() {
             isPlayMode = !isPlayMode;
             document.body.classList.toggle('play-mode-enabled', isPlayMode);
-            
-            const toggleButton = document.getElementById('playModeToggle');
-            
-            if (isPlayMode) {
-                toggleButton.textContent = 'إيقاف وضع التشغيل';
-                showToast('تم تفعيل وضع التشغيل.', 'play', 3000);
-            } else {
-                toggleButton.textContent = 'تفعيل وضع التشغيل';
-                showToast('تم إيقاف وضع التشغيل.', 'play', 3000);
+            const toggleButton = document.getElementById('modalPlayModeToggle');
+            if (toggleButton) {
+                if (isPlayMode) {
+                    toggleButton.textContent = 'إيقاف وضع التشغيل';
+                    showToast('تم تفعيل وضع التشغيل.', 'play', 3000);
+                } else {
+                    toggleButton.textContent = 'تفعيل وضع التشغيل';
+                    showToast('تم إيقاف وضع التشغيل.', 'play', 3000);
+                }
             }
         }
 
@@ -2563,6 +2522,31 @@
         }
         function exportSelected() { if (selectedIndices.size === 0) return; openModal('exportModal'); }
         
+        function handleChannelCheckClick() {
+            if (isCheckPerformed) {
+                clearChannelCheckBadges();
+            } else {
+                openChannelCheckerModal();
+            }
+        }
+
+        function updateChannelCheckMenu() {
+            const checkerButton = document.querySelector('#modal-options-list button[onclick*="handleChannelCheckClick"]');
+            if (checkerButton) {
+                checkerButton.textContent = isCheckPerformed ? 'إلغاء شارات الفحص' : 'فحص حالة القنوات';
+            }
+        }
+
+        function clearChannelCheckBadges() {
+            isCheckPerformed = false;
+            channelsData.forEach(channel => {
+                channel.status = 'unchecked';
+            });
+            displayPaginatedChannels();
+            updateChannelCheckMenu();
+            showToast('تم إلغاء شارات الفحص.', 'info');
+        }
+
         function openChannelCheckerModal() {
             if (channelsData.length === 0) return showToast("لا توجد قنوات لفحصها", "error");
             
@@ -2586,29 +2570,6 @@
 
         function stopChannelCheck() { isChecking = false; showToast("تم إيقاف فحص القنوات.", "info"); }
         
-        function updateChannelCheckMenu() {
-            const checkerMenuItem = document.querySelector('#advancedToolsDropdown a[onclick*="openChannelCheckerModal"], #advancedToolsDropdown a[onclick*="clearChannelCheckBadges"]');
-            if (checkerMenuItem) {
-                if (isCheckPerformed) {
-                    checkerMenuItem.textContent = 'إلغاء شارات الفحص';
-                    checkerMenuItem.onclick = function() { clearChannelCheckBadges(); closeAdvancedToolsDropdown(); return false; };
-                } else {
-                    checkerMenuItem.textContent = 'فحص حالة القنوات';
-                    checkerMenuItem.onclick = function() { openChannelCheckerModal(); closeAdvancedToolsDropdown(); return false; };
-                }
-            }
-        }
-
-        function clearChannelCheckBadges() {
-            isCheckPerformed = false;
-            channelsData.forEach(channel => {
-                channel.status = 'unchecked';
-            });
-            displayPaginatedChannels();
-            updateChannelCheckMenu();
-            showToast('تم إلغاء شارات الفحص.', 'info');
-        }
-
         function resetAllStatusDots() {
             channelsData.forEach(channel => {
                 channel.status = 'unchecked';
@@ -2735,16 +2696,10 @@
             document.getElementById("checker-actions-dropdown").classList.toggle("show");
         }
         
-        function closeAdvancedToolsDropdown() {
-            const dropdown = document.getElementById('advancedToolsDropdown');
-            if (dropdown) {
-                dropdown.classList.remove('show');
-            }
-        }
-
         window.addEventListener('click', function(event) {
             if (!event.target.closest('.advanced-tools-dropdown')) {
-                closeAdvancedToolsDropdown();
+                const dropdown = document.getElementById('advancedToolsDropdown');
+                if (dropdown) dropdown.classList.remove('show');
             }
             
             if (!event.target.matches('.dropdown-btn')) {
