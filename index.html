@@ -506,15 +506,15 @@
         }
         .popup.active { display: flex; }
         /* هذا السطر يسمح للنافذة المنبثقة بالحركة بحرية */
-.popup-content { 
-    overflow: visible; 
-}
+        .popup-content { 
+            overflow: visible; 
+        }
 
-/* هذا السطر الجديد يصلح مشكلة شريط الأدوات */
-.plyr--video {
-    overflow: hidden;
-    border-radius: var(--border-radius); 
-}
+        /* هذا السطر الجديد يصلح مشكلة شريط الأدوات */
+        .plyr--video {
+            overflow: hidden;
+            border-radius: var(--border-radius); 
+        }
         
         .popup-content { 
             position: relative; 
@@ -643,41 +643,36 @@
             display: block;
         }
         
-        #sortByNameInputContainer, #sortByGroupInputContainer, #moveBlockInputContainer {
-            max-height: 0;
-            overflow: hidden;
-            transition: max-height 0.4s ease-in-out, margin 0.4s ease-in-out;
-            margin-right: 25px;
-            margin-top: 0;
-            margin-bottom: 0;
-        }
-
-        #sortByNameInputContainer.visible, #sortByGroupInputContainer.visible {
-            max-height: 100px;
-            margin-bottom: 10px;
-        }
-        #moveBlockInputContainer.visible {
-            max-height: 200px;
-        }
-        
+        /* START: CSS Refactoring */
+        #sortByNameInputContainer, #sortByGroupInputContainer, #moveBlockInputContainer,
         #renameGroupInputContainer, #mergeGroupInputContainer {
             max-height: 0;
             overflow: hidden;
+            margin: 0 25px 0 0;
+        }
+        #sortByNameInputContainer, #sortByGroupInputContainer, #moveBlockInputContainer {
+            transition: max-height 0.4s ease-in-out, margin 0.4s ease-in-out;
+        }
+        #renameGroupInputContainer, #mergeGroupInputContainer {
             transition: all 0.4s ease-in-out;
-            margin-right: 25px;
-            margin-top: 0;
-            margin-bottom: 0;
             padding: 0;
+        }
+
+        #sortByNameInputContainer.visible, #sortByGroupInputContainer.visible,
+        #mergeGroupInputContainer.visible {
+            max-height: 100px;
+            margin-bottom: 10px;
         }
         #renameGroupInputContainer.visible {
             max-height: 150px;
             margin-bottom: 10px;
         }
-        #mergeGroupInputContainer.visible {
-            max-height: 100px;
-            margin-bottom: 10px;
-        }
+        /* END: CSS Refactoring */
 
+        #moveBlockInputContainer.visible {
+            max-height: 200px;
+        }
+        
         .move-block-row {
             display: flex;
             align-items: center;
@@ -1231,27 +1226,7 @@ body.dark-mode #libraryImportModal h2 {
             updateAndRefreshUI();
         }
 
-
-        document.addEventListener('DOMContentLoaded', () => { 
-            document.getElementById('executeDragDropChoice').onclick = () => {
-                const selectedMode = document.querySelector('input[name="dragDropChoice"]:checked').value;
-                filterDragMode = selectedMode;
-                if (latestDropTargetRow) {
-                    performDrop(filterDragMode, latestDropTargetRow);
-                }
-                closeModal('dragDropChoiceModal');
-                latestDropTargetRow = null;
-            };
-
-            loadSession();
-            if(channelsData.length === 0) {
-                document.getElementById('uploadArea').style.display = 'block'; 
-                document.getElementById('urlLoadContainer').style.display = 'block'; 
-                document.getElementById('toolsMergeRow').style.display = 'none'; 
-                ['openExportModalButton', 'addChannelButton', 'openSortModalButton', 'manageGroupsButton', 'openMergeModalButton', 'removeDuplicatesButton', 'bulkActionsButton'].forEach(id => { const button = document.getElementById(id); if (button) button.style.display = 'none'; }); 
-                document.getElementById('results').innerHTML = '';
-            }
-            
+        function setupPopupDrag() {
             const popup = document.getElementById('video-popup');
             const popupContent = document.getElementById('popup-content');
             
@@ -1293,6 +1268,29 @@ body.dark-mode #libraryImportModal h2 {
             popup.addEventListener('click', (event) => {
                 if (event.target === popup) stopPlayer(false);
             });
+        }
+
+        document.addEventListener('DOMContentLoaded', () => { 
+            document.getElementById('executeDragDropChoice').onclick = () => {
+                const selectedMode = document.querySelector('input[name="dragDropChoice"]:checked').value;
+                filterDragMode = selectedMode;
+                if (latestDropTargetRow) {
+                    performDrop(filterDragMode, latestDropTargetRow);
+                }
+                closeModal('dragDropChoiceModal');
+                latestDropTargetRow = null;
+            };
+
+            loadSession();
+            if(channelsData.length === 0) {
+                document.getElementById('uploadArea').style.display = 'block'; 
+                document.getElementById('urlLoadContainer').style.display = 'block'; 
+                document.getElementById('toolsMergeRow').style.display = 'none'; 
+                ['openExportModalButton', 'addChannelButton', 'openSortModalButton', 'manageGroupsButton', 'openMergeModalButton', 'removeDuplicatesButton', 'bulkActionsButton'].forEach(id => { const button = document.getElementById(id); if (button) button.style.display = 'none'; }); 
+                document.getElementById('results').innerHTML = '';
+            }
+            
+            setupPopupDrag();
         });
 
         function cancelDragOperation() {
@@ -1912,26 +1910,33 @@ body.dark-mode #libraryImportModal h2 {
             showToast(`تم حذف ${countStr} مكررة بنجاح.`, 'success');
         }
 
+        async function fetchAndParseUrls(urls) {
+            let allNewChannels = [];
+            let failedCount = 0;
+            for (const url of urls) {
+                try {
+                    const response = await fetch(url);
+                    if (!response.ok) throw new Error(`فشل تحميل الرابط (الحالة: ${response.status})`);
+                    const content = await response.text();
+                    const channelsFromUrl = parseFileContent(content, url);
+                    allNewChannels.push(...channelsFromUrl);
+                } catch (error) {
+                    failedCount++;
+                    console.error(`خطأ في تحميل الرابط ${url}:`, error);
+                }
+            }
+            return { channels: allNewChannels, failedCount: failedCount };
+        }
+
         async function processMultiUrlLoad() { 
             const urlsText = document.getElementById('multiUrlTextarea').value; 
             const urls = urlsText.split('\n').map(u => u.trim()).filter(u => u); 
             if (urls.length === 0) { return showToast("يرجى إدخال رابط واحد على الأقل", "error"); } 
             closeModal('multiUrlModal'); 
             document.getElementById('loadingIndicator').style.display = 'block'; 
-            let allNewChannels = []; 
-            let failedCount = 0; 
-            for (const url of urls) { 
-                try { 
-                    const response = await fetch(url); 
-                    if (!response.ok) throw new Error(`فشل تحميل الرابط (الحالة: ${response.status})`); 
-                    const content = await response.text(); 
-                    const channelsFromUrl = parseFileContent(content, url); 
-                    allNewChannels.push(...channelsFromUrl); 
-                } catch (error) { 
-                    failedCount++; 
-                    console.error(`خطأ في تحميل الرابط ${url}:`, error); 
-                } 
-            } 
+
+            const { channels: allNewChannels } = await fetchAndParseUrls(urls);
+            
             document.getElementById('loadingIndicator').style.display = 'none'; 
             if (allNewChannels.length > 0) { 
                 channelsData = []; 
@@ -2218,25 +2223,11 @@ body.dark-mode #libraryImportModal h2 {
             if (urls.length === 0) {
                 return showToast("يرجى إدخال رابط واحد على الأقل للدمج", "error");
             }
-
             closeModal('mergeModal');
             document.getElementById('loadingIndicator').style.display = 'block';
 
-            let allNewChannels = [];
-            let failedCount = 0;
+            const { channels: allNewChannels, failedCount } = await fetchAndParseUrls(urls);
 
-            for (const url of urls) {
-                try {
-                    const response = await fetch(url);
-                    if (!response.ok) throw new Error(`Failed to fetch`);
-                    const content = await response.text();
-                    const channelsFromUrl = parseFileContent(content, url);
-                    allNewChannels.push(...channelsFromUrl);
-                } catch (error) {
-                    failedCount++;
-                    console.error(`Error fetching/parsing URL ${url}:`, error);
-                }
-            }
             document.getElementById('loadingIndicator').style.display = 'none';
 
             if (allNewChannels.length > 0) {
@@ -2299,46 +2290,27 @@ body.dark-mode #libraryImportModal h2 {
             }
             openModal('editModal');
         }
-        
-        function openSortModal() {
-            if (channelsData.length === 0) return showToast("لا توجد قنوات لفرزها", "error");
 
-            // --- بداية التعديل ---
-            // التحقق مما إذا كانت هناك تصفية نشطة
-            const isFiltered = displayedChannels.length < channelsData.length;
-            const moveBlockRow = document.getElementById('sort-move-row');
+        function populateDynamicScopeSelector(selectorId, baseText = {}) {
+            const defaultText = { filtered: 'نتيجة البحث والتصفية', selected: 'القنوات المحددة', all: 'كل القنوات' };
+            const text = { ...defaultText, ...baseText };
             
-            // إخفاء خيار النقل في حالة التصفية، وإظهاره في الحالة العادية
-            if (isFiltered) {
-                moveBlockRow.style.display = 'none';
-                
-                // للسلامة: إذا كان الخيار المخفي محدداً، نلغي تحديده ونختار الأول
-                if (document.getElementById('sort-move').checked) {
-                    document.getElementById('sort-alpha').checked = true;
-                }
-            } else {
-                moveBlockRow.style.display = 'flex'; // أو 'block' حسب التصميم الأصلي
-            }
-            // --- نهاية التعديل ---
-
-            const hasSelection = selectedIndices.size > 0;
-            const scopeSelector = document.getElementById('sort-scope-selector');
-            
+            const scopeSelector = document.getElementById(selectorId);
             scopeSelector.innerHTML = '';
-            
+            const isFiltered = displayedChannels.length < channelsData.length;
+            const hasSelection = selectedIndices.size > 0;
             const channelWords = {singular: 'قناة', dualGenitive: 'قناتين', plural: 'قنوات', gender: 'f'};
-            
+
             if (isFiltered) {
                 const countStr = generateCountString(displayedChannels.length, channelWords);
-                scopeSelector.innerHTML += `<option value="filtered">فرز نتيجة البحث والتصفية (${countStr})</option>`;
+                scopeSelector.add(new Option(`${text.filtered} (${countStr})`, 'filtered'));
             }
             if (hasSelection) {
                 const countStr = generateCountString(selectedIndices.size, channelWords);
-                scopeSelector.innerHTML += `<option value="selected">فرز القنوات المحددة (${countStr})</option>`;
+                scopeSelector.add(new Option(`${text.selected} (${countStr})`, 'selected'));
             }
-            
-            const countStr = generateCountString(channelsData.length, channelWords);
-            scopeSelector.innerHTML += `<option value="all">فرز كامل القائمة (${countStr})</option>`;
+            const allCountStr = generateCountString(channelsData.length, channelWords);
+            scopeSelector.add(new Option(`${text.all} (${allCountStr})`, 'all'));
 
             if (isFiltered) {
                 scopeSelector.value = 'filtered';
@@ -2347,6 +2319,30 @@ body.dark-mode #libraryImportModal h2 {
             } else {
                 scopeSelector.value = 'all';
             }
+        }
+        
+        function openSortModal() {
+            if (channelsData.length === 0) return showToast("لا توجد قنوات لفرزها", "error");
+
+            const isFiltered = displayedChannels.length < channelsData.length;
+            const moveBlockRow = document.getElementById('sort-move-row');
+            
+            if (isFiltered) {
+                moveBlockRow.style.display = 'none';
+                if (document.getElementById('sort-move').checked) {
+                    document.getElementById('sort-alpha').checked = true;
+                }
+            } else {
+                moveBlockRow.style.display = 'flex';
+            }
+
+            const hasSelection = selectedIndices.size > 0;
+            
+            populateDynamicScopeSelector('sort-scope-selector', {
+                filtered: 'فرز نتيجة البحث والتصفية',
+                selected: 'فرز القنوات المحددة',
+                all: 'فرز كامل القائمة'
+            });
             
             const moveLabel = document.getElementById('sort-move-label');
             if (hasSelection) {
@@ -2568,8 +2564,8 @@ body.dark-mode #libraryImportModal h2 {
 
         const createPlaylistContent = (type, channelsToExport = channelsData) => { if (channelsToExport.length === 0) { showToast("لا يوجد قنوات للحفظ", "error"); return null; } if (type === 'pls') { return '[playlist]\nNumberOfEntries=' + channelsToExport.length + '\nVersion=2\n' + channelsToExport.map((ch, i) => `File${i+1}=${ch.url}\nTitle${i+1}=${ch.name}\nLength${i+1}=-1`).join('\n'); } return '#EXTM3U\n' + channelsToExport.map(ch => `${buildUpdatedExtinf(ch.originalExtinf, ch.groups, ch.logo, ch.name, ch.chno)}\n${ch.url}`).join('\n\n'); }
         function savePlaylist(channelsToExport = channelsData) { const c = createPlaylistContent('m3u', channelsToExport); if(c) downloadFile(c, 'playlist.m3u', 'text/plain;charset=utf-8'); }
-        function savePlaylistAsM3u8(channelsToExport = channelsData) { const c = createPlaylistContent('m3u8', channelsToExport); if(c) downloadFile(c, 'application/x-mpegurl;charset=utf-8'); }
-        function savePlaylistAsPls(channelsToExport = channelsData) { const c = createPlaylistContent('pls', channelsToExport); if(c) downloadFile(c, 'audio/x-scpls;charset=utf-8'); }
+        function savePlaylistAsM3u8(channelsToExport = channelsData) { const c = createPlaylistContent('m3u8', channelsToExport); if(c) downloadFile(c, 'playlist.m3u8', 'application/x-mpegurl;charset=utf-8'); }
+        function savePlaylistAsPls(channelsToExport = channelsData) { const c = createPlaylistContent('pls', channelsToExport); if(c) downloadFile(c, 'playlist.pls', 'audio/x-scpls;charset=utf-8'); }
 
         function savePlaylistAsJson(channelsToExport = channelsData) {
             const content = JSON.stringify(channelsToExport, null, 2);
@@ -3018,34 +3014,8 @@ body.dark-mode #libraryImportModal h2 {
 
             document.getElementById('find-text').value = '';
             document.getElementById('replace-text').value = '';
-
-            const scopeSelector = document.getElementById('replace-scope-selector');
-            scopeSelector.innerHTML = ''; 
-
-            const isFiltered = displayedChannels.length < channelsData.length;
-            const hasSelection = selectedIndices.size > 0;
-            const channelWords = {singular: 'قناة', dualGenitive: 'قناتين', plural: 'قنوات', gender: 'f'};
-
-            if (isFiltered) {
-                const countStr = generateCountString(displayedChannels.length, channelWords);
-                scopeSelector.innerHTML += `<option value="filtered">نتيجة البحث والتصفية (${countStr})</option>`;
-            }
-            if (hasSelection) {
-                const countStr = generateCountString(selectedIndices.size, channelWords);
-                scopeSelector.innerHTML += `<option value="selected">القنوات المحددة (${countStr})</option>`;
-            }
-            if (!isFiltered) {
-                const countStr = generateCountString(channelsData.length, channelWords);
-                scopeSelector.innerHTML += `<option value="all">كل القنوات (${countStr})</option>`;
-            }
-
-            if (isFiltered) {
-                scopeSelector.value = 'filtered';
-            } else if (hasSelection) {
-                scopeSelector.value = 'selected';
-            } else {
-                scopeSelector.value = 'all';
-            }
+            
+            populateDynamicScopeSelector('replace-scope-selector');
             
             openModal('findReplaceModal');
         }
@@ -3128,12 +3098,11 @@ body.dark-mode #libraryImportModal h2 {
             evt.currentTarget.className += " active";
         }
         
-        // START: New, more performant function for library filter
         function debouncedFilterLibrary(input, select) {
             clearTimeout(debounceTimeout);
             debounceTimeout = setTimeout(() => {
                 performFilter(input, select);
-            }, 200); // 200ms delay
+            }, 200);
         }
 
         function performFilter(input, select) {
@@ -3155,14 +3124,18 @@ body.dark-mode #libraryImportModal h2 {
                 }
             }
 
-            // Auto-select the first visible result
             if (firstVisibleIndex !== -1) {
                 select.selectedIndex = firstVisibleIndex;
             } else {
-                select.selectedIndex = 0; // Select the placeholder if no results
+                select.selectedIndex = 0;
             }
         }
-        // END: New, more performant function for library filter
+        
+        function setupLibraryFilter(inputId, selectId) {
+            const searchInput = document.getElementById(inputId);
+            const selectElement = document.getElementById(selectId);
+            searchInput.addEventListener('input', () => debouncedFilterLibrary(searchInput, selectElement));
+        }
 
         async function openLibraryImportModal() {
             openModal('libraryImportModal');
@@ -3199,15 +3172,9 @@ body.dark-mode #libraryImportModal h2 {
                 languages.forEach(l => languageFilter.add(new Option(l.name, l.code)));
                 categories.forEach(c => categoryFilter.add(new Option(c.name, c.id)));
                 
-                // Add event listeners using the debounced function
-                const countrySearchInput = document.getElementById('countrySearchInput');
-                countrySearchInput.addEventListener('input', () => debouncedFilterLibrary(countrySearchInput, countryFilter));
-
-                const languageSearchInput = document.getElementById('languageSearchInput');
-                languageSearchInput.addEventListener('input', () => debouncedFilterLibrary(languageSearchInput, languageFilter));
-
-                const categorySearchInput = document.getElementById('categorySearchInput');
-                categorySearchInput.addEventListener('input', () => debouncedFilterLibrary(categorySearchInput, categoryFilter));
+                setupLibraryFilter('countrySearchInput', 'libraryCountryFilter');
+                setupLibraryFilter('languageSearchInput', 'libraryLanguageFilter');
+                setupLibraryFilter('categorySearchInput', 'libraryCategoryFilter');
                 
                 isLibraryDataFetched = true;
 
