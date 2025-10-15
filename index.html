@@ -28,7 +28,7 @@
             --text-light-color: #ffffff;
             --border-color: #e0e0e0;
             --row-alt-color: #f7f7f7;
-            --selected-row-color: #fdebd0; /* Light Orange */
+            --selected-row-color: #fdebd0;
             --border-radius: 12px; /* تمت إضافته لتوافق المشغل الجديد */
         }
         
@@ -698,8 +698,8 @@
         .status-dot { height: 10px; width: 10px; border-radius: 50%; display: none; margin-left: 5px; } .status-dot.unchecked { background-color: #bbb; } .status-dot.checking { background-color: #f0ad4e; animation: blinker 1s linear infinite; } .status-dot.checked-ok { background-color: #5cb85c; } .status-dot.checked-fail { background-color: var(--delete-color); } @keyframes blinker { 50% { opacity: 0.5; } } #checker-progress-bar-container { width: 100%; background-color: #e0e0e0; border-radius: 5px; margin: 15px 0; } body.dark-mode #checker-progress-bar-container { background-color: #444; } #checker-progress-bar { width: 0%; height: 20px; background-color: var(--primary-color); border-radius: 5px; text-align: center; line-height: 20px; color: white; transition: width 0.3s; } .find-replace-options div { margin-bottom: 5px; }
         
         #modal-options-list {
-            display: flex;
-            flex-direction: column;
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
             gap: 14px;
             margin-top: 20px;
         }
@@ -719,44 +719,114 @@
             background-color: var(--secondary-hover);
         }
         
-        .library-tabs {
-            overflow: hidden;
-            border: 1px solid var(--border-color);
-            background-color: var(--row-alt-color);
-            display: flex;
-            border-radius: 8px;
-            margin-top: 15px;
-            width: 95%; /* <--- أضف هذا السطر فقط */
-        }
-        .library-tabs button {
-            background-color: inherit;
-            flex-grow: 1;
-            border: none;
-            outline: none;
-            cursor: pointer;
-            padding: 5px 12px;
-            transition: background-color 0.3s;
-            font-size: 0.9em;
-            color: var(--text-color);
-            font-weight: bold;
-        }
-        .library-tabs button:hover {
-            background-color: var(--border-color);
-        }
-        .library-tabs button.active {
-            background-color: var(--primary-color);
-            color: white;
-        }
-        body.dark-mode .library-tabs button.active {
-            color: #1a1a1a;
-        }
+       /* START: MODIFIED Styles for Tabs */
+.library-tabs,
+.format-tabs {
+    overflow: hidden;
+    border: 1px solid var(--border-color);
+    background-color: var(--row-alt-color);
+    display: flex;
+    border-radius: 8px;
+    margin-top: 15px;
+    box-sizing: border-box;
+}
+
+/* القاعدة الخاصة بنافذة تحويل التنسيق */
+.format-tabs {
+    width: 100%;
+    margin-bottom: 0;
+    border-bottom: none;
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+}
+
+/* القاعدة الخاصة بنافذة استيراد iptv-org */
+#libraryImportModal .library-tabs {
+    width: 95%;
+}
+
+#libraryImportModal .library-tab-pane {
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* --- ALL TAB BUTTONS - Base State --- */
+.library-tabs button,
+.format-tabs button {
+    background-color: inherit;
+    flex-grow: 1;
+    border: none;
+    outline: none;
+    cursor: pointer;
+    padding: 5px 12px;
+    font-size: 0.9em;
+    color: var(--text-color);
+    font-weight: bold;
+    -webkit-tap-highlight-color: transparent;
+    transition: background-color 0.2s;
+}
+
+/* --- 1. قاعدة التحويم (اللون الأغمق) --- */
+/* هذه القاعدة تأتي أولاً الآن */
+.library-tabs button:hover,
+.format-tabs button:hover {
+    background-color: #e0e0e0; /* درجة رمادي أغمق قليلاً للتحويم */
+}
+
+/* --- 2. قاعدة الزر النشط (اللون الأفتح) --- */
+/* هذه القاعدة تأتي ثانيًا، وستتغلب على قاعدة التحويم عند الحاجة */
+.library-tabs button.active,
+.format-tabs button.active {
+    background-color: #e8e8e8; /* درجة الرمادي الأفتح المطلوبة */
+    color: var(--text-color);
+    cursor: default;
+}
+
+
+/* --- نفس المنطق للوضع الليلي --- */
+body.dark-mode .library-tabs button:hover,
+body.dark-mode .format-tabs button:hover {
+    background-color: #2c2c2e; /* لون تحويم داكن */
+}
+
+body.dark-mode .library-tabs button.active,
+body.dark-mode .format-tabs button.active {
+    background-color: #3a3a3c; /* اللون الأفتح الصحيح للوضع الليلي */
+    color: var(--text-color);
+}
+
+
+.library-tab-pane {
+    display: none;
+    padding: 15px 0 0 0;
+    border-top: none;
+}
+
+.format-tab-pane {
+    display: none;
+    border: 1px solid var(--border-color);
+    border-top: none;
+    padding: 20px;
+    border-bottom-left-radius: 8px;
+    border-bottom-right-radius: 8px;
+}
+/* END: MODIFIED Styles for Tabs */
+        
         .library-tab-pane {
             display: none;
             padding: 15px 0 0 0;
             border-top: none;
         }
+
+        .format-tab-pane {
+            display: none;
+            border: 1px solid var(--border-color);
+            border-top: none;
+            padding: 20px;
+            border-bottom-left-radius: 8px;
+            border-bottom-right-radius: 8px;
+        }
         
-        /* START: Added for library filter */
         .library-search-input {
             width: 100%;
             padding: 8px;
@@ -770,11 +840,19 @@
             color: var(--text-color);
             border-color: #555;
         }
-        /* END: Added for library filter */
         
         .library-select {
             width: 100%;
             padding: 8px;
+        }
+        
+        .format-options-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 5px 15px; /* row-gap column-gap */
+        }
+        .format-options-grid .modal-row {
+            margin-bottom: 0; /* Override default margin */
         }
         
         @media (max-width: 600px) {
@@ -948,7 +1026,8 @@ body.dark-mode #libraryImportModal h2 {
     <div id="bulkEditGroupModal" class="modal modal-small-top"><div class="modal-content"><span class="close" onclick="closeModal('bulkEditGroupModal')">&times;</span><h2>تعديل مجموعة القنوات المحددة</h2><label for="bulkNewGroupName">اسم المجموعة الجديد:</label><input type="text" id="bulkNewGroupName" placeholder="أدخل اسمًا جديدًا أو اتركه فارغًا"><div class="modal-buttons"><button onclick="executeBulkEditGroup()">تطبيق</button><button onclick="closeModal('bulkEditGroupModal')" class="cancel">إلغاء</button></div></div></div>
     <div id="editModal" class="modal modal-medium-top"><div class="modal-content"><span class="close" onclick="closeModal('editModal')">&times;</span><h2>تحرير القناة</h2><div class="modal-form-row"><label for="editIndexField">رقم القناة:</label><input type="number" id="editIndexField" min="1"></div><div class="modal-form-row"><label for="editName">اسم القناة:</label><input type="text" id="editName"></div><div class="modal-form-row"><label for="editGroup">المجموعة:</label><input type="text" id="editGroup"></div><div class="modal-form-row"><label for="editLogo">رابط الصورة:</label><input type="url" id="editLogo"><div id="logoPreview"><img id="previewImage"></div></div><div class="modal-form-row"><label for="editUrl">رابط التشغيل:</label><input type="url" id="editUrl"></div><input type="hidden" id="editOriginalIndex"><div class="modal-buttons"><button onclick="saveEdit()">حفظ</button><button onclick="closeModal('editModal')" class="cancel">إلغاء</button></div></div></div>
     <div id="addModal" class="modal modal-medium-top"><div class="modal-content"><span class="close" onclick="closeModal('addModal')">&times;</span><h2>إضافة قناة جديدة</h2><div class="modal-form-row"><label for="addIndexField">رقم القناة:</label><input type="number" id="addIndexField" min="1"></div><div class="modal-form-row"><label for="addName">اسم القناة:</label><input type="text" id="addName" required></div><div class="modal-form-row"><label for="addGroup">المجموعة:</label><input type="text" id="addGroup"></div><div class="modal-form-row"><label for="addLogo">رابط الصورة:</label><input type="url" id="addLogo"><div id="addLogoPreview"><img id="addPreviewImage"></div></div><div class="modal-form-row"><label for="addUrl">رابط التشغيل:</label><input type="url" id="addUrl" required></div><div class="modal-buttons"><button onclick="saveNewChannel()">إضافة</button><button onclick="closeModal('addModal')" class="cancel">إلغاء</button></div></div></div>
-    <div id="removeDuplicatesModal" class="modal modal-small-top"><div class="modal-content"><span class="close" onclick="closeModal('removeDuplicatesModal')">&times;</span><h2>إزالة التكرار</h2><div id="duplicate-criteria-step"><label>اختر الشرط:</label><div class="modal-row"><input type="radio" id="crit-name" name="duplicateCriteria" value="name"><label for="crit-name">الاسم فقط</label></div><div class="modal-row"><input type="radio" id="crit-name-url" name="duplicateCriteria" value="name-url" checked><label for="crit-name-url">الاسم + الرابط</label></div><div class="modal-row"><input type="radio" id="crit-name-url-group" name="duplicateCriteria" value="name-url-group"><label for="crit-name-url-group">الاسم + الرابط + المجموعة</label></div><div class="modal-buttons"><button onclick="findDuplicates()">البحث عن التكرار</button><button onclick="closeModal('removeDuplicatesModal')" class="cancel">إلغاء</button></div></div><div id="duplicate-results-step" style="display: none;"><p><strong>اختر النسخة التي تريد الإبقاء عليها:</strong></p><div id="duplicate-results-list"></div><div class="modal-buttons"><button onclick="executeDuplicateDeletion()">حذف التكرار</button><button onclick="showDuplicateCriteriaStep()" class="cancel">رجوع</button></div></div></div></div>
+    <div id="removeDuplicatesModal" class="modal modal-small-top">
+    <div class="modal-content"><span class="close" onclick="closeModal('removeDuplicatesModal')">&times;</span><h2>إزالة التكرار</h2><div id="duplicate-criteria-step"><label>اختر الشرط:</label><div class="modal-row"><input type="radio" id="crit-name" name="duplicateCriteria" value="name"><label for="crit-name">الاسم فقط</label></div><div class="modal-row"><input type="radio" id="crit-name-url" name="duplicateCriteria" value="name-url" checked><label for="crit-name-url">الاسم + الرابط</label></div><div class="modal-row"><input type="radio" id="crit-name-url-group" name="duplicateCriteria" value="name-url-group"><label for="crit-name-url-group">الاسم + الرابط + المجموعة</label></div><div class="modal-buttons"><button onclick="findDuplicates()">البحث عن التكرار</button><button onclick="closeModal('removeDuplicatesModal')" class="cancel">إلغاء</button></div></div><div id="duplicate-results-step" style="display: none;"><p><strong>اختر النسخة التي تريد الإبقاء عليها:</strong></p><div id="duplicate-results-list"></div><div class="modal-buttons"><button onclick="executeDuplicateDeletion()">حذف التكرار</button><button onclick="showDuplicateCriteriaStep()" class="cancel">رجوع</button></div></div></div></div>
     <div id="sortModal" class="modal"><div class="modal-content"><span class="close" onclick="closeModal('sortModal')">&times;</span><h2>فرز وترتيب القنوات</h2><div id="sort-scope-container" style="display: none; margin-bottom: 15px;"><label for="sort-scope-selector" style="display:block; margin-bottom: 5px;"><strong>نطاق الفرز:</strong></label><select id="sort-scope-selector" style="width: 95%;"></select></div><div class="modal-row"><input type="radio" id="sort-alpha" name="sortCriteria" value="alphabetical" checked onchange="handleSortCriteriaChange()"><label for="sort-alpha">أبجدي</label></div><div class="modal-row"><input type="radio" id="sort-chno" name="sortCriteria" value="tvg-chno" onchange="handleSortCriteriaChange()"><label for="sort-chno">حسب الرقم الأصلي</label></div><div class="modal-row"><input type="radio" id="sort-name" name="sortCriteria" value="name" onchange="handleSortCriteriaChange()"><label for="sort-name">حسب اسم القناة</label></div><div id="sortByNameInputContainer"><input type="text" id="sortByNameField" placeholder="أدخل اسم القناة (مثال: mbc)"></div><div class="modal-row"><input type="radio" id="sort-group" name="sortCriteria" value="group" onchange="handleSortCriteriaChange()"><label for="sort-group">حسب اسم المجموعة</label></div><div id="sortByGroupInputContainer"><input type="text" id="sortByGroupField" placeholder="أدخل اسم المجموعة"></div><div class="modal-row" id="sort-move-row"><input type="radio" id="sort-move" name="sortCriteria" value="moveBlock" onchange="handleSortCriteriaChange()"><label id="sort-move-label" for="sort-move">نقل قنوات إلى موضع جديد</label></div><div id="moveBlockInputContainer"><div id="moveBlockRangeContainer"><div class="move-block-row"><label for="moveFromIndex">نقل من رقم:</label><input type="number" id="moveFromIndex" min="1" placeholder="مثال: 50"></div><div class="move-block-row"><label for="moveToIndex">إلى رقم:</label><input type="number" id="moveToIndex" min="1" placeholder="مثال: 100"></div></div><div class="move-block-row"><label for="moveTargetIndex">إلى الموضع رقم:</label><input type="number" id="moveTargetIndex" min="1" placeholder="مثال: 1"></div></div><div class="sort-options-container"><div class="modal-row"><input type="checkbox" id="sort-descending"><label for="sort-descending">ترتيب تنازلي</label></div><div class="modal-row" id="sort-grouping-container"><input type="checkbox" id="sort-grouping"><label for="sort-grouping">تجميع</label></div></div><div class="modal-buttons"><button onclick="executeSort()">تنفيذ</button><button onclick="closeModal('sortModal')" class="cancel">إلغاء</button></div></div></div>
     <div id="manageGroupsModal" class="modal"><div class="modal-content"><span class="close" onclick="closeModal('manageGroupsModal')">&times;</span><h2>إدارة المجموعات</h2><div style="padding: 5px; margin: 0 -5px 15px -5px;"><label for="groupSelector">اختر المجموعة:</label><select id="groupSelector" onchange="handleGroupSelectorChange()"></select><label>اختر الإجراء:</label><div class="modal-row"><input type="radio" id="action-rename" name="groupAction" value="rename" checked onchange="handleGroupActionChange()"><label for="action-rename">إعادة تسمية</label></div><div id="renameGroupInputContainer"><input type="text" id="newGroupNameField" placeholder="أدخل اسمًا جديدًا أو اتركه فارغًا"><div class="modal-row" style="font-size: 0.9em; margin-top: 5px;"><input type="checkbox" id="rename-add-as-new"><label for="rename-add-as-new">إضافة دون حذف التصنيفات الحالية</label></div></div><div class="modal-row"><input type="radio" id="action-merge" name="groupAction" value="merge" onchange="handleGroupActionChange()"><label for="action-merge">دمج المجموعة المحددة</label></div><div id="mergeGroupInputContainer"><label for="mergeTargetSelector" style="display: block;">مع المجموعة:</label><select id="mergeTargetSelector"></select></div><div class="modal-row"><input type="radio" id="action-remove-all-groups" name="groupAction" value="removeAll" onchange="handleGroupActionChange()"><label for="action-remove-all-groups">إزالة كل التصنيفات</label></div><div class="modal-row"><input type="radio" id="action-delete" name="groupAction" value="delete" onchange="handleGroupActionChange()"><label for="action-delete">حذف المجموعة</label></div><div class="modal-row"><input type="radio" id="action-export-group" name="groupAction" value="exportGroup" onchange="handleGroupActionChange()"><label for="action-export-group">تصدير قنوات المجموعة</label></div></div><div class="modal-buttons"><button onclick="executeGroupAction()">تنفيذ</button><button onclick="closeModal('manageGroupsModal')" class="cancel">إلغاء</button></div></div></div>
     <div id="mergeModal" class="modal modal-small-top"><div class="modal-content"><span class="close" onclick="closeModal('mergeModal')">&times;</span><h2>خيارات الدمج</h2><div class="modal-content-body"><label for="mergeOptionSelector" style="display:block; margin-bottom: 5px; text-align: right;">اختر طريقة الدمج:</label><select id="mergeOptionSelector" onchange="handleMergeOptionChange()"><option value="file" selected>من ملف</option><option value="url">من رابط</option></select><div id="mergeFileOption" class="merge-option-container" style="display: block;"><p>اختر ملف أو أكثر لدمجه مع القائمة الحالية.</p><button onclick="document.getElementById('mergeFileInput').click()">اختيار ملفات</button></div><div id="mergeUrlOption" class="merge-option-container" style="display: none;"><p>ألصق الروابط هنا، كل رابط في سطر جديد.</p><textarea id="mergeUrlTextarea" placeholder="https://example.com/playlist.m3u" style="width: 100%; min-height: 120px; margin-bottom: 20px; direction: ltr; text-align: left;"></textarea><button onclick="executeMerge()">دمج الروابط</button></div></div></div></div>
@@ -973,6 +1052,7 @@ body.dark-mode #libraryImportModal h2 {
                 <button onclick="removeDuplicatesManually(); closeModal('advancedOptionsModal');">إزالة التكرار</button>
                 <button onclick="openFindReplaceModal(); closeModal('advancedOptionsModal');">بحث واستبدال</button>
                 <button onclick="handleChannelCheckClick(); closeModal('advancedOptionsModal');">فحص حالة القنوات</button>
+                <button onclick="openFormatDataModal(); closeModal('advancedOptionsModal');">تحويل وتنسيق البيانات</button>
                 <button onclick="openLibraryImportModal(); closeModal('advancedOptionsModal');">استيراد من iptv-org</button>
                 <button id="modalPlayModeToggle" onclick="togglePlayMode(); closeModal('advancedOptionsModal');">تفعيل وضع التشغيل</button>
             </div>
@@ -1028,6 +1108,55 @@ body.dark-mode #libraryImportModal h2 {
             </div>
         </div>
     </div>
+
+    <!-- Modal for Data Formatting -- START: MODIFIED -->
+    <div id="formatDataModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('formatDataModal')">&times;</span>
+            <h2>تحويل وتنسيق البيانات</h2>
+            
+            <div style="margin-bottom: 15px;">
+                <label for="format-scope-selector" style="display:block; margin-bottom: 5px;"><strong>تطبيق على:</strong></label>
+                <select id="format-scope-selector" style="width: 100%;"></select>
+            </div>
+
+            <!-- Tab buttons -->
+            <div class="format-tabs">
+                <button class="format-tab-btn" onclick="openFormatTab(event, 'FormatCase')" id="defaultFormatOpen">الأحرف</button>
+                <button class="format-tab-btn" onclick="openFormatTab(event, 'FormatAffix')">الإضافات</button>
+                <button class="format-tab-btn" onclick="openFormatTab(event, 'FormatClean')">التنظيف</button>
+            </div>
+            
+            <!-- Tab content -->
+            <div id="FormatCase" class="format-tab-pane">
+                 <div class="format-options-grid">
+                    <div class="modal-row"><input type="radio" id="case-none" name="formatCase" value="none" checked><label for="case-none">بدون تغيير</label></div>
+                    <div class="modal-row"><input type="radio" id="case-upper" name="formatCase" value="upper"><label for="case-upper">أحرف كبيرة</label></div>
+                    <div class="modal-row"><input type="radio" id="case-lower" name="formatCase" value="lower"><label for="case-lower">أحرف صغيرة</label></div>
+                    <div class="modal-row"><input type="radio" id="case-title" name="formatCase" value="title"><label for="case-title">حالة العنوان</label></div>
+                </div>
+            </div>
+            <div id="FormatAffix" class="format-tab-pane">
+                <label for="format-prefix">إضافة كنص بادئ:</label>
+                <input type="text" id="format-prefix" placeholder="مثال: [VIP]" style="width: 100%;">
+                <label for="format-suffix">إضافة كنص لاحق:</label>
+                <input type="text" id="format-suffix" placeholder="مثال: | FHD" style="width: 100%;">
+            </div>
+            <div id="FormatClean" class="format-tab-pane">
+                 <div class="format-options-grid">
+                    <div class="modal-row"><input type="checkbox" id="format-trim"><label for="format-trim">إزالة المسافات الزائدة</label></div>
+                    <div class="modal-row"><input type="checkbox" id="format-remove-logos"><label for="format-remove-logos">حذف جميع الشعارات</label></div>
+                </div>
+            </div>
+
+            <div class="modal-buttons">
+                <button onclick="executeFormatting()">تنفيذ</button>
+                <button class="cancel" onclick="closeModal('formatDataModal')">إلغاء</button>
+            </div>
+        </div>
+    </div>
+    <!-- Modal for Data Formatting -- END: MODIFIED -->
+
 
     <footer class="site-footer">
         <p>تم التطوير بواسطة <a href="https://github.com/iofahmawi" target="_blank" rel="noopener noreferrer">iofahmawi</a></p>
@@ -1785,6 +1914,7 @@ body.dark-mode #libraryImportModal h2 {
         function removeDuplicatesManually() { if (channelsData.length === 0) return showToast("لا توجد قنوات", 'error'); openModal('removeDuplicatesModal'); }
         
         function showDuplicateCriteriaStep() {
+            document.getElementById('removeDuplicatesModal').classList.add('modal-small-top');
             document.getElementById('duplicate-criteria-step').style.display = 'block';
             document.getElementById('duplicate-results-step').style.display = 'none';
         }
@@ -1816,6 +1946,8 @@ body.dark-mode #libraryImportModal h2 {
                 showToast("لم يتم العثور على قنوات مكررة بناءً على هذا الشرط.", "info");
                 return;
             }
+
+            document.getElementById('removeDuplicatesModal').classList.remove('modal-small-top');
 
             const resultsList = document.getElementById('duplicate-results-list');
             resultsList.innerHTML = '';
@@ -3083,6 +3215,99 @@ body.dark-mode #libraryImportModal h2 {
             const قناةStr = generateCountString(affectedChannels, {singular: 'قناة', dualGenitive: 'قناتين', plural: 'قنوات', gender: 'f'});
             showToast(`تم استبدال النص ${مرهStr} في ${قناةStr}.`, 'success');
         }
+        
+        function openFormatDataModal() {
+            if (channelsData.length === 0) return showToast("لا توجد قنوات لتنسيقها", "error");
+
+            populateDynamicScopeSelector('format-scope-selector', {
+                filtered: 'تنسيق نتيجة البحث والتصفية',
+                selected: 'تنسيق القنوات المحددة',
+                all: 'تنسيق كامل القائمة'
+            });
+            
+            document.getElementById('case-none').checked = true;
+            document.getElementById('format-prefix').value = '';
+            document.getElementById('format-suffix').value = '';
+            document.getElementById('format-trim').checked = false;
+            document.getElementById('format-remove-logos').checked = false;
+
+            document.getElementById('defaultFormatOpen').click();
+
+            openModal('formatDataModal');
+        }
+
+        function executeFormatting() {
+            const scope = document.getElementById('format-scope-selector').value;
+            
+            let targetChannels;
+            if (scope === 'selected' && selectedIndices.size > 0) {
+                targetChannels = Array.from(selectedIndices).map(index => channelsData[index]);
+            } else if (scope === 'filtered') {
+                targetChannels = [...displayedChannels];
+            } else {
+                targetChannels = [...channelsData];
+            }
+
+            if (targetChannels.length === 0) {
+                showToast("لا توجد قنوات لتطبيق التنسيق عليها في النطاق المحدد.", "info");
+                closeModal('formatDataModal');
+                return;
+            }
+
+            const caseType = document.querySelector('input[name="formatCase"]:checked').value;
+            const prefix = document.getElementById('format-prefix').value;
+            const suffix = document.getElementById('format-suffix').value;
+            const shouldTrim = document.getElementById('format-trim').checked;
+            const shouldRemoveLogos = document.getElementById('format-remove-logos').checked;
+            let affectedChannelsCount = 0;
+
+            const toTitleCase = (str) => str.replace(/\w\S*/g, (txt) => txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase());
+
+            targetChannels.forEach(channel => {
+                let modified = false;
+                if (caseType !== 'none' && channel.name) {
+                    if (caseType === 'upper') channel.name = channel.name.toUpperCase();
+                    else if (caseType === 'lower') channel.name = channel.name.toLowerCase();
+                    else if (caseType === 'title') channel.name = toTitleCase(channel.name);
+                    modified = true;
+                }
+                if (prefix && channel.name) {
+                    channel.name = prefix + channel.name;
+                    modified = true;
+                }
+                if (suffix && channel.name) {
+                    channel.name = channel.name + suffix;
+                    modified = true;
+                }
+                if (shouldTrim) {
+                    if (channel.name) {
+                        const originalName = channel.name;
+                        channel.name = channel.name.trim();
+                        if (originalName !== channel.name) modified = true;
+                    }
+                    if (channel.groups && channel.groups.length > 0) {
+                        const originalGroups = [...channel.groups];
+                        channel.groups = channel.groups.map(g => g.trim()).filter(g => g);
+                        if (JSON.stringify(originalGroups) !== JSON.stringify(channel.groups)) modified = true;
+                    }
+                }
+                if (shouldRemoveLogos && channel.logo) {
+                    channel.logo = '';
+                    modified = true;
+                }
+                if (modified) affectedChannelsCount++;
+            });
+
+            closeModal('formatDataModal');
+            
+            if (affectedChannelsCount > 0) {
+                updateAndRefreshUI();
+                const countStr = generateCountString(affectedChannelsCount, {singular: 'قناة', dualGenitive: 'قناتين', plural: 'قنوات', gender: 'f'});
+                showToast(`تم تطبيق التنسيقات على ${countStr} بنجاح.`, 'success');
+            } else {
+                showToast("لم يتم إجراء أي تغييرات.", "info");
+            }
+        }
 
         function openLibraryTab(evt, tabName) {
             let i, tabcontent, tablinks;
@@ -3097,6 +3322,22 @@ body.dark-mode #libraryImportModal h2 {
             document.getElementById(tabName).style.display = "block";
             evt.currentTarget.className += " active";
         }
+        
+        // START: NEW FUNCTION
+        function openFormatTab(evt, tabName) {
+            let i, tabcontent, tablinks;
+            tabcontent = document.getElementsByClassName("format-tab-pane");
+            for (i = 0; i < tabcontent.length; i++) {
+                tabcontent[i].style.display = "none";
+            }
+            tablinks = document.getElementsByClassName("format-tab-btn");
+            for (i = 0; i < tablinks.length; i++) {
+                tablinks[i].className = tablinks[i].className.replace(" active", "");
+            }
+            document.getElementById(tabName).style.display = "block";
+            evt.currentTarget.className += " active";
+        }
+        // END: NEW FUNCTION
         
         function debouncedFilterLibrary(input, select) {
             clearTimeout(debounceTimeout);
