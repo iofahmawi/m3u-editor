@@ -421,10 +421,26 @@
         .modal-content { padding: 20px; border: 1px solid var(--border-color); width: auto; max-width: 500px; border-radius: 10px; position: relative; box-sizing: border-box; overflow-y: auto; max-height: 90vh; margin: auto; } .modal-content textarea { width: 95%; min-height: 150px; padding: 8px; margin: 10px auto; display: block; border: 1px solid var(--border-color); border-radius: 4px; box-sizing: border-box; resize: vertical; } #multiUrlTextarea { direction: ltr; text-align: left; } .close { color: #aaa; float: left; font-size: 28px; font-weight: bold; } .close:hover, .close:focus { color: #000; text-decoration: none; cursor: pointer; } 
         body.dark-mode .close { color: #ccc; } 
         body.dark-mode .close:hover { color: #fff; }
-        .modal-content input[type="text"], .modal-content input[type="url"], .modal-content input[type="number"], .modal-content select { 
-            width: 95%; padding: 8px; margin: 10px 0; display: inline-block; border: 1px solid var(--border-color); border-radius: 4px; box-sizing: border-box; 
-            transition: border-color 0.3s, box-shadow 0.3s;
-        } 
+        /* القاعدة العامة للمدخلات في النوافذ المنبثقة */
+.modal-content input[type="text"], .modal-content input[type="url"], .modal-content input[type="number"], .modal-content select { 
+    width: 95%; 
+    padding: 8px; 
+    margin: 10px 0; 
+    display: inline-block; 
+    border: 1px solid var(--border-color); 
+    border-radius: 4px; 
+    box-sizing: border-box; 
+    transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+/* استثناء وتخصيص للقوائم المنسدلة المحددة */
+#formatDataModal #format-scope-selector,
+#sortModal #sort-scope-selector,
+#manageGroupsModal #groupSelector,
+#findReplaceModal #replace-scope-selector {
+    padding: 9px;
+    font-size: 0.9em;
+} 
         body.dark-mode .modal-content input[type="text"], 
         body.dark-mode .modal-content input[type="url"], 
         body.dark-mode .modal-content input[type="number"], 
@@ -705,7 +721,7 @@
         }
         #modal-options-list button {
             width: 100%;
-            padding: 10px;
+            padding: 8px;
             background-color: var(--secondary-color);
             color: white;
             border: none;
@@ -726,7 +742,7 @@
     border: 1px solid var(--border-color);
     background-color: var(--row-alt-color);
     display: flex;
-    border-radius: 8px;
+    border-radius: 4px;
     margin-top: 15px;
     box-sizing: border-box;
 }
@@ -758,7 +774,7 @@
     border: none;
     outline: none;
     cursor: pointer;
-    padding: 5px 12px;
+    padding: 5px 12px; /* <-- تم تعديل الرقم الأول لزيادة الارتفاع */
     font-size: 0.9em;
     color: var(--text-color);
     font-weight: bold;
@@ -802,13 +818,14 @@ body.dark-mode .format-tabs button.active {
     border-top: none;
 }
 
+/* تعديل خاص بمحتوى نافذة التنسيق */
 .format-tab-pane {
     display: none;
     border: 1px solid var(--border-color);
     border-top: none;
     padding: 20px;
-    border-bottom-left-radius: 8px;
-    border-bottom-right-radius: 8px;
+    border-bottom-left-radius: 4px; /* <-- تم تعديل القيمة إلى 4px */
+    border-bottom-right-radius: 4px; /* <-- تم تعديل القيمة إلى 4px */
 }
 /* END: MODIFIED Styles for Tabs */
         
@@ -828,13 +845,14 @@ body.dark-mode .format-tabs button.active {
         }
         
         .library-search-input {
-            width: 100%;
-            padding: 8px;
-            margin-bottom: 10px;
-            border: 1px solid var(--border-color);
-            border-radius: 4px;
-            box-sizing: border-box;
-        }
+    width: 100%;
+    padding: 8px;
+    margin-top: 13px;  /* <-- تمت إضافة هذه المسافة العلوية */
+    margin-bottom: 13px; /* <-- تم زيادة هذه المسافة السفلية */
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    box-sizing: border-box;
+}
         body.dark-mode .library-search-input {
             background-color: #3a3a3a;
             color: var(--text-color);
@@ -971,7 +989,26 @@ body.dark-mode #libraryImportModal h2 {
 #mainControls #toolsMergeRow {
     display: none;
 }
-
+/* تعديل ارتفاع وحجم خط قائمة النطاق في نافذة تنسيق البيانات فقط */
+#formatDataModal #format-scope-selector {
+    padding: 8.5px;           /* يتحكم في الارتفاع */
+    font-size: 0.9em;        /* <-- هذا هو السطر الجديد للتحكم في حجم الخط */
+}
+/* تعديل ارتفاع وحجم خط قائمة النطاق في نافذة فرز وترتيب */
+#sortModal #sort-scope-selector {
+    padding: 8px;
+    font-size: 0.9em;
+}
+/* تعديل ارتفاع وحجم خط قائمة "اختر المجموعة" في نافذة إدارة المجموعات */
+#manageGroupsModal #groupSelector {
+    padding: 8px;
+    font-size: 0.9em;
+    /* تعديل ارتفاع وحجم خط قائمة النطاق في نافذة بحث واستبدال */
+/* تعديل ارتفاع وحجم خط قائمة النطاق في نافذة بحث واستبدال */
+#findReplaceModal #replace-scope-selector {
+    padding: 8px !important;
+    font-size: 0.9em !important;
+}
 </style>
 </head>
 <body>
@@ -1113,7 +1150,7 @@ body.dark-mode #libraryImportModal h2 {
     <div id="formatDataModal" class="modal">
         <div class="modal-content">
             <span class="close" onclick="closeModal('formatDataModal')">&times;</span>
-            <h2>تحويل وتنسيق البيانات</h2>
+            <h2>تنسيق البيانات</h2>
             
             <div style="margin-bottom: 15px;">
                 <label for="format-scope-selector" style="display:block; margin-bottom: 5px;"><strong>تطبيق على:</strong></label>
