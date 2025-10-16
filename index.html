@@ -734,7 +734,12 @@
         #modal-options-list button:hover {
             background-color: var(--secondary-hover);
         }
-        
+        #modalPlayModeToggle {
+    grid-column: 1 / -1; /* هذا يجعل الزر يمتد على جميع الأعمدة المتاحة */
+}
+#advancedOptionsModal .modal-content {
+    padding-bottom: 17px; /* يمكنك تعديل هذه القيمة حسب الحاجة */
+}
        /* START: MODIFIED Styles for Tabs */
 .library-tabs,
 .format-tabs {
@@ -1058,7 +1063,6 @@ body.dark-mode #libraryImportModal h2 {
     <div id="searchFilterModal" class="modal modal-small-top"><div class="modal-content"><span class="close" onclick="closeModal('searchFilterModal')">&times;</span><h2>بحث وتصفية القنوات</h2><input type="text" id="searchInput" placeholder="ابحث عن قناة..."><select id="groupFilter"><option value="all">كل المجموعات</option></select><div class="modal-buttons"><button id="searchFilterActionButton">إغلاق</button></div></div></div>
     <div id="bulkActionsModal" class="modal"><div class="modal-content"><span class="close" onclick="closeModal('bulkActionsModal')">&times;</span><h2>إجراءات على القنوات المحددة</h2><div id="bulk-actions-list"><div class="modal-row"><input type="radio" id="bulk-action-sort" name="bulkAction" value="sort" checked><label for="bulk-action-sort">فرز المحدد أبجدياً</label></div><div class="modal-row"><input type="radio" id="bulk-action-move" name="bulkAction" value="move"><label for="bulk-action-move">نقل المحدد إلى موضع</label><div id="bulk-move-input-container"><label for="bulk-move-target-index">رقم:</label><input type="number" id="bulk-move-target-index" min="1" placeholder="مثال: 1"></div></div><div class="modal-row"><input type="radio" id="bulk-action-group" name="bulkAction" value="group"><label for="bulk-action-group">تعديل المجموعة</label></div><div class="modal-row"><input type="radio" id="bulk-action-remove-group" name="bulkAction" value="removeGroup"><label for="bulk-action-remove-group">إزالة التصنيف عن المحدد</label></div><div class="modal-row"><input type="radio" id="bulk-action-delete" name="bulkAction" value="delete"><label for="bulk-action-delete">حذف المحدد</label></div><div class="modal-row"><input type="radio" id="bulk-action-export" name="bulkAction" value="export"><label for="bulk-action-export">تصدير المحدد</label></div></div><div class="modal-buttons"><button onclick="executeBulkAction()">تنفيذ</button><button onclick="closeModal('bulkActionsModal')" class="cancel">إلغاء</button></div></div></div>
     <div id="channelCheckerModal" class="modal modal-small-top"><div class="modal-content"><span class="close" onclick="closeModal('channelCheckerModal')">&times;</span><h2>مدقق حالة القنوات</h2><p>سيقوم هذا الإجراء بالتحقق من كل قناة لتحديد ما إذا كانت تعمل. قد يستغرق هذا بعض الوقت للقوائم الكبيرة.</p><div id="checker-progress-container"><p id="checker-progress-text">اضغط على زر 'بدء الفحص' للتحقق من حالة القنوات.</p><div id="checker-progress-bar-container"><div id="checker-progress-bar">0%</div></div></div><p id="checker-summary-text" style="font-weight: bold;"></p><div class="modal-buttons"><button id="start-check-btn" onclick="executeChannelCheck()">بدء الفحص</button><button id="stop-check-btn" onclick="stopChannelCheck()" class="cancel" style="display:none;">إيقاف الفحص</button><button id="checker-cancel-btn" onclick="closeModal('channelCheckerModal')" class="cancel">إغلاق</button></div><div class="dropdown-container" id="checker-actions-container" style="display: none;"><button onclick="toggleCheckerActions()" class="dropdown-btn">إجراءات &#9662;</button><div id="checker-actions-dropdown" class="dropdown-content"><a href="#" id="export-working-btn" onclick="exportWorkingChannels()">تصدير القنوات التي تعمل</a><a href="#" id="select-failed-btn" onclick="selectFailedChannels()">تحديد القنوات التي لا تعمل</a><a href="#" id="delete-failed-btn" class="delete-option" onclick="deleteFailedChannels()">حذف القنوات التي لا تعمل</a></div></div></div></div>
-    <div id="findReplaceModal" class="modal"><div class="modal-content"><span class="close" onclick="closeModal('findReplaceModal')">&times;</span><h2>بحث واستبدال</h2><div class="find-replace-options" style="margin-bottom: 15px;"><label for="replace-scope-selector" style="display:block; margin-bottom: 5px;"><strong>النطاق:</strong></label><select id="replace-scope-selector" style="width: 95%;"></select></div><label for="find-text">بحث عن:</label><input type="text" id="find-text"><label for="replace-text">استبدال بـ:</label><input type="text" id="replace-text"><div class="find-replace-options"><p style="margin-top: 15px; margin-bottom: 5px;"><strong>بحث في:</strong></p><div><input type="checkbox" id="find-in-name" checked> <label for="find-in-name">اسم القناة</label></div><div><input type="checkbox" id="find-in-group"> <label for="find-in-group">المجموعة</label></div><div><input type="checkbox" id="find-in-url"> <label for="find-in-url">رابط التشغيل</label></div></div><div class="modal-buttons"><button onclick="executeFindAndReplace()">تنفيذ</button><button onclick="closeModal('findReplaceModal')" class="cancel">إلغاء</button></div></div></div>
     <div id="multiUrlModal" class="modal modal-medium-top"><div class="modal-content"><span class="close" onclick="closeModal('multiUrlModal')">&times;</span><h2>تحميل من عدة روابط</h2><p>ألصق الروابط هنا، كل رابط في سطر جديد. سيتم دمجها بالترتيب.</p><textarea id="multiUrlTextarea" placeholder="https://example.com/playlist1.m3u&#10;https://example.com/playlist2.m3u8"></textarea><div class="modal-buttons"><button onclick="processMultiUrlLoad()">تحميل</button><button onclick="closeModal('multiUrlModal')" class="cancel">إلغاء</button></div></div></div>
     <div id="bulkEditGroupModal" class="modal modal-small-top"><div class="modal-content"><span class="close" onclick="closeModal('bulkEditGroupModal')">&times;</span><h2>تعديل مجموعة القنوات المحددة</h2><label for="bulkNewGroupName">اسم المجموعة الجديد:</label><input type="text" id="bulkNewGroupName" placeholder="أدخل اسمًا جديدًا أو اتركه فارغًا"><div class="modal-buttons"><button onclick="executeBulkEditGroup()">تطبيق</button><button onclick="closeModal('bulkEditGroupModal')" class="cancel">إلغاء</button></div></div></div>
     <div id="editModal" class="modal modal-medium-top"><div class="modal-content"><span class="close" onclick="closeModal('editModal')">&times;</span><h2>تحرير القناة</h2><div class="modal-form-row"><label for="editIndexField">رقم القناة:</label><input type="number" id="editIndexField" min="1"></div><div class="modal-form-row"><label for="editName">اسم القناة:</label><input type="text" id="editName"></div><div class="modal-form-row"><label for="editGroup">المجموعة:</label><input type="text" id="editGroup"></div><div class="modal-form-row"><label for="editLogo">رابط الصورة:</label><input type="url" id="editLogo"><div id="logoPreview"><img id="previewImage"></div></div><div class="modal-form-row"><label for="editUrl">رابط التشغيل:</label><input type="url" id="editUrl"></div><input type="hidden" id="editOriginalIndex"><div class="modal-buttons"><button onclick="saveEdit()">حفظ</button><button onclick="closeModal('editModal')" class="cancel">إلغاء</button></div></div></div>
@@ -1087,7 +1091,6 @@ body.dark-mode #libraryImportModal h2 {
                 <button onclick="openAddModal(); closeModal('advancedOptionsModal');">إضافة قناة</button>
                 <button onclick="openMergeModal(); closeModal('advancedOptionsModal');">دمج قوائم</button>
                 <button onclick="removeDuplicatesManually(); closeModal('advancedOptionsModal');">إزالة التكرار</button>
-                <button onclick="openFindReplaceModal(); closeModal('advancedOptionsModal');">بحث واستبدال</button>
                 <button onclick="handleChannelCheckClick(); closeModal('advancedOptionsModal');">فحص حالة القنوات</button>
                 <button onclick="openFormatDataModal(); closeModal('advancedOptionsModal');">تنسيق البيانات</button>
                 <button onclick="openLibraryImportModal(); closeModal('advancedOptionsModal');">استيراد من iptv-org</button>
@@ -1161,6 +1164,7 @@ body.dark-mode #libraryImportModal h2 {
             <div class="format-tabs">
                 <button class="format-tab-btn" onclick="openFormatTab(event, 'FormatCase')" id="defaultFormatOpen">الأحرف</button>
                 <button class="format-tab-btn" onclick="openFormatTab(event, 'FormatAffix')">الإضافات</button>
+                <button class="format-tab-btn" onclick="openFormatTab(event, 'FormatReplace')">الاستبدال</button>
                 <button class="format-tab-btn" onclick="openFormatTab(event, 'FormatClean')">التنظيف</button>
             </div>
             
@@ -1178,6 +1182,18 @@ body.dark-mode #libraryImportModal h2 {
                 <input type="text" id="format-prefix" placeholder="مثال: VIP" style="width: 100%;">
                 <label for="format-suffix">إضافة كنص لاحق:</label>
                 <input type="text" id="format-suffix" placeholder="مثال: FHD" style="width: 100%;">
+            </div>
+            <div id="FormatReplace" class="format-tab-pane">
+                <label for="find-text">بحث عن:</label>
+                <input type="text" id="find-text" style="width: 100%;">
+                <label for="replace-text" style="margin-top:10px; display:block;">استبدال بـ:</label>
+                <input type="text" id="replace-text" style="width: 100%;">
+                <div class="find-replace-options">
+                    <p style="margin-top: 15px; margin-bottom: 5px;"><strong>بحث في:</strong></p>
+                    <div><input type="checkbox" id="find-in-name" checked> <label for="find-in-name">اسم القناة</label></div>
+                    <div><input type="checkbox" id="find-in-group"> <label for="find-in-group">المجموعة</label></div>
+                    <div><input type="checkbox" id="find-in-url"> <label for="find-in-url">رابط التشغيل</label></div>
+                </div>
             </div>
             <div id="FormatClean" class="format-tab-pane">
                  <div class="format-options-grid">
@@ -2414,7 +2430,7 @@ body.dark-mode #libraryImportModal h2 {
         function saveEdit() { 
             const originalIndex = parseInt(document.getElementById('editOriginalIndex').value); 
             let newIndex = parseInt(document.getElementById('editIndexField').value) - 1; 
-            if (!document.getElementById('editName').value || !document.getElementById('editUrl').value) return showToast("الاسم والرابط مطلوبان", 'error'); 
+            if (!document.getElementById('editName').value || !document.getElementById('editUrl').value) return showToast("الاسم والرابط مطلوبان", "error"); 
             const groups = document.getElementById('editGroup').value.split(';').map(g => g.trim()).filter(g => g); 
             const channel = { name: document.getElementById('editName').value, groups: groups, logo: document.getElementById('editLogo').value, url: document.getElementById('editUrl').value, originalExtinf: channelsData[originalIndex].originalExtinf, status: channelsData[originalIndex].status }; 
             if (newIndex !== originalIndex && newIndex < channelsData.length) { 
@@ -3177,81 +3193,6 @@ body.dark-mode #libraryImportModal h2 {
             searchChannels();
             closeModal('searchFilterModal');
         }
-
-        function openFindReplaceModal() {
-            if (channelsData.length === 0) return showToast("لا توجد قنوات للبحث فيها", "error");
-
-            document.getElementById('find-text').value = '';
-            document.getElementById('replace-text').value = '';
-            
-            populateDynamicScopeSelector('replace-scope-selector');
-            
-            openModal('findReplaceModal');
-        }
-
-        function executeFindAndReplace() {
-            const findText = document.getElementById('find-text').value;
-            const replaceText = document.getElementById('replace-text').value;
-            if (!findText && replaceText) { return showToast("لا يمكن ترك حقل 'بحث عن' فارغًا عند الاستبدال.", "error"); }
-
-            const findInName = document.getElementById('find-in-name').checked;
-            const findInGroup = document.getElementById('find-in-group').checked;
-            const findInUrl = document.getElementById('find-in-url').checked;
-            if (!findInName && !findInGroup && !findInUrl) { return showToast("الرجاء تحديد حقل واحد على الأقل للبحث فيه.", "error"); }
-
-            const scope = document.getElementById('replace-scope-selector').value;
-            let targetIndices;
-
-            if (scope === 'selected') {
-                targetIndices = Array.from(selectedIndices);
-            } else if (scope === 'filtered') {
-                targetIndices = displayedChannels.map(ch => channelsData.indexOf(ch));
-            } else {
-                targetIndices = channelsData.map((_, i) => i);
-            }
-
-            let replacedCount = 0;
-            let affectedChannels = 0;
-
-            targetIndices.forEach(index => {
-                if(index === -1) return; 
-                const channel = channelsData[index];
-                let channelModified = false;
-                const regex = new RegExp(findText.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&'), 'g');
-
-                if (findInName && channel.name && channel.name.includes(findText)) {
-                    const original = channel.name;
-                    channel.name = channel.name.replaceAll(findText, replaceText);
-                    replacedCount += (original.match(regex) || []).length;
-                    channelModified = true;
-                }
-                if (findInGroup && channel.groups && channel.groups.length > 0) {
-                    channel.groups = channel.groups.map(group => {
-                        if (group.includes(findText)) {
-                            replacedCount += (group.match(regex) || []).length;
-                            channelModified = true;
-                            return group.replaceAll(findText, replaceText);
-                        }
-                        return group;
-                    });
-                }
-                if (findInUrl && channel.url && channel.url.includes(findText)) {
-                    const original = channel.url;
-                    channel.url = channel.url.replaceAll(findText, replaceText);
-                    replacedCount += (original.match(regex) || []).length;
-                    channelModified = true;
-                }
-                if (channelModified) {
-                    affectedChannels++;
-                }
-            });
-
-            updateAndRefreshUI();
-            closeModal('findReplaceModal');
-            const مرهStr = generateCountString(replacedCount, {singular: 'مرة', dualGenitive: 'مرتين', plural: 'مرات', gender: 'f'});
-            const قناةStr = generateCountString(affectedChannels, {singular: 'قناة', dualGenitive: 'قناتين', plural: 'قنوات', gender: 'f'});
-            showToast(`تم استبدال النص ${مرهStr} في ${قناةStr}.`, 'success');
-        }
         
         function openFormatDataModal() {
             if (channelsData.length === 0) return showToast("لا توجد قنوات لتنسيقها", "error");
@@ -3267,6 +3208,11 @@ body.dark-mode #libraryImportModal h2 {
             document.getElementById('format-suffix').value = '';
             document.getElementById('format-trim').checked = false;
             document.getElementById('format-remove-logos').checked = false;
+            document.getElementById('find-text').value = '';
+            document.getElementById('replace-text').value = '';
+            document.getElementById('find-in-name').checked = true;
+            document.getElementById('find-in-group').checked = false;
+            document.getElementById('find-in-url').checked = false;
 
             document.getElementById('defaultFormatOpen').click();
 
@@ -3274,8 +3220,9 @@ body.dark-mode #libraryImportModal h2 {
         }
 
         function executeFormatting() {
+            const isReplaceTabActive = document.getElementById('FormatReplace').style.display === 'block';
+
             const scope = document.getElementById('format-scope-selector').value;
-            
             let targetChannels;
             if (scope === 'selected' && selectedIndices.size > 0) {
                 targetChannels = Array.from(selectedIndices).map(index => channelsData[index]);
@@ -3284,65 +3231,132 @@ body.dark-mode #libraryImportModal h2 {
             } else {
                 targetChannels = [...channelsData];
             }
-
+            
             if (targetChannels.length === 0) {
-                showToast("لا توجد قنوات لتطبيق التنسيق عليها في النطاق المحدد.", "info");
+                showToast("لا توجد قنوات لتطبيق الإجراء عليها في النطاق المحدد.", "info");
                 closeModal('formatDataModal');
                 return;
             }
+            
+            if (isReplaceTabActive) {
+                const findText = document.getElementById('find-text').value;
+                const replaceText = document.getElementById('replace-text').value;
+                if (!findText && replaceText) { return showToast("لا يمكن ترك حقل 'بحث عن' فارغًا عند الاستبدال.", "error"); }
 
-            const caseType = document.querySelector('input[name="formatCase"]:checked').value;
-            const prefix = document.getElementById('format-prefix').value;
-            const suffix = document.getElementById('format-suffix').value;
-            const shouldTrim = document.getElementById('format-trim').checked;
-            const shouldRemoveLogos = document.getElementById('format-remove-logos').checked;
-            let affectedChannelsCount = 0;
+                const findInName = document.getElementById('find-in-name').checked;
+                const findInGroup = document.getElementById('find-in-group').checked;
+                const findInUrl = document.getElementById('find-in-url').checked;
+                if (!findInName && !findInGroup && !findInUrl) { return showToast("الرجاء تحديد حقل واحد على الأقل للبحث فيه.", "error"); }
 
-            const toTitleCase = (str) => str.replace(/\w\S*/g, (txt) => txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase());
+                let replacedCount = 0;
+                let affectedChannels = 0;
 
-            targetChannels.forEach(channel => {
-                let modified = false;
-                if (caseType !== 'none' && channel.name) {
-                    if (caseType === 'upper') channel.name = channel.name.toUpperCase();
-                    else if (caseType === 'lower') channel.name = channel.name.toLowerCase();
-                    else if (caseType === 'title') channel.name = toTitleCase(channel.name);
-                    modified = true;
+                targetChannels.forEach(channel => {
+                    let channelModified = false;
+                    const regex = new RegExp(findText.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&'), 'g');
+
+                    if (findInName && channel.name && channel.name.includes(findText)) {
+                        const original = channel.name;
+                        channel.name = channel.name.replaceAll(findText, replaceText);
+                        if(original !== channel.name) {
+                           replacedCount += (original.match(regex) || []).length;
+                           channelModified = true;
+                        }
+                    }
+                    if (findInGroup && channel.groups && channel.groups.length > 0) {
+                        const originalGroups = [...channel.groups];
+                        channel.groups = channel.groups.map(group => {
+                            if (group.includes(findText)) {
+                                const originalGroup = group;
+                                const newGroup = group.replaceAll(findText, replaceText);
+                                if(originalGroup !== newGroup) {
+                                    replacedCount += (originalGroup.match(regex) || []).length;
+                                }
+                                return newGroup;
+                            }
+                            return group;
+                        });
+                        if(JSON.stringify(originalGroups) !== JSON.stringify(channel.groups)) {
+                            channelModified = true;
+                        }
+                    }
+                    if (findInUrl && channel.url && channel.url.includes(findText)) {
+                        const original = channel.url;
+                        channel.url = channel.url.replaceAll(findText, replaceText);
+                         if(original !== channel.url) {
+                           replacedCount += (original.match(regex) || []).length;
+                           channelModified = true;
+                        }
+                    }
+                    if (channelModified) {
+                        affectedChannels++;
+                    }
+                });
+                
+                closeModal('formatDataModal');
+                if (affectedChannels > 0) {
+                    updateAndRefreshUI();
+                    const مرهStr = generateCountString(replacedCount, {singular: 'مرة', dualGenitive: 'مرتين', plural: 'مرات', gender: 'f'});
+                    const قناةStr = generateCountString(affectedChannels, {singular: 'قناة', dualGenitive: 'قناتين', plural: 'قنوات', gender: 'f'});
+                    showToast(`تم استبدال النص ${مرهStr} في ${قناةStr}.`, 'success');
+                } else {
+                    showToast("لم يتم العثور على النص المحدد.", "info");
                 }
-                if (prefix && channel.name) {
-                    channel.name = prefix + channel.name;
-                    modified = true;
-                }
-                if (suffix && channel.name) {
-                    channel.name = channel.name + suffix;
-                    modified = true;
-                }
-                if (shouldTrim) {
-                    if (channel.name) {
-                        const originalName = channel.name;
-                        channel.name = channel.name.trim();
+            } else {
+                const caseType = document.querySelector('input[name="formatCase"]:checked').value;
+                const prefix = document.getElementById('format-prefix').value;
+                const suffix = document.getElementById('format-suffix').value;
+                const shouldTrim = document.getElementById('format-trim').checked;
+                const shouldRemoveLogos = document.getElementById('format-remove-logos').checked;
+                let affectedChannelsCount = 0;
+
+                const toTitleCase = (str) => str.replace(/\w\S*/g, (txt) => txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase());
+
+                targetChannels.forEach(channel => {
+                    let modified = false;
+                    if (caseType !== 'none' && channel.name) {
+                        let originalName = channel.name;
+                        if (caseType === 'upper') channel.name = channel.name.toUpperCase();
+                        else if (caseType === 'lower') channel.name = channel.name.toLowerCase();
+                        else if (caseType === 'title') channel.name = toTitleCase(channel.name);
                         if (originalName !== channel.name) modified = true;
                     }
-                    if (channel.groups && channel.groups.length > 0) {
-                        const originalGroups = [...channel.groups];
-                        channel.groups = channel.groups.map(g => g.trim()).filter(g => g);
-                        if (JSON.stringify(originalGroups) !== JSON.stringify(channel.groups)) modified = true;
+                    if (prefix && channel.name) {
+                        channel.name = prefix + channel.name;
+                        modified = true;
                     }
-                }
-                if (shouldRemoveLogos && channel.logo) {
-                    channel.logo = '';
-                    modified = true;
-                }
-                if (modified) affectedChannelsCount++;
-            });
+                    if (suffix && channel.name) {
+                        channel.name = channel.name + suffix;
+                        modified = true;
+                    }
+                    if (shouldTrim) {
+                        if (channel.name) {
+                            const originalName = channel.name;
+                            channel.name = channel.name.trim();
+                            if (originalName !== channel.name) modified = true;
+                        }
+                        if (channel.groups && channel.groups.length > 0) {
+                            const originalGroups = [...channel.groups];
+                            channel.groups = channel.groups.map(g => g.trim()).filter(g => g);
+                            if (JSON.stringify(originalGroups) !== JSON.stringify(channel.groups)) modified = true;
+                        }
+                    }
+                    if (shouldRemoveLogos && channel.logo) {
+                        channel.logo = '';
+                        modified = true;
+                    }
+                    if (modified) affectedChannelsCount++;
+                });
 
-            closeModal('formatDataModal');
-            
-            if (affectedChannelsCount > 0) {
-                updateAndRefreshUI();
-                const countStr = generateCountString(affectedChannelsCount, {singular: 'قناة', dualGenitive: 'قناتين', plural: 'قنوات', gender: 'f'});
-                showToast(`تم تطبيق التنسيقات على ${countStr} بنجاح.`, 'success');
-            } else {
-                showToast("لم يتم إجراء أي تغييرات.", "info");
+                closeModal('formatDataModal');
+                
+                if (affectedChannelsCount > 0) {
+                    updateAndRefreshUI();
+                    const countStr = generateCountString(affectedChannelsCount, {singular: 'قناة', dualGenitive: 'قناتين', plural: 'قنوات', gender: 'f'});
+                    showToast(`تم تطبيق التنسيقات على ${countStr} بنجاح.`, 'success');
+                } else {
+                    showToast("لم يتم إجراء أي تغييرات.", "info");
+                }
             }
         }
 
@@ -3360,7 +3374,6 @@ body.dark-mode #libraryImportModal h2 {
             evt.currentTarget.className += " active";
         }
         
-        // START: NEW FUNCTION
         function openFormatTab(evt, tabName) {
             let i, tabcontent, tablinks;
             tabcontent = document.getElementsByClassName("format-tab-pane");
@@ -3374,7 +3387,6 @@ body.dark-mode #libraryImportModal h2 {
             document.getElementById(tabName).style.display = "block";
             evt.currentTarget.className += " active";
         }
-        // END: NEW FUNCTION
         
         function debouncedFilterLibrary(input, select) {
             clearTimeout(debounceTimeout);
@@ -3559,4 +3571,3 @@ body.dark-mode #libraryImportModal h2 {
     </script>
 </body>
 </html>
-
