@@ -448,7 +448,20 @@ td {
             padding-top: 0;
         } 
 
-        .modal-content { padding: 20px; border: 1px solid var(--border-color); width: auto; max-width: 500px; border-radius: 10px; position: relative; box-sizing: border-box; overflow-y: auto; max-height: 90vh; margin: auto; } .modal-content textarea { width: 95%; min-height: 150px; padding: 8px; margin: 10px auto; display: block; border: 1px solid var(--border-color); border-radius: 4px; box-sizing: border-box; resize: vertical; } #multiUrlTextarea { direction: ltr; text-align: left; } .close { color: #aaa; float: left; font-size: 28px; font-weight: bold; } .close:hover, .close:focus { color: #000; text-decoration: none; cursor: pointer; } 
+        .modal-content { padding: 20px; border: 1px solid var(--border-color); width: auto; max-width: 500px; border-radius: 10px; position: relative; box-sizing: border-box; overflow-y: auto; max-height: 90vh; margin: auto; } .modal-content textarea { width: 95%; min-height: 150px; padding: 8px; margin: 10px auto; display: block; border: 1px solid var(--border-color); border-radius: 4px; box-sizing: border-box; resize: vertical; } #multiUrlTextarea { direction: ltr; text-align: left; } 
+        
+        /* --- START: MODIFICATION FOR CLOSE BUTTON --- */
+        .close {
+            position: absolute;
+            top: 10px;
+            left: 15px;
+            color: #aaa;
+            font-size: 28px;
+            font-weight: bold;
+        }
+        .close:hover, .close:focus { color: #000; text-decoration: none; cursor: pointer; } 
+        /* --- END: MODIFICATION FOR CLOSE BUTTON --- */
+        
         body.dark-mode .close { color: #ccc; } 
         body.dark-mode .close:hover { color: #fff; }
         /* القاعدة العامة للمدخلات في النوافذ المنبثقة */
@@ -578,7 +591,10 @@ td {
             border-radius: var(--border-radius); 
         }
         
-        #duplicate-results-list { margin-top: 15px; }
+        #duplicate-results-list {
+            margin-top: 15px; 
+        }
+
         .duplicate-group { border: 1px solid var(--border-color); border-radius: 6px; margin-bottom: 10px; padding: 10px; }
         .duplicate-group h4 { margin: 0 0 10px 0; font-size: 1.1em; color: var(--primary-color); }
         .duplicate-channel-item { display: flex; align-items: center; }
@@ -1066,6 +1082,56 @@ body.dark-mode #libraryImportModal h2 {
     opacity: 1;
 }
 
+/* --- START: New styles for scrollable duplicate results --- */
+
+#removeDuplicatesModal .modal-content {
+    display: flex;
+    flex-direction: column;
+}
+
+#duplicate-results-step {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    min-height: 0; 
+}
+
+#duplicate-results-list {
+    overflow-y: auto;
+    flex-grow: 1;
+    padding: 10px 5px; 
+    margin-top: 3;
+    margin-bottom: 15px;
+
+    /* --- START: CODE TO HIDE THE SCROLLBAR --- */
+    /* For Firefox */
+    scrollbar-width: none;
+    /* For Internet Explorer and Edge */
+    -ms-overflow-style: none;  
+}
+
+/* For Chrome, Safari, and Opera */
+#duplicate-results-list::-webkit-scrollbar {
+    display: none;
+}
+/* --- END: CODE TO HIDE THE SCROLLBAR --- */
+
+#duplicate-results-step > p,
+#duplicate-results-step > .modal-buttons {
+    flex-shrink: 0;
+}
+/* --- END: New styles for scrollable duplicate results --- */
+/* --- START: MODIFICATION TO REDUCE TITLE SPACING --- */
+.modal-content h2 {
+    text-align: right; /* للتأكد من أن العنوان يبقى في المنتصف */
+    margin-top: 5px;   /* لتقليل المسافة فوق العنوان */
+    margin-bottom: 0px; /* هذا هو السطر الأهم لتقليل المسافة تحت العنوان */
+}
+/* --- END: MODIFICATION --- */
+/* --- Rule to Remove Tap Highlight Globally --- */
+* {
+    -webkit-tap-highlight-color: transparent !important;
+}
 </style>
 </head>
 <body>
@@ -1125,11 +1191,7 @@ body.dark-mode #libraryImportModal h2 {
     <div id="removeDuplicatesModal" class="modal modal-small-top">
     <div class="modal-content"><span class="close" onclick="closeModal('removeDuplicatesModal')">&times;</span><h2>إزالة التكرار</h2><div id="duplicate-criteria-step"><label>اختر شرط البحث عن التكرار:</label>
         <div class="modal-row"><input type="radio" id="crit-name" name="duplicateCriteria" value="name"><label for="crit-name">الاسم الكامل فقط</label></div>
-        
-        <!-- START: NEW OPTION -->
         <div class="modal-row"><input type="radio" id="crit-partial-name-url" name="duplicateCriteria" value="partial-name-url" checked><label for="crit-partial-name-url">جزء من الاسم + الرابط (الأقوى)</label></div>
-        <!-- END: NEW OPTION -->
-        
         <div class="modal-row"><input type="radio" id="crit-name-url" name="duplicateCriteria" value="name-url"><label for="crit-name-url">الاسم الكامل + الرابط</label></div>
         <div class="modal-row"><input type="radio" id="crit-name-url-group" name="duplicateCriteria" value="name-url-group"><label for="crit-name-url-group">الاسم الكامل + الرابط + المجموعة</label></div>
         <div class="modal-buttons"><button onclick="findDuplicates()">البحث عن التكرار</button><button onclick="closeModal('removeDuplicatesModal')" class="cancel">إلغاء</button></div></div>
@@ -1225,7 +1287,6 @@ body.dark-mode #libraryImportModal h2 {
                 <select id="format-scope-selector" style="width: 100%;"></select>
             </div>
 
-            <!-- START: FINAL MODIFICATION (HTML) -->
             <div class="format-container">
                 <!-- Tab buttons -->
                 <div class="format-tabs">
@@ -1269,7 +1330,6 @@ body.dark-mode #libraryImportModal h2 {
                     </div>
                 </div>
             </div>
-            <!-- END: FINAL MODIFICATION (HTML) -->
 
 
             <div class="modal-buttons">
@@ -2166,13 +2226,14 @@ body.dark-mode #libraryImportModal h2 {
                 if (!openFromToast) closeModal('removeDuplicatesModal');
                 return;
             }
-
+            
+            if(openFromToast) openModal('removeDuplicatesModal');
+            
             document.getElementById('removeDuplicatesModal').classList.remove('modal-small-top');
 
             const resultsList = document.getElementById('duplicate-results-list');
             resultsList.innerHTML = '';
             duplicateGroups.forEach((group, groupIndex) => {
-                // يتم فرز المجموعة داخليًا لوضع الاسم الأقصر أولاً، مما يجعله مرشحًا أفضل للإبقاء عليه
                 group.sort((a, b) => a.channel.name.length - b.channel.name.length);
 
                 const groupDiv = document.createElement('div');
@@ -2217,9 +2278,8 @@ body.dark-mode #libraryImportModal h2 {
                 resultsList.appendChild(groupDiv);
             });
             
-            if(openFromToast) openModal('removeDuplicatesModal');
             document.getElementById('duplicate-criteria-step').style.display = 'none';
-            document.getElementById('duplicate-results-step').style.display = 'block';
+            document.getElementById('duplicate-results-step').style.display = 'flex';
         }
         
         function showDuplicateInfo(index) {
