@@ -763,9 +763,9 @@ td {
 #advancedOptionsModal .modal-content {
     padding-bottom: 17px; /* يمكنك تعديل هذه القيمة حسب الحاجة */
 }
-       /* START: MODIFIED Styles for Tabs (ULTIMATE FORCED FIX) */
-.library-tabs,
-.format-tabs {
+       
+/* START: FINAL FIX FOR TABS */
+.library-tabs {
     overflow: hidden;
     border: 1px solid var(--border-color);
     background-color: var(--row-alt-color);
@@ -777,20 +777,48 @@ td {
     transform: translateZ(0);
 }
 
+.library-tabs button {
+    background-color: inherit;
+    flex: 1; 
+    min-width: 0; 
+    border: none;
+    outline: none;
+    cursor: pointer;
+    padding: 5px 6px; 
+    font-size: 0.85em; 
+    color: var(--text-color);
+    font-weight: bold;
+    -webkit-tap-highlight-color: transparent;
+    white-space: nowrap; 
+    transition: none !important;
+}
+.library-tabs button:first-child { border-radius: 0 4px 4px 0; }
+.library-tabs button:last-child { border-radius: 4px 0 0 4px; }
+.library-tabs button:hover { background-color: #e0e0e0; }
+.library-tabs button.active { background-color: #e8e8e8; color: var(--text-color); cursor: default; }
+body.dark-mode .library-tabs button:hover { background-color: #2c2c2e; }
+body.dark-mode .library-tabs button.active { background-color: #3a3a3c; color: var(--text-color); }
+.library-tab-pane { display: none; padding: 15px 0 0 0; border-top: none; }
+
+/* -- New Container Rule -- */
+.format-container {
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    margin-top: 15px;
+    overflow: hidden; /* Crucial for containing the rounded corners */
+}
+
+/* -- Modified .format-tabs -- */
 .format-tabs {
+    border: none; /* The container handles the border now */
+    background-color: var(--row-alt-color);
+    display: flex;
+    box-sizing: border-box;
+    -webkit-transform: translateZ(0);
+    transform: translateZ(0);
     width: 100%;
-    margin-bottom: 0;
-    border-bottom: none;
-    border-bottom-left-radius: 0;
-    border-bottom-right-radius: 0;
 }
 
-#libraryImportModal .library-tabs {
-    width: 95%;
-}
-
-/* --- القاعدة الموحدة للتوزيع والأداء --- */
-.library-tabs button,
 .format-tabs button {
     background-color: inherit;
     flex: 1; 
@@ -804,51 +832,33 @@ td {
     font-weight: bold;
     -webkit-tap-highlight-color: transparent;
     white-space: nowrap; 
-    /* --- هذا هو السطر الحاسم الذي يقتل أي بطء متبقي --- */
     transition: none !important;
 }
 
-
-/* --- القواعد المنفصلة والدقيقة لإصلاح الزوايا لكل نافذة --- */
-.format-tabs button:first-child { border-top-right-radius: 4px; }
-.format-tabs button:last-child { border-top-left-radius: 4px; }
-.library-tabs button:first-child { border-radius: 0 4px 4px 0; }
-.library-tabs button:last-child { border-radius: 4px 0 0 4px; }
-
-
-/* --- بقية الأكواد تبقى كما هي --- */
-.library-tabs button:hover,
 .format-tabs button:hover { background-color: #e0e0e0; }
-.library-tabs button.active,
 .format-tabs button.active { background-color: #e8e8e8; color: var(--text-color); cursor: default; }
-body.dark-mode .library-tabs button:hover,
 body.dark-mode .format-tabs button:hover { background-color: #2c2c2e; }
-body.dark-mode .library-tabs button.active,
 body.dark-mode .format-tabs button.active { background-color: #3a3a3c; color: var(--text-color); }
-.library-tab-pane { display: none; padding: 15px 0 0 0; border-top: none; }
-.format-tab-pane {
-    display: none;
-    border: 1px solid var(--border-color);
-    border-top: none;
-    padding: 20px;
-    border-bottom-left-radius: 4px;
-    border-bottom-right-radius: 4px;
-}
-/* END: MODIFIED Styles for Tabs (ULTIMATE FORCED FIX) */
-        
-        .library-tab-pane {
-            display: none;
-            padding: 15px 0 0 0;
-            border-top: none;
-        }
 
-        .format-tab-pane {
-            display: none;
-            border: 1px solid var(--border-color);
-            border-top: none;
-            padding: 20px;
-            border-bottom-left-radius: 8px;
-            border-bottom-right-radius: 8px;
+
+/* -- Modified .format-tab-pane -- */
+.format-tab-pane {
+    max-height: 0;
+    overflow: hidden;
+    border: none; /* The container handles the border now */
+    padding: 0 20px;
+    box-sizing: border-box;
+    transition: max-height 0.4s ease-in-out, padding-top 0.4s ease-in-out, padding-bottom 0.4s ease-in-out;
+}
+
+.format-tab-pane.active {
+    max-height: 400px; /* As requested */
+    padding: 20px;
+}
+/* END: FINAL FIX FOR TABS */
+        
+        #libraryImportModal .library-tabs {
+            width: 95%;
         }
         
         .library-search-input {
@@ -1151,7 +1161,7 @@ body.dark-mode #libraryImportModal h2 {
         </div>
     </div>
 
-    <!-- Modal for Data Formatting -- START: MODIFIED -->
+    <!-- Modal for Data Formatting -->
     <div id="formatDataModal" class="modal">
         <div class="modal-content">
             <span class="close" onclick="closeModal('formatDataModal')">&times;</span>
@@ -1162,47 +1172,52 @@ body.dark-mode #libraryImportModal h2 {
                 <select id="format-scope-selector" style="width: 100%;"></select>
             </div>
 
-            <!-- Tab buttons -->
-            <div class="format-tabs">
-                <button class="format-tab-btn" onclick="openFormatTab(event, 'FormatCase')" id="defaultFormatOpen">الأحرف</button>
-                <button class="format-tab-btn" onclick="openFormatTab(event, 'FormatAffix')">الإضافات</button>
-                <button class="format-tab-btn" onclick="openFormatTab(event, 'FormatReplace')">الاستبدال</button>
-                <button class="format-tab-btn" onclick="openFormatTab(event, 'FormatClean')">التنظيف</button>
-            </div>
-            
-            <!-- Tab content -->
-            <div id="FormatCase" class="format-tab-pane">
-                 <div class="format-options-grid">
-                    <div class="modal-row"><input type="radio" id="case-none" name="formatCase" value="none" checked><label for="case-none">بدون تغيير</label></div>
-                    <div class="modal-row"><input type="radio" id="case-upper" name="formatCase" value="upper"><label for="case-upper">أحرف كبيرة</label></div>
-                    <div class="modal-row"><input type="radio" id="case-lower" name="formatCase" value="lower"><label for="case-lower">أحرف صغيرة</label></div>
-                    <div class="modal-row"><input type="radio" id="case-title" name="formatCase" value="title"><label for="case-title">حالة العنوان</label></div>
+            <!-- START: FINAL MODIFICATION (HTML) -->
+            <div class="format-container">
+                <!-- Tab buttons -->
+                <div class="format-tabs">
+                    <button class="format-tab-btn" onclick="openFormatTab(event, 'FormatCase')" id="defaultFormatOpen">الأحرف</button>
+                    <button class="format-tab-btn" onclick="openFormatTab(event, 'FormatAffix')">الإضافات</button>
+                    <button class="format-tab-btn" onclick="openFormatTab(event, 'FormatReplace')">الاستبدال</button>
+                    <button class="format-tab-btn" onclick="openFormatTab(event, 'FormatClean')">التنظيف</button>
+                </div>
+                
+                <!-- Tab content -->
+                <div id="FormatCase" class="format-tab-pane">
+                     <div class="format-options-grid">
+                        <div class="modal-row"><input type="radio" id="case-none" name="formatCase" value="none" checked><label for="case-none">بدون تغيير</label></div>
+                        <div class="modal-row"><input type="radio" id="case-upper" name="formatCase" value="upper"><label for="case-upper">أحرف كبيرة</label></div>
+                        <div class="modal-row"><input type="radio" id="case-lower" name="formatCase" value="lower"><label for="case-lower">أحرف صغيرة</label></div>
+                        <div class="modal-row"><input type="radio" id="case-title" name="formatCase" value="title"><label for="case-title">حالة العنوان</label></div>
+                    </div>
+                </div>
+                <div id="FormatAffix" class="format-tab-pane">
+                    <label for="format-prefix">إضافة كنص بادئ:</label>
+                    <input type="text" id="format-prefix" placeholder="مثال: VIP" style="width: 100%;">
+                    <label for="format-suffix">إضافة كنص لاحق:</label>
+                    <input type="text" id="format-suffix" placeholder="مثال: FHD" style="width: 100%;">
+                </div>
+                <div id="FormatReplace" class="format-tab-pane">
+                    <label for="find-text">بحث عن:</label>
+                    <input type="text" id="find-text" style="width: 100%;">
+                    <label for="replace-text" style="margin-top:10px; display:block;">استبدال بـ:</label>
+                    <input type="text" id="replace-text" style="width: 100%;">
+                    <div class="find-replace-options">
+                        <p style="margin-top: 15px; margin-bottom: 5px;"><strong>بحث في:</strong></p>
+                        <div><input type="checkbox" id="find-in-name" checked> <label for="find-in-name">اسم القناة</label></div>
+                        <div><input type="checkbox" id="find-in-group"> <label for="find-in-group">المجموعة</label></div>
+                        <div><input type="checkbox" id="find-in-url"> <label for="find-in-url">رابط التشغيل</label></div>
+                    </div>
+                </div>
+                <div id="FormatClean" class="format-tab-pane">
+                     <div class="format-options-grid">
+                        <div class="modal-row"><input type="checkbox" id="format-trim"><label for="format-trim">إزالة المسافات الزائدة</label></div>
+                        <div class="modal-row"><input type="checkbox" id="format-remove-logos"><label for="format-remove-logos">حذف جميع الشعارات</label></div>
+                    </div>
                 </div>
             </div>
-            <div id="FormatAffix" class="format-tab-pane">
-                <label for="format-prefix">إضافة كنص بادئ:</label>
-                <input type="text" id="format-prefix" placeholder="مثال: VIP" style="width: 100%;">
-                <label for="format-suffix">إضافة كنص لاحق:</label>
-                <input type="text" id="format-suffix" placeholder="مثال: FHD" style="width: 100%;">
-            </div>
-            <div id="FormatReplace" class="format-tab-pane">
-                <label for="find-text">بحث عن:</label>
-                <input type="text" id="find-text" style="width: 100%;">
-                <label for="replace-text" style="margin-top:10px; display:block;">استبدال بـ:</label>
-                <input type="text" id="replace-text" style="width: 100%;">
-                <div class="find-replace-options">
-                    <p style="margin-top: 15px; margin-bottom: 5px;"><strong>بحث في:</strong></p>
-                    <div><input type="checkbox" id="find-in-name" checked> <label for="find-in-name">اسم القناة</label></div>
-                    <div><input type="checkbox" id="find-in-group"> <label for="find-in-group">المجموعة</label></div>
-                    <div><input type="checkbox" id="find-in-url"> <label for="find-in-url">رابط التشغيل</label></div>
-                </div>
-            </div>
-            <div id="FormatClean" class="format-tab-pane">
-                 <div class="format-options-grid">
-                    <div class="modal-row"><input type="checkbox" id="format-trim"><label for="format-trim">إزالة المسافات الزائدة</label></div>
-                    <div class="modal-row"><input type="checkbox" id="format-remove-logos"><label for="format-remove-logos">حذف جميع الشعارات</label></div>
-                </div>
-            </div>
+            <!-- END: FINAL MODIFICATION (HTML) -->
+
 
             <div class="modal-buttons">
                 <button onclick="executeFormatting()">تنفيذ</button>
@@ -1210,7 +1225,6 @@ body.dark-mode #libraryImportModal h2 {
             </div>
         </div>
     </div>
-    <!-- Modal for Data Formatting -- END: MODIFIED -->
 
 
     <footer class="site-footer">
@@ -3287,7 +3301,7 @@ body.dark-mode #libraryImportModal h2 {
         }
 
         function executeFormatting() {
-            const isReplaceTabActive = document.getElementById('FormatReplace').style.display === 'block';
+            const isReplaceTabActive = document.getElementById('FormatReplace').classList.contains('active');
 
             const scope = document.getElementById('format-scope-selector').value;
             let targetChannels;
@@ -3445,14 +3459,14 @@ body.dark-mode #libraryImportModal h2 {
             let i, tabcontent, tablinks;
             tabcontent = document.getElementsByClassName("format-tab-pane");
             for (i = 0; i < tabcontent.length; i++) {
-                tabcontent[i].style.display = "none";
+                tabcontent[i].classList.remove('active');
             }
             tablinks = document.getElementsByClassName("format-tab-btn");
             for (i = 0; i < tablinks.length; i++) {
-                tablinks[i].className = tablinks[i].className.replace(" active", "");
+                tablinks[i].classList.remove('active');
             }
-            document.getElementById(tabName).style.display = "block";
-            evt.currentTarget.className += " active";
+            document.getElementById(tabName).classList.add('active');
+            evt.currentTarget.classList.add('active');
         }
         
         function debouncedFilterLibrary(input, select) {
