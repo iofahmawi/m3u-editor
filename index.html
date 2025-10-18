@@ -119,10 +119,9 @@
         body.dark-mode .sun-icon { display: none; }
         
         h1 { color: var(--primary-color); text-align: center; margin-bottom: 20px; }
-        .page-title a {
+        .page-title {
             color: inherit;
             text-decoration: none;
-            cursor: pointer;
         }
 
         .upload-area {
@@ -147,6 +146,7 @@
             border-radius: 10px; cursor: pointer;
             font-weight: bold; display: inline-block;
             transition: background-color 0.3s; border: none; margin-top: 10px;
+            font-size: 15.5px;
         }
         .upload-label:hover { background-color: var(--primary-hover); }
 
@@ -893,7 +893,7 @@ body.dark-mode .format-tabs button.active { background-color: #3a3a3c; color: va
 }
 
 .format-tab-pane.active {
-    max-height: 400px; /* As requested */
+    max-height: 500px; /* Increased max-height */
     padding: 20px;
 }
 /* END: FINAL FIX FOR TABS */
@@ -929,11 +929,12 @@ body.dark-mode .format-tabs button.active { background-color: #3a3a3c; color: va
         
         .format-options-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 5px 15px; /* row-gap column-gap */
+            grid-template-columns: 1fr; /* Make it a single column grid */
+            gap: 10px;
         }
         .format-options-grid .modal-row {
             margin-bottom: 0; /* Override default margin */
+            grid-column: 1 / -1; /* Make each item span the full width */
         }
         
         @media (max-width: 600px) {
@@ -1214,6 +1215,37 @@ body.dark-mode .modal-content select {
     margin-bottom: 10px;
 }
 /* --- END: Added space in Format Data Modal --- */
+
+#remove-words-container {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease-in-out, margin-top 0.3s ease-in-out;
+    margin-top: 0;
+}
+#remove-words-container.visible {
+    max-height: 100px; /* Adjust as needed */
+    margin-top: 10px;
+}
+#bulk-edit-group-container {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease-in-out, margin-top 0.3s ease-in-out;
+    margin-top: 0;
+    width: 100%;
+    padding-right: 25px;
+}
+#bulk-edit-group-container.visible {
+    max-height: 100px; /* Adjust as needed */
+    margin-top: 10px;
+}
+h1.page-title {
+    color: var(--primary-color);
+}
+#bulk-new-group-name {
+    width: 100%;
+    margin: 0;
+    padding: 9px 9px;
+}
 </style>
 </head>
 <body>
@@ -1225,7 +1257,7 @@ body.dark-mode .modal-content select {
 </svg>
         </button>
 
-        <h1 class="page-title"><a href="">محرر قوائم تشغيل M3U/M3U8</a></h1>
+        <h1 class="page-title">محرر قوائم تشغيل M3U/M3U8</h1>
         
         <div id="loadingIndicator" style="display: none;"><p>جارٍ التحميل...</p></div>
         
@@ -1247,7 +1279,7 @@ body.dark-mode .modal-content select {
                 <button class="action-btn" id="manageGroupsButton" onclick="openManageGroupsModal()">إدارة المجموعات</button>
                 <button class="action-btn" id="openSortModalButton" onclick="openSortModal()">فرز وترتيب</button>
                 <button class="action-btn" id="advancedToolsButton" onclick="openModal('advancedOptionsModal')">خيارات إضافية</button>
-                <button class="action-btn" id="openSearchFilterModalButton" onclick="openModal('searchFilterModal')">بحث وتصفية</button>
+                <button class="action-btn" id="openSearchFilterModalButton" onclick="handleFilterButtonClick()">بحث وتصفية</button>
                 <button class="action-btn" id="bulkActionsButton" onclick="openModal('bulkActionsModal')">
                     إجراءات على المحدد
                     <span id="bulkActionsBadge" class="badge"></span>
@@ -1263,11 +1295,10 @@ body.dark-mode .modal-content select {
 
     <!-- All Modals -->
     <div id="dragDropChoiceModal" class="modal modal-small-top"><div class="modal-content"><span class="close" onclick="cancelDragOperation()">&times;</span><h2>كيف تريد تطبيق الترتيب؟</h2><div style="margin: 20px 0;"><div class="modal-row"><input type="radio" id="dragChoiceGroup" name="dragDropChoice" value="group" checked><label for="dragChoiceGroup">تجميع المجموعة وترتيبها</label></div><div class="modal-row"><input type="radio" id="dragChoiceInPlace" name="dragDropChoice" value="sortInPlace"><label for="dragChoiceInPlace">الترتيب في الأماكن الحالية فقط</label></div></div><div class="modal-buttons"><button id="executeDragDropChoice">تنفيذ</button><button class="cancel" onclick="cancelDragOperation()">إلغاء</button></div></div></div>
-    <div id="searchFilterModal" class="modal modal-small-top"><div class="modal-content"><span class="close" onclick="closeModal('searchFilterModal')">&times;</span><h2>بحث وتصفية القنوات</h2><input type="text" id="searchInput" placeholder="ابحث عن قناة..."><select id="groupFilter"><option value="all">كل المجموعات</option></select><div class="modal-buttons"><button id="searchFilterActionButton">إغلاق</button></div></div></div>
-    <div id="bulkActionsModal" class="modal"><div class="modal-content"><span class="close" onclick="closeModal('bulkActionsModal')">&times;</span><h2>إجراءات على القنوات المحددة</h2><div id="bulk-actions-list"><div class="modal-row"><input type="radio" id="bulk-action-sort" name="bulkAction" value="sort" checked><label for="bulk-action-sort">فرز المحدد أبجدياً</label></div><div class="modal-row"><input type="radio" id="bulk-action-move" name="bulkAction" value="move"><label for="bulk-action-move">نقل المحدد إلى موضع</label><div id="bulk-move-input-container"><label for="bulk-move-target-index">رقم:</label><input type="number" id="bulk-move-target-index" min="1" placeholder="مثال: 1"></div></div><div class="modal-row"><input type="radio" id="bulk-action-group" name="bulkAction" value="group"><label for="bulk-action-group">تعديل المجموعة</label></div><div class="modal-row"><input type="radio" id="bulk-action-remove-group" name="bulkAction" value="removeGroup"><label for="bulk-action-remove-group">إزالة التصنيف عن المحدد</label></div><div class="modal-row"><input type="radio" id="bulk-action-delete" name="bulkAction" value="delete"><label for="bulk-action-delete">حذف المحدد</label></div><div class="modal-row"><input type="radio" id="bulk-action-export" name="bulkAction" value="export"><label for="bulk-action-export">تصدير المحدد</label></div></div><div class="modal-buttons"><button onclick="executeBulkAction()">تنفيذ</button><button onclick="closeModal('bulkActionsModal')" class="cancel">إلغاء</button></div></div></div>
+    <div id="searchFilterModal" class="modal modal-small-top"><div class="modal-content"><span class="close" onclick="closeModal('searchFilterModal')">&times;</span><h2>بحث وتصفية القنوات</h2><input type="text" id="searchInput" placeholder="ابحث عن قناة..."><select id="groupFilter"><option value="all">كل المجموعات</option></select><div class="modal-buttons"><button id="searchFilterActionButton">تطبيق التصفية</button></div></div></div>
+    <div id="bulkActionsModal" class="modal"><div class="modal-content"><span class="close" onclick="closeModal('bulkActionsModal')">&times;</span><h2>إجراءات على القنوات المحددة</h2><div id="bulk-actions-list"><div class="modal-row"><input type="radio" id="bulk-action-sort" name="bulkAction" value="sort" checked><label for="bulk-action-sort">فرز المحدد أبجدياً</label></div><div class="modal-row"><input type="radio" id="bulk-action-move" name="bulkAction" value="move"><label for="bulk-action-move">نقل المحدد إلى موضع</label><div id="bulk-move-input-container"><label for="bulk-move-target-index">رقم:</label><input type="number" id="bulk-move-target-index" min="1" placeholder="مثال: 1"></div></div><div class="modal-row"><input type="radio" id="bulk-action-group" name="bulkAction" value="group"><label for="bulk-action-group">تعديل المجموعة</label><div id="bulk-edit-group-container"><input type="text" id="bulk-new-group-name" placeholder="أدخل اسم المجموعة الجديد"></div></div><div class="modal-row"><input type="radio" id="bulk-action-remove-group" name="bulkAction" value="removeGroup"><label for="bulk-action-remove-group">إزالة التصنيف عن المحدد</label></div><div class="modal-row"><input type="radio" id="bulk-action-delete" name="bulkAction" value="delete"><label for="bulk-action-delete">حذف المحدد</label></div><div class="modal-row"><input type="radio" id="bulk-action-export" name="bulkAction" value="export"><label for="bulk-action-export">تصدير المحدد</label></div></div><div class="modal-buttons"><button onclick="executeBulkAction()">تنفيذ</button><button onclick="closeModal('bulkActionsModal')" class="cancel">إلغاء</button></div></div></div>
     <div id="channelCheckerModal" class="modal modal-small-top"><div class="modal-content"><span class="close" onclick="closeModal('channelCheckerModal')">&times;</span><h2>مدقق حالة القنوات</h2><p>سيقوم هذا الإجراء بالتحقق من كل قناة لتحديد ما إذا كانت تعمل. قد يستغرق هذا بعض الوقت للقوائم الكبيرة.</p><div id="checker-progress-container"><p id="checker-progress-text">اضغط على زر 'بدء الفحص' للتحقق من حالة القنوات.</p><div id="checker-progress-bar-container"><div id="checker-progress-bar">0%</div></div></div><p id="checker-summary-text" style="font-weight: bold;"></p><div class="modal-buttons"><button id="start-check-btn" onclick="executeChannelCheck()">بدء الفحص</button><button id="stop-check-btn" onclick="stopChannelCheck()" class="cancel" style="display:none;">إيقاف الفحص</button><button id="checker-cancel-btn" onclick="closeModal('channelCheckerModal')" class="cancel">إغلاق</button></div><div class="dropdown-container" id="checker-actions-container" style="display: none;"><button onclick="toggleCheckerActions()" class="dropdown-btn">إجراءات &#9662;</button><div id="checker-actions-dropdown" class="dropdown-content"><a href="#" id="export-working-btn" onclick="exportWorkingChannels()">تصدير القنوات التي تعمل</a><a href="#" id="select-failed-btn" onclick="selectFailedChannels()">تحديد القنوات التي لا تعمل</a><a href="#" id="delete-failed-btn" class="delete-option" onclick="deleteFailedChannels()">حذف القنوات التي لا تعمل</a></div></div></div></div>
     <div id="multiUrlModal" class="modal modal-medium-top"><div class="modal-content"><span class="close" onclick="closeModal('multiUrlModal')">&times;</span><h2>تحميل من عدة روابط</h2><p>ألصق الروابط هنا، كل رابط في سطر جديد. سيتم دمجها بالترتيب.</p><textarea id="multiUrlTextarea" placeholder="https://example.com/playlist1.m3u&#10;https://example.com/playlist2.m3u8"></textarea><div class="modal-buttons"><button onclick="processMultiUrlLoad()">تحميل</button><button onclick="closeModal('multiUrlModal')" class="cancel">إلغاء</button></div></div></div>
-    <div id="bulkEditGroupModal" class="modal modal-small-top"><div class="modal-content"><span class="close" onclick="closeModal('bulkEditGroupModal')">&times;</span><h2>تعديل مجموعة القنوات المحددة</h2><label for="bulkNewGroupName">اسم المجموعة الجديد:</label><input type="text" id="bulkNewGroupName" placeholder="أدخل اسمًا جديدًا أو اتركه فارغًا"><div class="modal-buttons"><button onclick="executeBulkEditGroup()">تطبيق</button><button onclick="closeModal('bulkEditGroupModal')" class="cancel">إلغاء</button></div></div></div>
     <div id="editModal" class="modal modal-medium-top"><div class="modal-content"><span class="close" onclick="closeModal('editModal')">&times;</span><h2>تحرير القناة</h2><div class="modal-form-row"><label for="editIndexField">رقم القناة:</label><input type="number" id="editIndexField" min="1"></div><div class="modal-form-row"><label for="editName">اسم القناة:</label><input type="text" id="editName"></div><div class="modal-form-row"><label for="editGroup">المجموعة:</label><input type="text" id="editGroup"></div><div class="modal-form-row"><label for="editLogo">رابط الصورة:</label><input type="url" id="editLogo"><div id="logoPreview"><img id="previewImage"></div></div><div class="modal-form-row"><label for="editUrl">رابط التشغيل:</label><input type="url" id="editUrl"></div><input type="hidden" id="editOriginalIndex"><div class="modal-buttons"><button onclick="saveEdit()">حفظ</button><button onclick="closeModal('editModal')" class="cancel">إلغاء</button></div></div></div>
     <div id="addModal" class="modal modal-medium-top"><div class="modal-content"><span class="close" onclick="closeModal('addModal')">&times;</span><h2>إضافة قناة جديدة</h2><div class="modal-form-row"><label for="addIndexField">رقم القناة:</label><input type="number" id="addIndexField" min="1"></div><div class="modal-form-row"><label for="addName">اسم القناة:</label><input type="text" id="addName" required></div><div class="modal-form-row"><label for="addGroup">المجموعة:</label><input type="text" id="addGroup"></div><div class="modal-form-row"><label for="addLogo">رابط الصورة:</label><input type="url" id="addLogo"><div id="addLogoPreview"><img id="addPreviewImage"></div></div><div class="modal-form-row"><label for="addUrl">رابط التشغيل:</label><input type="url" id="addUrl" required></div><div class="modal-buttons"><button onclick="saveNewChannel()">إضافة</button><button onclick="closeModal('addModal')" class="cancel">إلغاء</button></div></div></div>
     <div id="removeDuplicatesModal" class="modal modal-small-top">
@@ -1386,6 +1417,9 @@ body.dark-mode .modal-content select {
                         <div class="modal-row"><input type="radio" id="case-lower" name="formatCase" value="lower"><label for="case-lower">أحرف صغيرة</label></div>
                         <div class="modal-row"><input type="radio" id="case-title" name="formatCase" value="title"><label for="case-title">حالة العنوان</label></div>
                     </div>
+                    <div id="title-case-exceptions-container" style="display: none; margin-top: 10px; width: 100%;">
+                        <input type="text" id="title-case-exceptions-input" placeholder="استثناءات: TV, HD, OSN (مفصولة بفاصلة)" style="width: 100%;">
+                    </div>
                 </div>
                 <div id="FormatAffix" class="format-tab-pane">
                     <label for="format-prefix">إضافة كنص بادئ:</label>
@@ -1407,8 +1441,15 @@ body.dark-mode .modal-content select {
                 </div>
                 <div id="FormatClean" class="format-tab-pane">
                      <div class="format-options-grid">
-                        <div class="modal-row"><input type="checkbox" id="format-trim"><label for="format-trim">إزالة المسافات الزائدة</label></div>
+                        <div class="modal-row"><input type="checkbox" id="format-trim" checked><label for="format-trim">إزالة المسافات الزائدة</label></div>
                         <div class="modal-row"><input type="checkbox" id="format-remove-logos"><label for="format-remove-logos">حذف جميع الشعارات</label></div>
+                        <div class="modal-row">
+                            <input type="checkbox" id="format-remove-words-toggle" onchange="document.getElementById('remove-words-container').classList.toggle('visible', this.checked)">
+                            <label for="format-remove-words-toggle">إزالة كلمات محددة</label>
+                        </div>
+                    </div>
+                    <div id="remove-words-container">
+                        <textarea id="format-remove-words-input" placeholder="أدخل الكلمات هنا، مفصولة بفاصلة (مثال: 1080p, VIP, (AR))" style="width: 100%; min-height: 80px; direction: ltr; text-align: left;"></textarea>
                     </div>
                 </div>
             </div>
@@ -1702,6 +1743,14 @@ body.dark-mode .modal-content select {
                 if (event.target === popup) stopPlayer(false);
             });
         }
+        
+        function clearAllSelections() {
+            if (selectedIndices.size > 0) {
+                selectedIndices.clear();
+                updateAndRefreshUI(false);
+                showToast('تم إلغاء تحديد الكل.', 'info', 2000);
+            }
+        }
 
         document.addEventListener('DOMContentLoaded', () => { 
             document.getElementById('executeDragDropChoice').onclick = () => {
@@ -1722,6 +1771,22 @@ body.dark-mode .modal-content select {
                 ['openExportModalButton', 'addChannelButton', 'openSortModalButton', 'manageGroupsButton', 'openMergeModalButton', 'removeDuplicatesButton', 'bulkActionsButton'].forEach(id => { const button = document.getElementById(id); if (button) button.style.display = 'none'; }); 
                 document.getElementById('results').innerHTML = '';
             }
+            
+            document.addEventListener('keydown', (event) => {
+                if (event.key === 'Escape') {
+                    clearAllSelections();
+                }
+            });
+
+            document.querySelector('.container').addEventListener('click', (event) => {
+                // Do nothing if a modal is open
+                if (document.querySelector('.modal[style*="display: flex"]')) return;
+                
+                // Check if the click is on a non-interactive part of the container
+                if (!event.target.closest('table, .action-btn, input, select, button, a, .upload-area')) {
+                     clearAllSelections();
+                }
+            });
             
             setupPopupDrag();
         });
@@ -2029,9 +2094,7 @@ body.dark-mode .modal-content select {
 
         function setupPaginationControls(totalPages) { const container = document.getElementById('paginationControls'); container.innerHTML = ''; if (totalPages <= 1) return; container.innerHTML = `<button id="prevPage" onclick="changePage(-1)" ${currentPage === 1 ? 'disabled' : ''}>السابق</button><span id="pageInfo">صفحة ${currentPage} من ${totalPages}</span><button id="nextPage" onclick="changePage(1)" ${currentPage === totalPages ? 'disabled' : ''}>التالي</button>`; }
         function changePage(direction) { currentPage += direction; displayPaginatedChannels(); }
-        function searchChannels() { 
-            const searchTerm = document.getElementById('searchInput').value.toLowerCase(); const selectedGroup = document.getElementById('groupFilter').value; let tempChannels = channelsData; if (selectedGroup !== 'all') { tempChannels = channelsData.filter(ch => { if (selectedGroup === 'uncategorized') { return !ch.groups || ch.groups.length === 0; } return ch.groups && ch.groups.includes(selectedGroup); }); } if (searchTerm) { displayedChannels = tempChannels.filter(ch => (ch.name || '').toLowerCase().includes(searchTerm) || (ch.groups && ch.groups.join(' ').toLowerCase().includes(searchTerm))); } else { displayedChannels = [...tempChannels]; } currentPage = 1; isFilterActiveForButton = (searchTerm !== '' || selectedGroup !== 'all'); displayPaginatedChannels(); 
-        }
+        
         function populateGroupFilter(targetSelectId = 'groupFilter') {
             const groupFilter = document.getElementById(targetSelectId);
             const savedValue = groupFilter.value;
@@ -3149,6 +3212,7 @@ body.dark-mode .modal-content select {
         function handleBulkActionChange() {
             const selectedAction = document.querySelector('input[name="bulkAction"]:checked').value;
             document.getElementById('bulk-move-input-container').classList.toggle('visible', selectedAction === 'move');
+            document.getElementById('bulk-edit-group-container').classList.toggle('visible', selectedAction === 'group');
         }
 
         function executeBulkAction() {
@@ -3173,7 +3237,19 @@ body.dark-mode .modal-content select {
                 selectedIndices.clear();
                 updateAndRefreshUI();
                 return;
+            } else if (selectedAction === 'group') {
+                const newGroups = document.getElementById('bulk-new-group-name').value.split(';').map(g => g.trim()).filter(g => g); 
+                const count = selectedIndices.size; 
+                selectedIndices.forEach(index => { channelsData[index].groups = newGroups; }); 
+                updateAndRefreshUI(); 
+                selectedIndices.clear(); 
+                populateGroupFilter(); 
+                closeModal('bulkActionsModal'); 
+                const countStr = generateCountString(count, {singular: 'قناة', dualGenitive: 'قناتين', plural: 'قنوات', gender: 'f'});
+                showToast(`تم تعديل مجموعة ${countStr} بنجاح`, 'success'); 
+                return;
             }
+
 
             closeModal('bulkActionsModal');
 
@@ -3190,9 +3266,6 @@ body.dark-mode .modal-content select {
                     updateAndRefreshUI();
                     const sortStr = generateCountString(indices.length, {singular: 'قناة', dualGenitive: 'قناتين', plural: 'قنوات', gender: 'f'});
                     showToast(`تم فرز ${sortStr} محددة أبجدياً في أماكنها`, 'success');
-                    break;
-                case 'group':
-                    openBulkEditGroupModal();
                     break;
                 case 'removeGroup':
                     undoManager.registerUndo();
@@ -3218,18 +3291,6 @@ body.dark-mode .modal-content select {
             }
         }
 
-        function openBulkEditGroupModal() { if (selectedIndices.size === 0) return; document.getElementById('bulkNewGroupName').value = ''; openModal('bulkEditGroupModal'); }
-        function executeBulkEditGroup() { 
-            const newGroups = document.getElementById('bulkNewGroupName').value.split(';').map(g => g.trim()).filter(g => g); 
-            const count = selectedIndices.size; 
-            selectedIndices.forEach(index => { channelsData[index].groups = newGroups; }); 
-            updateAndRefreshUI(); 
-            selectedIndices.clear(); 
-            populateGroupFilter(); 
-            closeModal('bulkEditGroupModal'); 
-            const countStr = generateCountString(count, {singular: 'قناة', dualGenitive: 'قناتين', plural: 'قنوات', gender: 'f'});
-            showToast(`تم تعديل مجموعة ${countStr} بنجاح`, 'success'); 
-        }
         function exportSelected() { if (selectedIndices.size === 0) return; openModal('exportModal'); }
         
         function handleChannelCheckClick() {
@@ -3471,58 +3532,66 @@ body.dark-mode .modal-content select {
             showToast(`تم عرض وتحديد ${countStr} لا تعمل.`, 'info');
         }
 
+        /* --- START: NEW FILTER LOGIC --- */
+        
+        function handleFilterButtonClick() {
+            if (isFilterActiveForButton) {
+                document.getElementById('searchInput').value = '';
+                document.getElementById('groupFilter').value = 'all';
+                searchChannels();
+            }
+            openModal('searchFilterModal');
+        }
+
+        function searchChannels() { 
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase(); 
+            const selectedGroup = document.getElementById('groupFilter').value; 
+            let tempChannels = channelsData; 
+            if (selectedGroup !== 'all') { 
+                tempChannels = channelsData.filter(ch => { 
+                    if (selectedGroup === 'uncategorized') { return !ch.groups || ch.groups.length === 0; } 
+                    return ch.groups && ch.groups.includes(selectedGroup); 
+                }); 
+            } 
+            if (searchTerm) { 
+                displayedChannels = tempChannels.filter(ch => (ch.name || '').toLowerCase().includes(searchTerm) || (ch.groups && ch.groups.join(' ').toLowerCase().includes(searchTerm))); 
+            } else { 
+                displayedChannels = [...tempChannels]; 
+            } 
+            currentPage = 1; 
+            isFilterActiveForButton = (searchTerm !== '' || selectedGroup !== 'all'); 
+            
+            const filterButton = document.getElementById('openSearchFilterModalButton');
+            if (filterButton) {
+                filterButton.textContent = isFilterActiveForButton ? 'إلغاء التصفية' : 'بحث وتصفية';
+            }
+            
+            displayPaginatedChannels(); 
+        }
+        
         function setupSearchFilterModal() {
-            const searchInput = document.getElementById('searchInput');
             const groupFilter = document.getElementById('groupFilter');
             const actionButton = document.getElementById('searchFilterActionButton');
 
-            const initialSearchTerm = searchInput.value;
-            const initialGroupFilter = groupFilter.value;
-
+            const currentGroup = groupFilter.value;
             populateGroupFilter('groupFilter');
-            groupFilter.value = initialGroupFilter;
+            groupFilter.value = currentGroup;
 
-            const updateButtonState = () => {
-                const currentSearchTerm = searchInput.value;
-                const currentGroupFilter = groupFilter.value;
-
-                const hasChanged = currentSearchTerm !== initialSearchTerm || currentGroupFilter !== initialGroupFilter;
-
-                if (hasChanged) {
-                    actionButton.textContent = 'تطبيق التصفية';
-                    actionButton.onclick = applyFilter;
-                    actionButton.classList.remove('cancel');
-                } else {
-                    if (isFilterActiveForButton) {
-                        actionButton.textContent = 'إلغاء التصفية';
-                        actionButton.onclick = cancelFilter;
-                        actionButton.classList.add('cancel');
-                    } else {
-                        actionButton.textContent = 'إغلاق';
-                        actionButton.onclick = () => closeModal('searchFilterModal');
-                        actionButton.classList.add('cancel');
-                    }
-                }
-            };
-            
-            searchInput.oninput = updateButtonState;
-            groupFilter.onchange = updateButtonState;
-            
-            updateButtonState();
+            actionButton.onclick = applyFilter;
         }
 
         function applyFilter() {
             searchChannels();
             closeModal('searchFilterModal');
         }
-
-        function cancelFilter() {
-            document.getElementById('searchInput').value = '';
-            document.getElementById('groupFilter').value = 'all';
-            searchChannels();
-            closeModal('searchFilterModal');
-        }
         
+        /* --- END: NEW FILTER LOGIC --- */
+        
+        function handleCaseTypeChange() {
+            const exceptionsContainer = document.getElementById('title-case-exceptions-container');
+            exceptionsContainer.style.display = document.getElementById('case-title').checked ? 'block' : 'none';
+        }
+
         function openFormatDataModal() {
             if (channelsData.length === 0) return showToast("لا توجد قنوات لتنسيقها", "error");
 
@@ -3532,25 +3601,49 @@ body.dark-mode .modal-content select {
                 all: 'تنسيق كامل القائمة'
             });
             
+            document.querySelectorAll('input[name="formatCase"]').forEach(radio => {
+                radio.onchange = handleCaseTypeChange;
+            });
+            
             document.getElementById('case-none').checked = true;
             document.getElementById('format-prefix').value = '';
             document.getElementById('format-suffix').value = '';
-            document.getElementById('format-trim').checked = false;
+            document.getElementById('format-trim').checked = true;
             document.getElementById('format-remove-logos').checked = false;
             document.getElementById('find-text').value = '';
             document.getElementById('replace-text').value = '';
             document.getElementById('find-in-name').checked = true;
             document.getElementById('find-in-group').checked = false;
             document.getElementById('find-in-url').checked = false;
+            document.getElementById('format-remove-words-toggle').checked = false;
+            document.getElementById('remove-words-container').classList.remove('visible');
+            document.getElementById('format-remove-words-input').value = '';
+            
+            const savedExceptions = localStorage.getItem('m3uEditorTitleCaseExceptions');
+            const exceptionsInput = document.getElementById('title-case-exceptions-input');
+            exceptionsInput.value = savedExceptions || '';
 
+            handleCaseTypeChange();
             document.getElementById('defaultFormatOpen').click();
 
             openModal('formatDataModal');
         }
 
-        function executeFormatting() {
-            const isReplaceTabActive = document.getElementById('FormatReplace').classList.contains('active');
+        const titleCaseExceptions = ['TV', 'SD', 'HD', 'FHD', 'UHD', '4K', '8K', 'HEVC', 'H265', 'VIP', '3D', 'OSN', 'ART', 'SSC'];
 
+        function smartTitleCase(str, exceptions) {
+            if (!str) return '';
+            let words = str.toLowerCase().split(' ');
+            return words.map(word => {
+                if (exceptions.includes(word.toUpperCase())) {
+                    return word.toUpperCase();
+                } else {
+                    return word.charAt(0).toUpperCase() + word.slice(1);
+                }
+            }).join(' ');
+        }
+
+        function executeFormatting() {
             const scope = document.getElementById('format-scope-selector').value;
             let targetChannels;
             if (scope === 'selected' && selectedIndices.size > 0) {
@@ -3567,106 +3660,85 @@ body.dark-mode .modal-content select {
                 return;
             }
             
-            if (isReplaceTabActive) {
-                const findText = document.getElementById('find-text').value;
-                const replaceText = document.getElementById('replace-text').value;
-                if (!findText && replaceText) { return showToast("لا يمكن ترك حقل 'بحث عن' فارغًا عند الاستبدال.", "error"); }
+            let affectedChannelsCount = 0;
+            const activeTabId = document.querySelector('.format-tab-pane.active').id;
 
-                const findInName = document.getElementById('find-in-name').checked;
-                const findInGroup = document.getElementById('find-in-group').checked;
-                const findInUrl = document.getElementById('find-in-url').checked;
-                if (!findInName && !findInGroup && !findInUrl) { return showToast("الرجاء تحديد حقل واحد على الأقل للبحث فيه.", "error"); }
-
-                let replacedCount = 0;
-                let affectedChannels = 0;
-
-                targetChannels.forEach(channel => {
-                    let channelModified = false;
-                    const regex = new RegExp(findText.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&'), 'g');
-
-                    if (findInName && channel.name && channel.name.includes(findText)) {
-                        const original = channel.name;
-                        channel.name = channel.name.replaceAll(findText, replaceText);
-                        if(original !== channel.name) {
-                           replacedCount += (original.match(regex) || []).length;
-                           channelModified = true;
-                        }
-                    }
-                    if (findInGroup && channel.groups && channel.groups.length > 0) {
-                        const originalGroups = [...channel.groups];
-                        channel.groups = channel.groups.map(group => {
-                            if (group.includes(findText)) {
-                                const originalGroup = group;
-                                const newGroup = group.replaceAll(findText, replaceText);
-                                if(originalGroup !== newGroup) {
-                                    replacedCount += (originalGroup.match(regex) || []).length;
-                                }
-                                return newGroup;
-                            }
-                            return group;
-                        });
-                        if(JSON.stringify(originalGroups) !== JSON.stringify(channel.groups)) {
-                            channelModified = true;
-                        }
-                    }
-                    if (findInUrl && channel.url && channel.url.includes(findText)) {
-                        const original = channel.url;
-                        channel.url = channel.url.replaceAll(findText, replaceText);
-                         if(original !== channel.url) {
-                           replacedCount += (original.match(regex) || []).length;
-                           channelModified = true;
-                        }
-                    }
-                    if (channelModified) {
-                        affectedChannels++;
-                    }
-                });
+            targetChannels.forEach(channel => {
+                let modified = false;
                 
-                closeModal('formatDataModal');
-                if (affectedChannels > 0) {
-                    updateAndRefreshUI();
-                    const مرهStr = generateCountString(replacedCount, {singular: 'مرة', dualGenitive: 'مرتين', plural: 'مرات', gender: 'f'});
-                    const قناةStr = generateCountString(affectedChannels, {singular: 'قناة', dualGenitive: 'قناتين', plural: 'قنوات', gender: 'f'});
-                    showToast(`تم استبدال النص ${مرهStr} في ${قناةStr}.`, 'success');
-                } else {
-                    showToast("لم يتم العثور على النص المحدد.", "info");
-                }
-            } else {
-                const caseType = document.querySelector('input[name="formatCase"]:checked').value;
-                const prefix = document.getElementById('format-prefix').value;
-                const suffix = document.getElementById('format-suffix').value;
-                const shouldTrim = document.getElementById('format-trim').checked;
-                const shouldRemoveLogos = document.getElementById('format-remove-logos').checked;
-                let affectedChannelsCount = 0;
-
-                const toTitleCase = (str) => str.replace(/\w\S*/g, (txt) => txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase());
-
-                targetChannels.forEach(channel => {
-                    let modified = false;
+                if (activeTabId === 'FormatCase') {
+                    const caseType = document.querySelector('input[name="formatCase"]:checked').value;
                     if (caseType !== 'none' && channel.name) {
                         let originalName = channel.name;
                         if (caseType === 'upper') channel.name = channel.name.toUpperCase();
                         else if (caseType === 'lower') channel.name = channel.name.toLowerCase();
-                        else if (caseType === 'title') channel.name = toTitleCase(channel.name);
+                        else if (caseType === 'title') {
+                            const userExceptionsText = document.getElementById('title-case-exceptions-input').value;
+                            localStorage.setItem('m3uEditorTitleCaseExceptions', userExceptionsText);
+
+                            let finalExceptions = [...titleCaseExceptions];
+                            if (userExceptionsText.trim()) {
+                                const userExceptionsArray = userExceptionsText.split(',').map(ex => ex.trim().toUpperCase()).filter(ex => ex);
+                                finalExceptions = [...new Set([...finalExceptions, ...userExceptionsArray])];
+                            }
+                            channel.name = smartTitleCase(channel.name, finalExceptions);
+                        }
                         if (originalName !== channel.name) modified = true;
                     }
+                } else if (activeTabId === 'FormatAffix') {
+                    const prefix = document.getElementById('format-prefix').value;
+                    const suffix = document.getElementById('format-suffix').value;
+                    let nameChanged = false;
                     if (prefix && channel.name) {
-                        channel.name = prefix + channel.name;
-                        modified = true;
+                        channel.name = `${prefix.trim()} ${channel.name.trim()}`;
+                        nameChanged = true;
                     }
                     if (suffix && channel.name) {
-                        channel.name = channel.name + suffix;
+                        channel.name = `${channel.name.trim()} ${suffix.trim()}`;
+                        nameChanged = true;
+                    }
+                    if(nameChanged) {
+                        channel.name = channel.name.trim().replace(/\s+/g, ' ');
                         modified = true;
                     }
+                } else if (activeTabId === 'FormatReplace') {
+                    const findText = document.getElementById('find-text').value;
+                    if (findText) {
+                        const replaceText = document.getElementById('replace-text').value;
+                        const findInName = document.getElementById('find-in-name').checked;
+                        const findInGroup = document.getElementById('find-in-group').checked;
+                        const findInUrl = document.getElementById('find-in-url').checked;
+
+                        if (findInName && channel.name && channel.name.includes(findText)) {
+                            const original = channel.name;
+                            channel.name = channel.name.replaceAll(findText, replaceText);
+                            if (original !== channel.name) modified = true;
+                        }
+                        if (findInGroup && channel.groups && channel.groups.length > 0) {
+                            const originalGroups = [...channel.groups];
+                            channel.groups = channel.groups.map(group => group.replaceAll(findText, replaceText));
+                            if(JSON.stringify(originalGroups) !== JSON.stringify(channel.groups)) modified = true;
+                        }
+                        if (findInUrl && channel.url && channel.url.includes(findText)) {
+                            const original = channel.url;
+                            channel.url = channel.url.replaceAll(findText, replaceText);
+                            if (original !== channel.url) modified = true;
+                        }
+                    }
+                } else if (activeTabId === 'FormatClean') {
+                    const shouldTrim = document.getElementById('format-trim').checked;
+                    const shouldRemoveLogos = document.getElementById('format-remove-logos').checked;
+                    const shouldRemoveWords = document.getElementById('format-remove-words-toggle').checked;
+                    
                     if (shouldTrim) {
                         if (channel.name) {
                             const originalName = channel.name;
-                            channel.name = channel.name.trim();
+                            channel.name = channel.name.trim().replace(/\s+/g, ' ');
                             if (originalName !== channel.name) modified = true;
                         }
                         if (channel.groups && channel.groups.length > 0) {
                             const originalGroups = [...channel.groups];
-                            channel.groups = channel.groups.map(g => g.trim()).filter(g => g);
+                            channel.groups = channel.groups.map(g => g.trim().replace(/\s+/g, ' ')).filter(g => g);
                             if (JSON.stringify(originalGroups) !== JSON.stringify(channel.groups)) modified = true;
                         }
                     }
@@ -3674,18 +3746,32 @@ body.dark-mode .modal-content select {
                         channel.logo = '';
                         modified = true;
                     }
-                    if (modified) affectedChannelsCount++;
-                });
-
-                closeModal('formatDataModal');
-                
-                if (affectedChannelsCount > 0) {
-                    updateAndRefreshUI();
-                    const countStr = generateCountString(affectedChannelsCount, {singular: 'قناة', dualGenitive: 'قناتين', plural: 'قنوات', gender: 'f'});
-                    showToast(`تم تطبيق التنسيقات على ${countStr} بنجاح.`, 'success');
-                } else {
-                    showToast("لم يتم إجراء أي تغييرات.", "info");
+                    if (shouldRemoveWords) {
+                        const wordsToRemoveText = document.getElementById('format-remove-words-input').value.trim();
+                        if (wordsToRemoveText && channel.name) {
+                            const originalName = channel.name;
+                            const wordsToRemove = wordsToRemoveText.split(',').map(w => w.trim()).filter(w => w);
+                            wordsToRemove.forEach(word => {
+                                const regex = new RegExp(word.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&'), 'gi');
+                                channel.name = channel.name.replace(regex, '');
+                            });
+                            channel.name = channel.name.trim().replace(/\s+/g, ' ');
+                            if (originalName !== channel.name) modified = true;
+                        }
+                    }
                 }
+
+                if (modified) affectedChannelsCount++;
+            });
+
+            closeModal('formatDataModal');
+            
+            if (affectedChannelsCount > 0) {
+                updateAndRefreshUI();
+                const countStr = generateCountString(affectedChannelsCount, {singular: 'قناة', dualGenitive: 'قناتين', plural: 'قنوات', gender: 'f'});
+                showToast(`تم تطبيق التنسيقات على ${countStr} بنجاح.`, 'success');
+            } else {
+                showToast("لم يتم إجراء أي تغييرات.", "info");
             }
         }
 
