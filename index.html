@@ -162,7 +162,7 @@
             margin: 10px 5px; 
             flex-shrink: 0;
             white-space: nowrap;
-            font-size: 0.85em;
+            font-size: 0.86em;
         }
         body.dark-mode .action-btn {
             color: var(--text-light-color);
@@ -930,27 +930,28 @@ body.dark-mode .format-tabs button.active { background-color: #3a3a3c; color: va
         }
         
         @media (max-width: 600px) {
-            h1.page-title {
-                font-size: 1.9em;
-            }
-        
-            .container {
-                padding: 15px;
-                margin: 10px auto;
-            }
-            table {
-                font-size: 14px;
-            }
-            th {
-                padding: 6px 3px;
-            }
-            td {
-                padding: 14px 5px;
-            }
-            
-            table th:nth-child(2), table td:nth-child(2) { 
-                display: table-cell; 
-            }
+    h1.page-title {
+        font-size: 1.9em;
+    }
+
+    .container {
+        padding: 15px;
+        margin: 10px auto;
+    }
+    table {
+        font-size: 13.5px;
+    }
+    th {
+        padding: 6px 3px;
+        font-size: 13.5px; /* <-- هذا هو التعديل الوحيد */
+    }
+    td {
+        padding: 14px 5px;
+    }
+    
+    table th:nth-child(2), table td:nth-child(2) { 
+        display: table-cell; 
+    }
 
             .modal-content {
                 width: 91%;
@@ -3873,4 +3874,3 @@ body.dark-mode .modal-content select {
     </script>
 </body>
 </html>
-
