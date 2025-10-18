@@ -764,7 +764,14 @@ td {
         .modal-content.compact-layout .modal-buttons { margin-top: 10px; }
         .modal-content.compact-layout #moveBlockInputContainer { padding-top: 5px; padding-bottom: 5px; }
 
-        #loadingIndicator { font-weight: bold; color: var(--primary-color); text-align: center; margin: 20px; } #logoPreview img, #addPreviewImage { max-width: 50px; max-height: 50px; display: none; } #mergeModal .modal-content-body { padding: 15px; text-align: center; } #mergeOptionSelector { width: 100%; padding: 10px; font-size: 1em; margin-bottom: 20px; } .merge-option-container { padding: 10px; } .merge-option-container p { margin-bottom: 20px; color: #666; } 
+        #loadingIndicator { font-weight: bold; color: var(--primary-color); text-align: center; margin: 20px; } #logoPreview img, #addPreviewImage { max-width: 50px; max-height: 50px; display: none; } #mergeModal .modal-content-body {
+    padding: 0;
+    text-align: right;
+    margin-top: 20px;
+} #mergeOptionSelector { width: 100%; padding: 10px; font-size: 1em; margin-bottom: 20px; } .merge-option-container {
+    padding: 10px;
+    text-align: center; /* هذه الإضافة ستعيد الزر إلى المنتصف */
+} .merge-option-container p { margin-bottom: 20px; color: #666; } 
         body.dark-mode .merge-option-container p { color: #ccc; }
         .merge-option-container button { background-color: var(--primary-color); color: white; padding: 7.5px 25px; font-size: 1em; border: none; border-radius: 10px; cursor: pointer; }
         .merge-option-container button:hover { background-color: var(--primary-hover); } 
@@ -1180,6 +1187,33 @@ body.dark-mode #libraryImportModal h2 {
 body.dark-mode .modal-content select {
      background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23FFFFFF' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
 }
+/* --- START: Added space in Sort Modal --- */
+#sortModal #sort-scope-container {
+    margin-top: 14px;
+}
+/* --- END: Added space in Sort Modal --- */
+/* --- START: Added space in Bulk Actions Modal --- */
+#bulkActionsModal #bulk-actions-list {
+    margin-top: 15px;
+}
+/* --- END: Added space in Bulk Actions Modal --- */
+/* --- START: Added space in Remove Duplicates Modal --- */
+#removeDuplicatesModal #duplicate-criteria-step {
+    margin-top: 13px;
+}
+/* --- END: Added space in Remove Duplicates Modal --- */
+/* --- START: Added space after Duplicate Criteria Label --- */
+#removeDuplicatesModal #duplicate-criteria-step > label {
+    display: block; /* لجعل الهامش يعمل بشكل صحيح */
+    margin-bottom: 10px; /* لإنشاء المسافة المطلوبة */
+    font-size: 1.1em; /* هذا السطر سيكبر حجم الخط قليلاً */
+}
+/* --- END: Added space after Duplicate Criteria Label --- */
+/* --- START: Added space in Format Data Modal --- */
+#formatDataModal h2 {
+    margin-bottom: 10px;
+}
+/* --- END: Added space in Format Data Modal --- */
 </style>
 </head>
 <body>
