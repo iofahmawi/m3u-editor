@@ -1559,7 +1559,7 @@ h1.page-title {
                     channelsData = JSON.parse(savedData);
                     if (channelsData.length > 0) {
                         showPlaylistControls();
-                        updateAndRefreshUI(false);
+                        updateAndRefreshUI();
                         
                         const action = {
                             text: 'هنا',
@@ -1747,7 +1747,7 @@ h1.page-title {
         function clearAllSelections() {
             if (selectedIndices.size > 0) {
                 selectedIndices.clear();
-                updateAndRefreshUI(false);
+                updateAndRefreshUI();
                 showToast('تم إلغاء تحديد الكل.', 'info', 2000);
             }
         }
@@ -2270,7 +2270,7 @@ h1.page-title {
             isSorted = false;
             isCheckPerformed = false; 
             updateChannelCheckMenu(); 
-            updateAndRefreshUI(false);
+            updateAndRefreshUI();
         }
         
         async function mergePlaylists(event) { 
@@ -2466,7 +2466,7 @@ h1.page-title {
             });
             
             updateAndRefreshUI();
-            closeModal('removeDuplicatesModal');
+            setTimeout(() => closeModal('removeDuplicatesModal'), 0);
             
             const countStr = generateCountString(sortedIndicesToRemove.length, {singular: 'قناة', dualGenitive: 'قناتين', plural: 'قنوات', gender: 'f'});
             showToast(`تم حذف ${countStr} مكررة.`, 'success', 8000, {
@@ -2526,7 +2526,7 @@ h1.page-title {
             updateChannelCheckMenu();
 
             showPlaylistControls();
-            updateAndRefreshUI(false);
+            updateAndRefreshUI();
 
             showToast('تم إنشاء قائمة جديدة فارغة.', 'success', 8000, {
                 text: 'تراجع',
@@ -2642,156 +2642,156 @@ h1.page-title {
             isSorted = true;
             isMerged = false;
             updateAndRefreshUI();
-            closeModal('sortModal');
+            setTimeout(() => closeModal('sortModal'), 0);
         }
 
         function executeGroupAction() {
-    const action = document.querySelector('input[name="groupAction"]:checked').value;
-    const selectedTarget = document.getElementById('groupSelector').value;
-    const isFilteredResultTarget = selectedTarget === '__filtered__';
-    const isSelectedResultTarget = selectedTarget === '__selected__';
+            const action = document.querySelector('input[name="groupAction"]:checked').value;
+            const selectedTarget = document.getElementById('groupSelector').value;
+            const isFilteredResultTarget = selectedTarget === '__filtered__';
+            const isSelectedResultTarget = selectedTarget === '__selected__';
 
-    if (action === 'removeAll') {
-        undoManager.registerUndo();
-        channelsData.forEach(channel => { channel.groups = []; });
-        updateAndRefreshUI();
-        showToast('تم إزالة جميع التصنيفات.', 'success', 8000, {
-            text: 'تراجع',
-            callback: () => undoManager.performUndo()
-        });
-        return;
-    }
+            if (action === 'removeAll') {
+                undoManager.registerUndo();
+                channelsData.forEach(channel => { channel.groups = []; });
+                updateAndRefreshUI();
+                showToast('تم إزالة جميع التصنيفات.', 'success', 8000, {
+                    text: 'تراجع',
+                    callback: () => undoManager.performUndo()
+                });
+                return;
+            }
 
-    const getTargetChannels = () => {
-        if (isFilteredResultTarget) return [...displayedChannels];
-        if (isSelectedResultTarget) return Array.from(selectedIndices).map(index => channelsData[index]);
-        const isUncategorized = selectedTarget === 'غير مصنفة';
-        return channelsData.filter(channel => {
-            if (isUncategorized) return !channel.groups || channel.groups.length === 0;
-            return channel.groups && channel.groups.includes(selectedTarget);
-        });
-    };
+            const getTargetChannels = () => {
+                if (isFilteredResultTarget) return [...displayedChannels];
+                if (isSelectedResultTarget) return Array.from(selectedIndices).map(index => channelsData[index]);
+                const isUncategorized = selectedTarget === 'غير مصنفة';
+                return channelsData.filter(channel => {
+                    if (isUncategorized) return !channel.groups || channel.groups.length === 0;
+                    return channel.groups && channel.groups.includes(selectedTarget);
+                });
+            };
 
-    const targetChannels = getTargetChannels();
-    if (targetChannels.length === 0 && !(isFilteredResultTarget || isSelectedResultTarget)) {
-        showToast('لم يتم العثور على قنوات في المجموعة المحددة', 'info');
-        return;
-    }
+            const targetChannels = getTargetChannels();
+            if (targetChannels.length === 0 && !(isFilteredResultTarget || isSelectedResultTarget)) {
+                showToast('لم يتم العثور على قنوات في المجموعة المحددة', 'info');
+                return;
+            }
 
-    if (action === 'delete') {
-        undoManager.registerUndo();
-        const originalCount = channelsData.length;
-        const targetIndices = new Set(targetChannels.map(ch => channelsData.indexOf(ch)));
-        channelsData = channelsData.filter((_, index) => !targetIndices.has(index));
-        const removedCount = originalCount - channelsData.length;
-        const removedStr = generateCountString(removedCount, {singular: 'قناة', dualGenitive: 'قناتين', plural: 'قنوات', gender: 'f'});
-        updateAndRefreshUI();
-        showToast(`تم حذف ${removedStr}.`, 'success', 8000, {
-            text: 'تراجع',
-            callback: () => undoManager.performUndo()
-        });
-    } else if (action === 'rename') {
-        const newGroupNameString = document.getElementById('newGroupNameField').value.trim();
-        const isAdditive = document.getElementById('rename-add-as-new').checked;
-        const targetIndices = new Set(targetChannels.map(ch => channelsData.indexOf(ch)));
-        const isUncategorized = selectedTarget === 'غير مصنفة';
-        
-        undoManager.registerUndo(); // نسجل الحالة قبل أي تغيير
-        let successMessage = '';
+            if (action === 'delete') {
+                undoManager.registerUndo();
+                const originalCount = channelsData.length;
+                const targetIndices = new Set(targetChannels.map(ch => channelsData.indexOf(ch)));
+                channelsData = channelsData.filter((_, index) => !targetIndices.has(index));
+                const removedCount = originalCount - channelsData.length;
+                const removedStr = generateCountString(removedCount, {singular: 'قناة', dualGenitive: 'قناتين', plural: 'قنوات', gender: 'f'});
+                updateAndRefreshUI();
+                showToast(`تم حذف ${removedStr}.`, 'success', 8000, {
+                    text: 'تراجع',
+                    callback: () => undoManager.performUndo()
+                });
+            } else if (action === 'rename') {
+                const newGroupNameString = document.getElementById('newGroupNameField').value.trim();
+                const isAdditive = document.getElementById('rename-add-as-new').checked;
+                const targetIndices = new Set(targetChannels.map(ch => channelsData.indexOf(ch)));
+                const isUncategorized = selectedTarget === 'غير مصنفة';
+                
+                undoManager.registerUndo(); // نسجل الحالة قبل أي تغيير
+                let successMessage = '';
 
-        if (newGroupNameString === '' && !isAdditive) {
-            // حالة إزالة التصنيف
-            let affectedChannels = 0;
-            channelsData.forEach((channel, index) => {
-                if (targetIndices.has(index)) {
-                    if (isFilteredResultTarget || isSelectedResultTarget || isUncategorized) {
-                        channel.groups = [];
-                    } else {
-                        channel.groups = channel.groups.filter(g => g !== selectedTarget);
-                    }
-                    affectedChannels++;
-                }
-            });
-            const affectedStr = generateCountString(affectedChannels, {singular: 'قناة', dualGenitive: 'قناتين', plural: 'قنوات', gender: 'f'});
-            successMessage = `تم إزالة التصنيف من ${affectedStr}.`;
-        } else {
-            // حالة إعادة التسمية أو الإضافة
-            const newGroups = newGroupNameString.split(';').map(g => g.trim()).filter(g => g);
-            if (newGroups.length === 0 && !isAdditive) return; // لا تفعل شيئًا إذا كان الإدخال فارغًا مع الإضافة
-            
-            channelsData.forEach((channel, index) => {
-                if (targetIndices.has(index)) {
-                    let currentGroups = new Set(channel.groups || []);
-                    if (!isAdditive) {
-                        if (isFilteredResultTarget || isSelectedResultTarget || isUncategorized) {
-                            currentGroups.clear();
-                        } else {
-                            currentGroups.delete(selectedTarget);
+                if (newGroupNameString === '' && !isAdditive) {
+                    // حالة إزالة التصنيف
+                    let affectedChannels = 0;
+                    channelsData.forEach((channel, index) => {
+                        if (targetIndices.has(index)) {
+                            if (isFilteredResultTarget || isSelectedResultTarget || isUncategorized) {
+                                channel.groups = [];
+                            } else {
+                                channel.groups = channel.groups.filter(g => g !== selectedTarget);
+                            }
+                            affectedChannels++;
                         }
-                    }
-                    newGroups.forEach(g => currentGroups.add(g));
-                    channel.groups = Array.from(currentGroups);
+                    });
+                    const affectedStr = generateCountString(affectedChannels, {singular: 'قناة', dualGenitive: 'قناتين', plural: 'قنوات', gender: 'f'});
+                    successMessage = `تم إزالة التصنيف من ${affectedStr}.`;
+                } else {
+                    // حالة إعادة التسمية أو الإضافة
+                    const newGroups = newGroupNameString.split(';').map(g => g.trim()).filter(g => g);
+                    if (newGroups.length === 0 && !isAdditive) return; // لا تفعل شيئًا إذا كان الإدخال فارغًا مع الإضافة
+                    
+                    channelsData.forEach((channel, index) => {
+                        if (targetIndices.has(index)) {
+                            let currentGroups = new Set(channel.groups || []);
+                            if (!isAdditive) {
+                                if (isFilteredResultTarget || isSelectedResultTarget || isUncategorized) {
+                                    currentGroups.clear();
+                                } else {
+                                    currentGroups.delete(selectedTarget);
+                                }
+                            }
+                            newGroups.forEach(g => currentGroups.add(g));
+                            channel.groups = Array.from(currentGroups);
+                        }
+                    });
+                    const affectedStr = generateCountString(targetIndices.size, {singular: 'قناة', dualGenitive: 'قناتين', plural: 'قنوات', gender: 'f'});
+                    successMessage = `تم تعديل مجموعة ${affectedStr}.`;
                 }
-            });
-            const affectedStr = generateCountString(targetIndices.size, {singular: 'قناة', dualGenitive: 'قناتين', plural: 'قنوات', gender: 'f'});
-            successMessage = `تم تعديل مجموعة ${affectedStr}.`;
-        }
 
-        updateAndRefreshUI();
-        showToast(successMessage, 'success', 8000, {
-            text: 'تراجع',
-            callback: () => undoManager.performUndo()
-        });
+                updateAndRefreshUI();
+                showToast(successMessage, 'success', 8000, {
+                    text: 'تراجع',
+                    callback: () => undoManager.performUndo()
+                });
 
-    } else if (action === 'merge') {
-        const mergeTargetGroup = document.getElementById('mergeTargetSelector').value;
-        if (!mergeTargetGroup || selectedTarget === mergeTargetGroup) {
-            return showToast('يرجى اختيار مجموعة مختلفة للدمج معها.', 'error');
-        }
-        showConfirm('دمج المجموعات', `هل أنت متأكد من دمج كل قنوات "${selectedTarget}" في مجموعة "${mergeTargetGroup}"؟`, () => {
-            const targetIndices = new Set(targetChannels.map(ch => channelsData.indexOf(ch)));
-            let affectedCount = 0;
-            channelsData.forEach((channel, index) => {
-                if (targetIndices.has(index)) {
-                    const currentGroups = new Set(channel.groups || []);
-                    currentGroups.delete(selectedTarget);
-                    currentGroups.add(mergeTargetGroup);
-                    channel.groups = Array.from(currentGroups);
-                    affectedCount++;
+            } else if (action === 'merge') {
+                const mergeTargetGroup = document.getElementById('mergeTargetSelector').value;
+                if (!mergeTargetGroup || selectedTarget === mergeTargetGroup) {
+                    return showToast('يرجى اختيار مجموعة مختلفة للدمج معها.', 'error');
                 }
-            });
-            const affectedStr = generateCountString(affectedCount, {singular: 'قناة', dualGenitive: 'قناتين', plural: 'قنوات', gender: 'f'});
-            showToast(`تم دمج ${affectedStr} بنجاح.`, 'success');
-            updateAndRefreshUI();
-        });
-    } else if (action === 'exportGroup') {
-        if (targetChannels.length > 0) {
-            const content = createPlaylistContent('m3u', targetChannels);
-            let fileName = 'playlist.m3u';
-            const countStr = generateCountString(targetChannels.length, {singular: 'قناة', dualGenitive: 'قناتين', plural: 'قنوات', gender: 'f'});
-            if (isFilteredResultTarget) fileName = `نتيجة البحث (${countStr}).m3u`;
-            else if (isSelectedResultTarget) fileName = `القنوات المحددة (${countStr}).m3u`;
-            else fileName = `Group_${selectedTarget.replace(/[\/\\?%*:|"<>]/g, '-')}.m3u`;
-            
-            if(content) downloadFile(content, fileName, 'text/plain;charset=utf-8');
-        } else {
-            showToast('لا توجد قنوات لتصديرها.', 'info');
+                showConfirm('دمج المجموعات', `هل أنت متأكد من دمج كل قنوات "${selectedTarget}" في مجموعة "${mergeTargetGroup}"؟`, () => {
+                    const targetIndices = new Set(targetChannels.map(ch => channelsData.indexOf(ch)));
+                    let affectedCount = 0;
+                    channelsData.forEach((channel, index) => {
+                        if (targetIndices.has(index)) {
+                            const currentGroups = new Set(channel.groups || []);
+                            currentGroups.delete(selectedTarget);
+                            currentGroups.add(mergeTargetGroup);
+                            channel.groups = Array.from(currentGroups);
+                            affectedCount++;
+                        }
+                    });
+                    const affectedStr = generateCountString(affectedCount, {singular: 'قناة', dualGenitive: 'قناتين', plural: 'قنوات', gender: 'f'});
+                    showToast(`تم دمج ${affectedStr} بنجاح.`, 'success');
+                    updateAndRefreshUI();
+                });
+            } else if (action === 'exportGroup') {
+                if (targetChannels.length > 0) {
+                    const content = createPlaylistContent('m3u', targetChannels);
+                    let fileName = 'playlist.m3u';
+                    const countStr = generateCountString(targetChannels.length, {singular: 'قناة', dualGenitive: 'قناتين', plural: 'قنوات', gender: 'f'});
+                    if (isFilteredResultTarget) fileName = `نتيجة البحث (${countStr}).m3u`;
+                    else if (isSelectedResultTarget) fileName = `القنوات المحددة (${countStr}).m3u`;
+                    else fileName = `Group_${selectedTarget.replace(/[\/\\?%*:|"<>]/g, '-')}.m3u`;
+                    
+                    if(content) downloadFile(content, fileName, 'text/plain;charset=utf-8');
+                } else {
+                    showToast('لا توجد قنوات لتصديرها.', 'info');
+                }
+                closeModal('manageGroupsModal');
+            }
+             if (action !== 'exportGroup') {
+                setTimeout(() => closeModal('manageGroupsModal'), 0);
+            }
         }
-        closeModal('manageGroupsModal');
-    }
-}
 
-
-        function updateAndRefreshUI(closeModals = true) {
+        // *** START: FIX ***
+        // Removed modal closing logic from this function to centralize it and prevent race conditions.
+        function updateAndRefreshUI() {
             updateTvgChnoInAllChannels();
             searchChannels();
             saveSession();
-            if (closeModals) {
-                 if (document.getElementById('manageGroupsModal').style.display === 'flex') {
-                    closeModal('manageGroupsModal');
-                 }
-            }
         }
+        // *** END: FIX ***
 
         async function executeMerge() {
             const urlsText = document.getElementById('mergeUrlTextarea').value;
@@ -2829,12 +2829,27 @@ h1.page-title {
                 channelsData[originalIndex] = channel; 
             } 
             updateAndRefreshUI(); 
-            closeModal('editModal'); 
+            setTimeout(() => closeModal('editModal'), 0); 
             populateGroupFilter(); 
             showToast('تم حفظ التعديلات بنجاح.', 'success'); 
         }
 
-        function saveNewChannel() { if (!document.getElementById('addName').value || !document.getElementById('addUrl').value) return showToast("الاسم والرابط مطلوبان", 'error'); let newIndex = parseInt(document.getElementById('addIndexField').value) - 1; const groups = document.getElementById('addGroup').value.split(';').map(g => g.trim()).filter(g => g); const newChannel = { name: document.getElementById('addName').value, groups: groups, logo: document.getElementById('addLogo').value, url: document.getElementById('addUrl').value, status: 'unchecked' }; if (newIndex >= 0 && newIndex <= channelsData.length) { channelsData.splice(newIndex, 0, newChannel); } else { channelsData.push(newChannel); } updateAndRefreshUI(); closeModal('addModal'); populateGroupFilter(); showToast('تمت إضافة القناة بنجاح', 'success'); }
+        function saveNewChannel() { 
+            if (!document.getElementById('addName').value || !document.getElementById('addUrl').value) return showToast("الاسم والرابط مطلوبان", 'error'); 
+            let newIndex = parseInt(document.getElementById('addIndexField').value) - 1; 
+            const groups = document.getElementById('addGroup').value.split(';').map(g => g.trim()).filter(g => g); 
+            const newChannel = { name: document.getElementById('addName').value, groups: groups, logo: document.getElementById('addLogo').value, url: document.getElementById('addUrl').value, status: 'unchecked' }; 
+            if (newIndex >= 0 && newIndex <= channelsData.length) { 
+                channelsData.splice(newIndex, 0, newChannel); 
+            } else { 
+                channelsData.push(newChannel); 
+            } 
+            updateAndRefreshUI(); 
+            setTimeout(() => closeModal('addModal'), 0); 
+            populateGroupFilter(); 
+            showToast('تمت إضافة القناة بنجاح', 'success'); 
+        }
+
         function openAddModal() { document.getElementById('addIndexField').value = channelsData.length + 1; ['addName', 'addGroup', 'addLogo', 'addUrl'].forEach(id => document.getElementById(id).value = ''); updateLogoPreview('addPreviewImage', ''); openModal('addModal'); }
         
         function openEditModal(index, readOnly = false) {
@@ -3224,7 +3239,6 @@ h1.page-title {
                 const maxIndex = channelsData.length;
                 if (target < 1 || target > maxIndex + 1) { return showToast(`الموضع الهدف خارج نطاق القائمة (1 - ${maxIndex})`, 'error'); }
                 
-                closeModal('bulkActionsModal');
                 const sortedIndices = Array.from(selectedIndices).sort((a, b) => b - a);
                 const blockToMove = [];
                 sortedIndices.forEach(index => {
@@ -3236,22 +3250,21 @@ h1.page-title {
                 showToast(`تم نقل ${countStr} محددة إلى الموضع ${target} بنجاح`, 'success');
                 selectedIndices.clear();
                 updateAndRefreshUI();
+                setTimeout(() => closeModal('bulkActionsModal'), 0);
                 return;
             } else if (selectedAction === 'group') {
                 const newGroups = document.getElementById('bulk-new-group-name').value.split(';').map(g => g.trim()).filter(g => g); 
                 const count = selectedIndices.size; 
                 selectedIndices.forEach(index => { channelsData[index].groups = newGroups; }); 
                 updateAndRefreshUI(); 
-                selectedIndices.clear(); 
                 populateGroupFilter(); 
-                closeModal('bulkActionsModal'); 
+                setTimeout(() => closeModal('bulkActionsModal'), 0); 
                 const countStr = generateCountString(count, {singular: 'قناة', dualGenitive: 'قناتين', plural: 'قنوات', gender: 'f'});
                 showToast(`تم تعديل مجموعة ${countStr} بنجاح`, 'success'); 
                 return;
             }
 
-
-            closeModal('bulkActionsModal');
+            setTimeout(() => closeModal('bulkActionsModal'), 0);
 
             switch(selectedAction) {
                 case 'sort':
@@ -3262,7 +3275,6 @@ h1.page-title {
                         channelsData[originalIndex] = channelsToSort[i];
                     });
                     
-                    selectedIndices.clear();
                     updateAndRefreshUI();
                     const sortStr = generateCountString(indices.length, {singular: 'قناة', dualGenitive: 'قناتين', plural: 'قنوات', gender: 'f'});
                     showToast(`تم فرز ${sortStr} محددة أبجدياً في أماكنها`, 'success');
@@ -3273,7 +3285,6 @@ h1.page-title {
                     selectedIndices.forEach(index => {
                         channelsData[index].groups = [];
                     });
-                    selectedIndices.clear();
                     updateAndRefreshUI();
                     populateGroupFilter();
                     const countStr = generateCountString(count, {singular: 'قناة', dualGenitive: 'قناتين', plural: 'قنوات', gender: 'f'});
@@ -3764,7 +3775,7 @@ h1.page-title {
                 if (modified) affectedChannelsCount++;
             });
 
-            closeModal('formatDataModal');
+            setTimeout(() => closeModal('formatDataModal'), 0);
             
             if (affectedChannelsCount > 0) {
                 updateAndRefreshUI();
