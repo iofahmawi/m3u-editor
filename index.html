@@ -448,7 +448,17 @@ td {
             padding-top: 0;
         } 
 
-        .modal-content { padding: 20px; border: 1px solid var(--border-color); width: auto; max-width: 500px; border-radius: 10px; position: relative; box-sizing: border-box; overflow-y: auto; max-height: 90vh; margin: auto; } .modal-content textarea { width: 95%; min-height: 150px; padding: 8px; margin: 10px auto; display: block; border: 1px solid var(--border-color); border-radius: 4px; box-sizing: border-box; resize: vertical; } #multiUrlTextarea { direction: ltr; text-align: left; } 
+        .modal-content { padding: 20px; border: 1px solid var(--border-color); width: auto; max-width: 500px; border-radius: 15px; position: relative; box-sizing: border-box; overflow-y: auto; max-height: 90vh; margin: auto; } .modal-content textarea { 
+    width: 95%; 
+    min-height: 150px; 
+    padding: 8px; 
+    margin: 10px auto; 
+    display: block; 
+    border: 1px solid var(--border-color); 
+    border-radius: 8px; /* <--- تم زيادة الاستدارة */
+    box-sizing: border-box; 
+    resize: vertical; 
+} #multiUrlTextarea { direction: ltr; text-align: left; } 
         
         /* --- START: MODIFICATION FOR CLOSE BUTTON --- */
         .close {
@@ -464,16 +474,17 @@ td {
         
         body.dark-mode .close { color: #ccc; } 
         body.dark-mode .close:hover { color: #fff; }
-        /* القاعدة العامة للمدخلات في النوافذ المنبثقة */
+/* القاعدة العامة للمدخلات في النوافذ المنبثقة */
 .modal-content input[type="text"], .modal-content input[type="url"], .modal-content input[type="number"], .modal-content select { 
     width: 95%; 
-    padding: 8px; 
+    padding: 8.5px 9px; 
     margin: 10px 0; 
     display: inline-block; 
     border: 1px solid var(--border-color); 
-    border-radius: 4px; 
+    border-radius: 8px; /* <--- هذا السطر هو الذي سنغيره */
     box-sizing: border-box; 
     transition: border-color 0.3s, box-shadow 0.3s;
+    background-color: #FFFFFF;
 }
 
 /* استثناء وتخصيص للقوائم المنسدلة المحددة */
@@ -793,7 +804,7 @@ td {
     border: 1px solid var(--border-color);
     background-color: var(--row-alt-color);
     display: flex;
-    border-radius: 4px;
+    border-radius: 8px;
     margin-top: 15px;
     box-sizing: border-box;
     -webkit-transform: translateZ(0);
@@ -826,7 +837,7 @@ body.dark-mode .library-tabs button.active { background-color: #3a3a3c; color: v
 /* -- New Container Rule -- */
 .format-container {
     border: 1px solid var(--border-color);
-    border-radius: 4px;
+    border-radius: 8px;
     margin-top: 15px;
     overflow: hidden; /* Crucial for containing the rounded corners */
 }
@@ -884,13 +895,14 @@ body.dark-mode .format-tabs button.active { background-color: #3a3a3c; color: va
             width: 95%;
         }
         
-        .library-search-input {
-    width: 100%;
-    padding: 8px;
+        /* تعديل لزيادة قوة القاعدة وجعلها قابلة للتخصيص */
+#libraryImportModal .library-search-input {
+    width: 95%;
+    padding: 9.5px; /* <-- الآن يمكنك التحكم بالارتفاع من هنا. جرب 12px */
     margin-top: 13px;
     margin-bottom: 13px;
     border: 1px solid var(--border-color);
-    border-radius: 4px;
+    border-radius: 8px; 
     box-sizing: border-box;
 }
         body.dark-mode .library-search-input {
@@ -900,9 +912,13 @@ body.dark-mode .format-tabs button.active { background-color: #3a3a3c; color: va
         }
         
         .library-select {
-            width: 100%;
-            padding: 8px;
-        }
+    width: 100%;
+    padding: 8px; /* يمكنك الحفاظ على هذه الحشوة للإطار */
+    
+    /* --- أضف هذين السطرين لزيادة الارتفاع --- */
+    font-size: 0.7em;      /* يزيد من حجم النص بالداخل */
+    line-height: 1.6;      /* يزيد من التباعد بين الأسطر (ارتفاع كل صف) */
+}
         
         .format-options-grid {
             display: grid;
@@ -1131,6 +1147,37 @@ body.dark-mode #libraryImportModal h2 {
 /* --- Rule to Remove Tap Highlight Globally --- */
 * {
     -webkit-tap-highlight-color: transparent !important;
+}
+/* --- الحل النهائي لتخصيص سهم القائمة المنسدلة (CSS فقط) --- */
+
+/* استهداف جميع القوائم المنسدلة داخل النوافذ المنبثقة */
+.modal-content select {
+    /* الخطوة 1: إخفاء المظهر الافتراضي للمتصفح بالكامل (بما في ذلك السهم) */
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+
+    /* الخطوة 2: إضافة سهمنا الخاص كصورة خلفية */
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+    
+    /* الخطوة 3: منع تكرار صورة السهم */
+    background-repeat: no-repeat;
+    
+    /* الخطوة 4 (الأهم): تحديد موضع السهم بدقة */
+    /* غيّر قيمة 15px إلى 20px أو 25px لترى الفرق */
+    background-position: left 10px center; 
+    
+    /* الخطوة 5: تحديد حجم السهم */
+    background-size: 1.2em;
+    
+    /* الخطوة 6: إضافة مساحة على اليسار لمنع تداخل النص مع السهم */
+    /* هذه القيمة يجب أن تكون أكبر من قيمة background-position */
+    padding-left: 35px !important;
+}
+
+/* تعديل لون السهم للوضع الليلي */
+body.dark-mode .modal-content select {
+     background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23FFFFFF' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
 }
 </style>
 </head>
@@ -3826,4 +3873,3 @@ body.dark-mode #libraryImportModal h2 {
     </script>
 </body>
 </html>
-
