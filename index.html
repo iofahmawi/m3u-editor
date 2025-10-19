@@ -3535,43 +3535,47 @@ h1.page-title {
             closeModal('channelCheckerModal');
         }
 
-        /* --- START: NEW FILTER LOGIC --- */
+        /* --- START: MODIFIED FILTER LOGIC --- */
         
         function handleFilterButtonClick() {
+            // If a filter is active, the button's only job is to cancel it.
             if (isFilterActiveForButton) {
                 document.getElementById('searchInput').value = '';
                 document.getElementById('groupFilter').value = 'all';
-                searchChannels();
+                searchChannels(); // This will reset the view and the button text
+            } else {
+                // If no filter is active, the button opens the modal.
+                openModal('searchFilterModal');
             }
-            openModal('searchFilterModal');
         }
 
-        function searchChannels() { 
-            const searchTerm = document.getElementById('searchInput').value.toLowerCase(); 
-            const selectedGroup = document.getElementById('groupFilter').value; 
-            let tempChannels = channelsData; 
-            if (selectedGroup !== 'all') { 
-                tempChannels = channelsData.filter(ch => { 
-                    if (selectedGroup === 'uncategorized') { return !ch.groups || ch.groups.length === 0; } 
-                    return ch.groups && ch.groups.includes(selectedGroup); 
-                }); 
-            } 
-            if (searchTerm) { 
-                displayedChannels = tempChannels.filter(ch => (ch.name || '').toLowerCase().includes(searchTerm) || (ch.groups && ch.groups.join(' ').toLowerCase().includes(searchTerm))); 
-            } else { 
-                displayedChannels = [...tempChannels]; 
-            } 
-            currentPage = 1; 
-            isFilterActiveForButton = (searchTerm !== '' || selectedGroup !== 'all'); 
-            
+        function searchChannels() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const selectedGroup = document.getElementById('groupFilter').value;
+            let tempChannels = channelsData;
+            if (selectedGroup !== 'all') {
+                tempChannels = channelsData.filter(ch => {
+                    if (selectedGroup === 'uncategorized') { return !ch.groups || ch.groups.length === 0; }
+                    return ch.groups && ch.groups.includes(selectedGroup);
+                });
+            }
+            if (searchTerm) {
+                displayedChannels = tempChannels.filter(ch => (ch.name || '').toLowerCase().includes(searchTerm) || (ch.groups && ch.groups.join(' ').toLowerCase().includes(searchTerm)));
+            } else {
+                displayedChannels = [...tempChannels];
+            }
+            currentPage = 1;
+            isFilterActiveForButton = (searchTerm !== '' || selectedGroup !== 'all');
+
             const filterButton = document.getElementById('openSearchFilterModalButton');
             if (filterButton) {
-                filterButton.textContent = isFilterActiveForButton ? 'إلغاء التصفية' : 'بحث وتصفية';
+                // Update button text based on whether a filter is active
+                filterButton.textContent = isFilterActiveForButton ? 'إلغاء البحث والتصفية' : 'بحث وتصفية';
             }
-            
-            displayPaginatedChannels(); 
+
+            displayPaginatedChannels();
         }
-        
+
         function setupSearchFilterModal() {
             const groupFilter = document.getElementById('groupFilter');
             const actionButton = document.getElementById('searchFilterActionButton');
@@ -3588,7 +3592,7 @@ h1.page-title {
             closeModal('searchFilterModal');
         }
         
-        /* --- END: NEW FILTER LOGIC --- */
+        /* --- END: MODIFIED FILTER LOGIC --- */
         
         function handleCaseTypeChange() {
             const exceptionsContainer = document.getElementById('title-case-exceptions-container');
