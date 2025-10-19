@@ -458,7 +458,17 @@ td {
     border-radius: 8px; /* <--- تم زيادة الاستدارة */
     box-sizing: border-box; 
     resize: vertical; 
-} #multiUrlTextarea { direction: ltr; text-align: left; } 
+} 
+        
+        /* --- START: MODIFICATION TO REMOVE RESIZE HANDLE --- */
+        #multiUrlTextarea,
+        #mergeUrlTextarea,
+        #format-remove-words-input {
+            resize: none;
+        }
+        /* --- END: MODIFICATION TO REMOVE RESIZE HANDLE --- */
+        
+        #multiUrlTextarea { direction: ltr; text-align: left; } 
         
         /* --- START: MODIFICATION FOR CLOSE BUTTON --- */
         .close {
@@ -1246,6 +1256,19 @@ h1.page-title {
     margin: 0;
     padding: 9px 9px;
 }
+/* --- START: Fix for Merge URL Textarea Width --- */
+.merge-option-container {
+    padding-left: 0;
+    padding-right: 0;
+}
+
+#mergeUrlTextarea {
+    width: calc(100% - 2px);
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+/* --- END: Fix for Merge URL Textarea Width --- */
 </style>
 </head>
 <body>
@@ -1309,9 +1332,9 @@ h1.page-title {
         <div class="modal-row"><input type="radio" id="crit-name-url-group" name="duplicateCriteria" value="name-url-group"><label for="crit-name-url-group">الاسم الكامل + الرابط + المجموعة</label></div>
         <div class="modal-buttons"><button onclick="findDuplicates()">البحث عن التكرار</button><button onclick="closeModal('removeDuplicatesModal')" class="cancel">إلغاء</button></div></div>
         <div id="duplicate-results-step" style="display: none;"><p><strong>اختر النسخة التي تريد الإبقاء عليها:</strong></p><div id="duplicate-results-list"></div><div class="modal-buttons"><button onclick="executeDuplicateDeletion()">حذف التكرار</button><button onclick="showDuplicateCriteriaStep()" class="cancel">رجوع</button></div></div></div></div>
-    <div id="sortModal" class="modal"><div class="modal-content"><span class="close" onclick="closeModal('sortModal')">&times;</span><h2>فرز وترتيب القنوات</h2><div id="sort-scope-container" style="display: none; margin-bottom: 15px;"><label for="sort-scope-selector" style="display:block; margin-bottom: 5px;"><strong>نطاق الفرز:</strong></label><select id="sort-scope-selector" style="width: 95%;"></select></div><div class="modal-row"><input type="radio" id="sort-alpha" name="sortCriteria" value="alphabetical" checked onchange="handleSortCriteriaChange()"><label for="sort-alpha">أبجدي</label></div><div class="modal-row"><input type="radio" id="sort-chno" name="sortCriteria" value="tvg-chno" onchange="handleSortCriteriaChange()"><label for="sort-chno">حسب الرقم الأصلي</label></div><div class="modal-row"><input type="radio" id="sort-name" name="sortCriteria" value="name" onchange="handleSortCriteriaChange()"><label for="sort-name">حسب اسم القناة</label></div><div id="sortByNameInputContainer"><input type="text" id="sortByNameField" placeholder="أدخل اسم القناة (مثال: mbc)"></div><div class="modal-row"><input type="radio" id="sort-group" name="sortCriteria" value="group" onchange="handleSortCriteriaChange()"><label for="sort-group">حسب اسم المجموعة</label></div><div id="sortByGroupInputContainer"><input type="text" id="sortByGroupField" placeholder="أدخل اسم المجموعة"></div><div class="modal-row" id="sort-move-row"><input type="radio" id="sort-move" name="sortCriteria" value="moveBlock" onchange="handleSortCriteriaChange()"><label id="sort-move-label" for="sort-move">نقل قنوات إلى موضع جديد</label></div><div id="moveBlockInputContainer"><div id="moveBlockRangeContainer"><div class="move-block-row"><label for="moveFromIndex">نقل من رقم:</label><input type="number" id="moveFromIndex" min="1" placeholder="مثال: 50"></div><div class="move-block-row"><label for="moveToIndex">إلى رقم:</label><input type="number" id="moveToIndex" min="1" placeholder="مثال: 100"></div></div><div class="move-block-row"><label for="moveTargetIndex">إلى الموضع رقم:</label><input type="number" id="moveTargetIndex" min="1" placeholder="مثال: 1"></div></div><div class="sort-options-container"><div class="modal-row"><input type="checkbox" id="sort-descending"><label for="sort-descending">ترتيب تنازلي</label></div><div class="modal-row" id="sort-grouping-container"><input type="checkbox" id="sort-grouping"><label for="sort-grouping">تجميع</label></div></div><div class="modal-buttons"><button onclick="executeSort()">تنفيذ</button><button onclick="closeModal('sortModal')" class="cancel">إلغاء</button></div></div></div>
+    <div id="sortModal" class="modal"><div class="modal-content"><span class="close" onclick="closeModal('sortModal')">&times;</span><h2>فرز وترتيب القنوات</h2><div id="sort-scope-container" style="display: none; margin-bottom: 15px;"><label for="sort-scope-selector" style="display:block; margin-bottom: 5px;"><strong>نطاق الفرز:</strong></label><select id="sort-scope-selector" style="width: 95%;"></select></div><div class="modal-row"><input type="radio" id="sort-alpha" name="sortCriteria" value="alphabetical" checked onchange="handleSortCriteriaChange()"><label for="sort-alpha">أبجدي</label></div><div class="modal-row"><input type="radio" id="sort-name" name="sortCriteria" value="name" onchange="handleSortCriteriaChange()"><label for="sort-name">حسب اسم القناة</label></div><div id="sortByNameInputContainer"><input type="text" id="sortByNameField" placeholder="أدخل اسم القناة (مثال: mbc)"></div><div class="modal-row"><input type="radio" id="sort-group" name="sortCriteria" value="group" onchange="handleSortCriteriaChange()"><label for="sort-group">حسب اسم المجموعة</label></div><div id="sortByGroupInputContainer"><input type="text" id="sortByGroupField" placeholder="أدخل اسم المجموعة"></div><div class="modal-row" id="sort-move-row"><input type="radio" id="sort-move" name="sortCriteria" value="moveBlock" onchange="handleSortCriteriaChange()"><label id="sort-move-label" for="sort-move">نقل قنوات إلى موضع جديد</label></div><div id="moveBlockInputContainer"><div id="moveBlockRangeContainer"><div class="move-block-row"><label for="moveFromIndex">نقل من رقم:</label><input type="number" id="moveFromIndex" min="1" placeholder="مثال: 50"></div><div class="move-block-row"><label for="moveToIndex">إلى رقم:</label><input type="number" id="moveToIndex" min="1" placeholder="مثال: 100"></div></div><div class="move-block-row"><label for="moveTargetIndex">إلى الموضع رقم:</label><input type="number" id="moveTargetIndex" min="1" placeholder="مثال: 1"></div></div><div class="sort-options-container"><div class="modal-row"><input type="checkbox" id="sort-descending"><label for="sort-descending">ترتيب تنازلي</label></div><div class="modal-row" id="sort-grouping-container"><input type="checkbox" id="sort-grouping"><label for="sort-grouping">تجميع</label></div></div><div class="modal-buttons"><button onclick="executeSort()">تنفيذ</button><button onclick="closeModal('sortModal')" class="cancel">إلغاء</button></div></div></div>
     <div id="manageGroupsModal" class="modal"><div class="modal-content"><span class="close" onclick="closeModal('manageGroupsModal')">&times;</span><h2>إدارة المجموعات</h2><div style="padding: 5px; margin: 0 -5px 15px -5px;"><label for="groupSelector">اختر المجموعة:</label><select id="groupSelector" onchange="handleGroupSelectorChange()"></select><label>اختر الإجراء:</label><div class="modal-row"><input type="radio" id="action-rename" name="groupAction" value="rename" checked onchange="handleGroupActionChange()"><label for="action-rename">إعادة تسمية</label></div><div id="renameGroupInputContainer"><input type="text" id="newGroupNameField" placeholder="أدخل اسمًا جديدًا أو اتركه فارغًا"><div class="modal-row" style="font-size: 0.9em; margin-top: 5px;"><input type="checkbox" id="rename-add-as-new"><label for="rename-add-as-new">إضافة دون حذف التصنيفات الحالية</label></div></div><div class="modal-row"><input type="radio" id="action-merge" name="groupAction" value="merge" onchange="handleGroupActionChange()"><label for="action-merge">دمج المجموعة المحددة</label></div><div id="mergeGroupInputContainer"><label for="mergeTargetSelector" style="display: block;">مع المجموعة:</label><select id="mergeTargetSelector"></select></div><div class="modal-row"><input type="radio" id="action-remove-all-groups" name="groupAction" value="removeAll" onchange="handleGroupActionChange()"><label for="action-remove-all-groups">إزالة كل التصنيفات</label></div><div class="modal-row"><input type="radio" id="action-delete" name="groupAction" value="delete" onchange="handleGroupActionChange()"><label for="action-delete">حذف المجموعة</label></div><div class="modal-row"><input type="radio" id="action-export-group" name="groupAction" value="exportGroup" onchange="handleGroupActionChange()"><label for="action-export-group">تصدير قنوات المجموعة</label></div></div><div class="modal-buttons"><button onclick="executeGroupAction()">تنفيذ</button><button onclick="closeModal('manageGroupsModal')" class="cancel">إلغاء</button></div></div></div>
-    <div id="mergeModal" class="modal modal-small-top"><div class="modal-content"><span class="close" onclick="closeModal('mergeModal')">&times;</span><h2>خيارات الدمج</h2><div class="modal-content-body"><label for="mergeOptionSelector" style="display:block; margin-bottom: 5px; text-align: right;">اختر طريقة الدمج:</label><select id="mergeOptionSelector" onchange="handleMergeOptionChange()"><option value="file" selected>من ملف</option><option value="url">من رابط</option></select><div id="mergeFileOption" class="merge-option-container" style="display: block;"><p>اختر ملف أو أكثر لدمجه مع القائمة الحالية.</p><button onclick="document.getElementById('mergeFileInput').click()">اختيار ملفات</button></div><div id="mergeUrlOption" class="merge-option-container" style="display: none;"><p>ألصق الروابط هنا، كل رابط في سطر جديد.</p><textarea id="mergeUrlTextarea" placeholder="https://example.com/playlist.m3u" style="width: 100%; min-height: 120px; margin-bottom: 20px; direction: ltr; text-align: left;"></textarea><button onclick="executeMerge()">دمج الروابط</button></div></div></div></div>
+    <div id="mergeModal" class="modal modal-small-top"><div class="modal-content"><span class="close" onclick="closeModal('mergeModal')">&times;</span><h2>خيارات الدمج</h2><div class="modal-content-body"><label for="mergeOptionSelector" style="display:block; margin-bottom: 5px; text-align: right;">اختر طريقة الدمج:</label><select id="mergeOptionSelector" onchange="handleMergeOptionChange()"><option value="file" selected>من ملف</option><option value="url">من رابط</option></select><div id="mergeFileOption" class="merge-option-container" style="display: block;"><p>اختر ملف أو أكثر لدمجه مع القائمة الحالية.</p><button onclick="document.getElementById('mergeFileInput').click()">اختيار ملفات</button></div><div id="mergeUrlOption" class="merge-option-container" style="display: none;"><p>ألصق الروابط هنا، كل رابط في سطر جديد.</p><textarea id="mergeUrlTextarea" placeholder="https://example.com/playlist.m3u" style="min-height: 120px; margin-bottom: 20px; direction: ltr; text-align: left;"></textarea><button onclick="executeMerge()">دمج الروابط</button></div></div></div></div>
     <div id="exportModal" class="modal modal-medium-top"><div class="modal-content"><span class="close" onclick="closeModal('exportModal')">&times;</span><h2>تصدير قائمة التشغيل</h2><p>اختر الصيغة المطلوبة للحفظ:</p><div class="modal-row"><input type="radio" id="export-m3u" name="exportFormat" value="m3u" checked><label for="export-m3u">M3U</label></div><div class="modal-row"><input type="radio" id="export-m3u8" name="exportFormat" value="m3u8"><label for="export-m3u8">M3U8</label></div><div class="modal-row"><input type="radio" id="export-pls" name="exportFormat" value="pls"><label for="export-pls">PLS</label></div><div class="modal-row"><input type="radio" id="export-json" name="exportFormat" value="json"><label for="export-json">JSON</label></div><div class="modal-row"><input type="radio" id="export-csv" name="exportFormat" value="csv"><label for="export-csv">CSV</label></div><div class="modal-row"><input type="radio" id="export-enigma2" name="exportFormat" value="enigma2"><label for="export-enigma2">Enigma2</label></div><div class="modal-buttons"><button onclick="executeExport()">تصدير</button><button onclick="closeModal('exportModal')" class="cancel">إلغاء</button></div></div></div>
     <div id="confirmModal" class="modal modal-small-top"><div class="modal-content"><span class="close" onclick="closeModal('confirmModal')">&times;</span><h2 id="confirmTitle">تأكيد الإجراء</h2><p id="confirmMessage">هل أنت متأكد؟</p><div class="modal-buttons"><button id="confirmBtn" class="action-btn">تأكيد</button><button onclick="closeModal('confirmModal')" class="action-btn delete-btn">إلغاء</button></div></div></div>
     <div id="toastContainer"></div>
@@ -2583,8 +2606,6 @@ h1.page-title {
 
                 if (criteria === 'alphabetical') {
                     channelsToSort.sort(sortFunction);
-                } else if (criteria === 'tvg-chno') {
-                    channelsToSort.sort((a, b) => (a.chno || 0) - (b.chno || 0));
                 } else if (criteria === 'name') {
                     const term = document.getElementById('sortByNameField').value.toLowerCase().trim();
                     if (term) channelsToSort.sort((a, b) => (b.name.toLowerCase().includes(term) - a.name.toLowerCase().includes(term)) || sortFunction(a, b));
@@ -2599,7 +2620,7 @@ h1.page-title {
                     else channelsToSort.sort(sortFunction);
                 }
                 
-                if (isDescending && criteria !== 'tvg-chno') {
+                if (isDescending) {
                     channelsToSort.reverse();
                 }
 
@@ -2918,7 +2939,7 @@ h1.page-title {
 
             modalContent.classList.toggle('compact-layout', criteria === 'moveBlock');
             
-            document.getElementById('sort-descending').disabled = (criteria === 'tvg-chno');
+            document.getElementById('sort-descending').disabled = false;
 
             const scopeContainer = document.getElementById('sort-scope-container');
             const scopeIsSubSet = document.getElementById('sort-scope-selector').value !== 'all';
