@@ -3,12 +3,12 @@
     "short_name": "M3U Editor",
     "icons": [
         {
-            "src": "/android-chrome-192x192.png",
+            "src": "https://cdn.jsdelivr.net/gh/iofahmawi/m3u-editor/android-chrome-192x192.png",
             "sizes": "192x192",
             "type": "image/png"
         },
         {
-            "src": "/android-chrome-512x512.png",
+            "src": "https://cdn.jsdelivr.net/gh/iofahmawi/m3u-editor/android-chrome-512x512.png",
             "sizes": "512x512",
             "type": "image/png"
         }
