@@ -4,7 +4,7 @@
   "start_url": "/m3u-editor/",
   "display": "standalone",
   "background_color": "#ffffff",
-  "theme_color": "#000000",
+  "theme_color": "#ffffff",
   "orientation": "any",
   "icons": [
     {
