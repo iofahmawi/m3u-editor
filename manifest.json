@@ -1,0 +1,21 @@
+{
+    "name": "M3U Editor",
+    "short_name": "M3U Editor",
+    "description": "A simple editor for M3U playlist files.",
+    "start_url": ".",
+    "display": "standalone",
+    "background_color": "#ffffff",
+    "theme_color": "#ffffff",
+    "icons": [
+        {
+            "src": "icon-512.png",
+            "sizes": "192x192",
+            "type": "image/png"
+        },
+        {
+            "src": "icon-512.png",
+            "sizes": "512x512",
+            "type": "image/png"
+        }
+    ]
+}
