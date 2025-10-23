@@ -5,7 +5,7 @@ const CACHE_NAME = 'm3u-editor-v1';
 const urlsToCache = [
     '/',
     'index.html',
-    'icon-1440.png'
+    'icon-1024.png'
     // إذا كان لديك ملفات CSS أو JS أخرى، أضف أسماءها هنا
     // مثال: 'style.css', 'app.js'
 ];
@@ -36,3 +36,4 @@ self.addEventListener('fetch', event => {
     );
 
 });
+
