@@ -8,11 +8,12 @@
     "theme_color": "#fdfcfb",
     "icons": [
         {
-            "src": "icon-1440.png",
-            "sizes": "1440x1440",
+            "src": "icon-1024.png",
+            "sizes": "1024x1024",
             "type": "image/png"
         }
     ]
 }
+
 
 
