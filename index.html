@@ -80,15 +80,16 @@
         }
 
         .container {
-            max-width: 1100px; width: 100%; margin: 20px auto;
-            background: var(--container-bg-color);
-            padding: 30px; border-radius: 12px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-            box-sizing: border-box;
-            border: 1px solid var(--border-color);
-            transition: background-color 0.3s, border-color 0.3s;
-            position: relative;
-        }
+    max-width: 1100px; width: 100%; margin: 20px auto;
+    background: var(--container-bg-color);
+    padding: 30px; border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    box-sizing: border-box;
+    border: 1px solid var(--border-color);
+    transition: background-color 0.3s, border-color 0.3s;
+    position: relative;
+    flex-grow: 1; /* <-- أضف هذا السطر فقط */
+}
         body.dark-mode .container {
              border: 1px solid #1c1c1e;
         }
@@ -1013,24 +1014,18 @@ body.dark-mode .format-tabs button.active { background-color: #3a3a3c; color: va
         
         /* --- هذا هو التعديل الصحيح --- */
 .site-footer {
-    /* 1. تعريف المتغير بقيمته الافتراضية */
-    --footer-padding-bottom: 30px;
-
     text-align: center;
-    margin-top: auto;
+    padding: 20px 20px 30px 20px; /* القيمة الافتراضية للمتصفح العادي */
+    /* margin-top: auto;  <-- تأكد من حذف هذا السطر */
     color: #888;
     font-size: 0.9em;
     flex-shrink: 0;
-    
-    /* 2. استخدام المتغير في الحشوة */
-    padding: 20px 20px var(--footer-padding-bottom) 20px;
 }
 
-/* 3. التحقق من دعم المتصفح وتحديث المتغير فقط عند الحاجة */
+/* قاعدة خاصة للمتصفحات التي تدعم مساحات الأمان (PWA) */
 @supports (padding-bottom: env(safe-area-inset-bottom)) {
     .site-footer {
-        /* عند توفر قيمة المساحة الآمنة، يتم تحديث المتغير تلقائيًا */
-        --footer-padding-bottom: calc(30px + env(safe-area-inset-bottom));
+        padding-bottom: calc(30px + env(safe-area-inset-bottom));
     }
 }
 
