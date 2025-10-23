@@ -2,7 +2,7 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <!-- === التعديل الأول: تحديث وسم meta viewport === -->
+    <!-- === التعديل الأول: تحديث وسم viewport === -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>محرر قوائم تشغيل M3U/M3U8</title>
 
@@ -67,8 +67,7 @@
             background-color: var(--background-color);
             color: var(--text-color);
             margin: 0;
-            /* === التعديل الثاني: تعديل الـ padding الخاص بالـ body === */
-            padding: 20px 20px calc(0.55cm + env(safe-area-inset-bottom)) 20px;
+            padding: 20px;
             direction: rtl;
             display: flex;
             flex-direction: column;
@@ -1013,9 +1012,15 @@ body.dark-mode .format-tabs button.active { background-color: #3a3a3c; color: va
             }
         }
         
+        /* === التعديل الثاني: تطبيق نفس طريقة التذييل الناجحة === */
         .site-footer {
             text-align: center;
-            padding: 20px 20px 30px 20px;
+            /* تم تعديل الحشوة العلوية لتتناسب مع التصميم الأصلي */
+            padding-top: 20px; 
+            /* تم تطبيق الحشوة السفلية الديناميكية */
+            padding-bottom: calc(0.55cm + env(safe-area-inset-bottom, 0px));
+            padding-left: 20px;
+            padding-right: 20px;
             margin-top: auto;
             color: #888;
             font-size: 0.9em;
