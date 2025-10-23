@@ -1011,15 +1011,22 @@ body.dark-mode .format-tabs button.active { background-color: #3a3a3c; color: va
             }
         }
         
-        .site-footer {
+        /* --- هذا هو التعديل الصحيح --- */
+.site-footer {
     text-align: center;
-    padding: 20px 20px 30px 20px;
+    /* تم حذف قاعدة الـ padding المختصرة القديمة */
     margin-top: auto;
     color: #888;
     font-size: 0.9em;
     flex-shrink: 0;
-    /* --- الإضافة الجديدة هنا --- */
-    padding-bottom: calc(30px + env(safe-area-inset-bottom, 0px));
+
+    /* تحديد الحشوة لكل جانب على حدة للتحكم الدقيق */
+    padding-top: 20px;
+    padding-right: 20px;
+    padding-left: 20px;
+    
+    /* القاعدة الذكية للحشوة السفلية */
+    padding-bottom: calc(20px + env(safe-area-inset-bottom, 0px));
 }
         .site-footer a {
             color: var(--button-delete-color);
