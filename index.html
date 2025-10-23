@@ -4027,5 +4027,28 @@ h1.page-title {
     }
     
     </script>
+
+    <!-- =============================================== -->
+    <!-- ===      >>>   أضف الكود الجديد هنا   <<<      === -->
+    <!-- =============================================== -->
+    <script>
+        // هذا الكود يعالج مشكلة تأخر ظهور المساحة الآمنة في PWA عند التشغيل الأول
+        window.addEventListener('load', () => {
+            // ننتظر جزءًا صغيرًا من الثانية للتأكد من أن كل شيء قد استقر
+            setTimeout(() => {
+                const footer = document.querySelector('.site-footer');
+                if (footer) {
+                    // نقوم بإخفاء وإظهار التذييل بسرعة كبيرة
+                    // هذا الإجراء يجبر المتصفح على إعادة حساب أنماطه (reflow)
+                    // وتطبيق قيمة env(safe-area-inset-bottom) الصحيحة.
+                    const originalDisplay = footer.style.display;
+                    footer.style.display = 'none';
+                    // أعده إلى قيمته الافتراضية (عادةً 'block' للعناصر مثل footer)
+                    footer.style.display = originalDisplay || 'block';
+                }
+            }, 100); // تأخير بسيط بمقدار 100 ميلي ثانية يكفي عادةً
+        });
+    </script>
+    
 </body>
 </html>
