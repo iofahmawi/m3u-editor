@@ -61,12 +61,12 @@
             height: 100%;
         }
 
+        /* === التعديل هنا: body نظيف بدون padding === */
         body {
             font-family: 'Arial', sans-serif;
             background-color: var(--background-color);
             color: var(--text-color);
             margin: 0;
-            padding: 20px;
             direction: rtl;
             display: flex;
             flex-direction: column;
@@ -79,23 +79,29 @@
             -webkit-tap-highlight-color: transparent;
         }
 
-        /* === التعديل هنا: إضافة قاعدة main === */
+        /* === التعديل هنا: main هو الذي يتمدد ويحتوي على المسافات === */
         main {
             flex-grow: 1;
+            padding: 20px;
             display: flex;
             flex-direction: column;
         }
 
+        /* === التعديل هنا: تعديل margin ليتناسب مع الهيكل الجديد === */
         .container {
-            max-width: 1100px; width: 100%; margin: 20px auto;
+            max-width: 1100px; 
+            width: 100%; 
+            margin: 0 auto; 
             background: var(--container-bg-color);
-            padding: 30px; border-radius: 12px;
+            padding: 30px; 
+            border-radius: 12px;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
             box-sizing: border-box;
             border: 1px solid var(--border-color);
             transition: background-color 0.3s, border-color 0.3s;
             position: relative;
         }
+
         body.dark-mode .container {
              border: 1px solid #1c1c1e;
         }
@@ -1025,6 +1031,8 @@ body.dark-mode .format-tabs button.active { background-color: #3a3a3c; color: va
             color: #888;
             font-size: 0.9em;
             flex-shrink: 0;
+            background-color: var(--background-color);
+            transition: background-color 0.3s;
         }
         @supports (padding-bottom: env(safe-area-inset-bottom)) {
             .site-footer {
@@ -1826,12 +1834,12 @@ h1.page-title {
                 }
             });
 
-            document.querySelector('.container').addEventListener('click', (event) => {
+            document.querySelector('main').addEventListener('click', (event) => {
                 // Do nothing if a modal is open
                 if (document.querySelector('.modal[style*="display: flex"]')) return;
                 
                 // Check if the click is on a non-interactive part of the container
-                if (!event.target.closest('table, .action-btn, input, select, button, a, .upload-area')) {
+                if (!event.target.closest('.container')) {
                      clearAllSelections();
                 }
             });
