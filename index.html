@@ -1019,15 +1019,16 @@ body.dark-mode .format-tabs button.active { background-color: #3a3a3c; color: va
     font-size: 0.9em;
     flex-shrink: 0;
     
-    /* تحديد الحشوة العلوية والجانبية بشكل منفصل */
-    padding-top: 20px;
-    padding-left: 20px;
-    padding-right: 20px;
-    
-    /* --- هذا هو السطر الصحيح --- */
-    /* استخدام 30px كأساس وإضافة مساحة الأمان إليها */
-    padding-bottom: calc(30px + env(safe-area-inset-bottom, 0px));
+    /* 1. نضع القيمة الافتراضية للمتصفح العادي */
+    padding: 20px 20px 30px 20px;
 }
+
+/* 2. نتحقق إذا كان المتصفح يدعم مساحات الأمان */
+@supports (padding-bottom: env(safe-area-inset-bottom)) {
+    .site-footer {
+        /* 3. إذا كان يدعم، نستبدل الحشوة السفلية بالقيمة الذكية */
+        padding-bottom: calc(30px + env(safe-area-inset-bottom));
+    }
         .site-footer a {
             color: var(--button-delete-color);
             text-decoration: none;
