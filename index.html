@@ -66,7 +66,7 @@
             background-color: var(--background-color);
             color: var(--text-color);
             margin: 0;
-            padding: 0; /* تم إزالة الحشوة من هنا لتكون الحاوية هي المسؤولة */
+            padding: 20px;
             direction: rtl;
             display: flex;
             flex-direction: column;
@@ -75,18 +75,12 @@
             transition: background-color 0.3s, color 0.3s;
         }
 
-        /* === النقطة 2: جعل حاوية المحتوى الرئيسي تتمدد === */
-        .main-content {
-            flex-grow: 1;
-            padding: 20px; /* نقل الحشوة من body إلى هنا */
-        }
-
         button, a, [onclick], .upload-area {
             -webkit-tap-highlight-color: transparent;
         }
 
         .container {
-            max-width: 1100px; width: 100%; margin: 0 auto; /* تم تعديل الهامش */
+            max-width: 1100px; width: 100%; margin: 20px auto;
             background: var(--container-bg-color);
             padding: 30px; border-radius: 12px;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
@@ -975,7 +969,7 @@ body.dark-mode .format-tabs button.active { background-color: #3a3a3c; color: va
 
     .container {
         padding: 15px;
-        margin: 0 auto;
+        margin: 10px auto;
     }
     table {
         font-size: 13.5px;
@@ -1017,16 +1011,16 @@ body.dark-mode .format-tabs button.active { background-color: #3a3a3c; color: va
             }
         }
         
-        /* === النقطة 3: تعديل التذييل ليعمل بشكل صحيح === */
         .site-footer {
-            text-align: center;
-            padding: 20px;
-            padding-bottom: calc(0.55cm + env(safe-area-inset-bottom, 0px));
-            color: #888;
-            font-size: 0.9em;
-            flex-shrink: 0;
-            /* تم حذف margin-top: auto لأن .main-content يقوم بالمهمة */
-        }
+    text-align: center;
+    padding: 20px 20px 30px 20px;
+    margin-top: auto;
+    color: #888;
+    font-size: 0.9em;
+    flex-shrink: 0;
+    /* --- الإضافة الجديدة هنا --- */
+    padding-bottom: calc(30px + env(safe-area-inset-bottom, 0px));
+}
         .site-footer a {
             color: var(--button-delete-color);
             text-decoration: none;
@@ -1295,55 +1289,51 @@ h1.page-title {
 </style>
 </head>
 <body>
-    <!-- === النقطة 1: إضافة حاوية المحتوى الرئيسي === -->
-    <main class="main-content">
-        <div class="container">
-            <button id="theme-toggle" title="تبديل الوضع">
-                <svg class="sun-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.25a.75.75 0 0 1 .75.75v1.5a.75.75 0 0 1-1.5 0v-1.5A.75.75 0 0 1 12 2.25Zm0 18a.75.75 0 0 1 .75.75v1.5a.75.75 0 0 1-1.5 0v-1.5a.75.75 0 0 1 .75-.75ZM5.336 5.336a.75.75 0 0 1 1.06-1.06l1.06 1.06a.75.75 0 0 1-1.06 1.06l-1.06-1.06Zm12.268 12.268a.75.75 0 0 1 1.06-1.06l1.06 1.06a.75.75 0 0 1-1.06 1.06l-1.06-1.06ZM2.25 12a.75.75 0 0 1 .75-.75h1.5a.75.75 0 0 1 0 1.5h-1.5a.75.75 0 0 1-.75-.75Zm18 0a.75.75 0 0 1 .75-.75h1.5a.75.75 0 0 1 0 1.5h-1.5a.75.75 0 0 1-.75-.75ZM5.336 18.664a.75.75 0 0 1-1.06 1.06l-1.06-1.06a.75.75 0 0 1 1.06-1.06l1.06 1.06Zm12.268-12.268a.75.75 0 0 1-1.06 1.06l-1.06-1.06a.75.75 0 1 1 1.06-1.06l1.06 1.06ZM12 7a5 5 0 1 0 0 10 5 5 0 0 0 0-10Z"/></svg>
-               <svg class="moon-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
-        <path d="M21.752 15.002A9.718 9.718 0 0118 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 003 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 009.002-5.998z" />
-    </svg>
-            </button>
-    
-            <h1 class="page-title">محرر قوائم تشغيل M3U/M3U8</h1>
-            
-            <div id="loadingIndicator" style="display: none;"><p>جارٍ التحميل...</p></div>
-            
-            <div id="mainControls">
-                <label for="fileInput" id="uploadArea" class="upload-area">
-                    <p style="font-size: 1.1em; font-weight: bold;">اضغط لرفع ملف قائمة التشغيل</p>
-                    <span class="upload-label">اختيار ملف PLS, M3U8, M3U</span>
-                </label>
-                
-                <div id="urlLoadContainer">
-                     <div class="button-row" id="initialButtonsRow">
-                        <button class="action-btn" id="loadUrlButton" onclick="openModal('multiUrlModal')">تحميل من روابط</button>
-                        <button class="action-btn" id="createNewPlaylistButton" onclick="createNewPlaylist()">إنشاء قائمة جديدة</button>
-                     </div>
-                </div>
-                
-                <div class="button-row" id="toolsMergeRow">
-                    <button class="action-btn" onclick="openModal('exportModal')">تصدير القائمة</button>
-                    <button class="action-btn" id="manageGroupsButton" onclick="openManageGroupsModal()">إدارة المجموعات</button>
-                    <button class="action-btn" id="openSortModalButton" onclick="openSortModal()">فرز وترتيب</button>
-                    <button class="action-btn" id="advancedToolsButton" onclick="openModal('advancedOptionsModal')">خيارات إضافية</button>
-                    <button class="action-btn" id="openSearchFilterModalButton" onclick="handleFilterButtonClick()">بحث وتصفية</button>
-                    <button class="action-btn" id="bulkActionsButton" onclick="openModal('bulkActionsModal')">
-                        إجراءات على المحدد
-                        <span id="bulkActionsBadge" class="badge"></span>
-                    </button>
-                </div>
-            </div>
-    
-            <input type="file" id="fileInput" accept=".m3u,.m3u8,.pls,.json,.csv" multiple style="display: none;">
-            <input type="file" id="mergeFileInput" accept=".m3u,.m3u8,.pls,.json,.csv" multiple style="display: none;">
-            <div id="results"></div>
-            <div id="paginationControls"></div>
-        </div>
-    </main>
-    
+    <div class="container">
+        <button id="theme-toggle" title="تبديل الوضع">
+            <svg class="sun-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.25a.75.75 0 0 1 .75.75v1.5a.75.75 0 0 1-1.5 0v-1.5A.75.75 0 0 1 12 2.25Zm0 18a.75.75 0 0 1 .75.75v1.5a.75.75 0 0 1-1.5 0v-1.5a.75.75 0 0 1 .75-.75ZM5.336 5.336a.75.75 0 0 1 1.06-1.06l1.06 1.06a.75.75 0 0 1-1.06 1.06l-1.06-1.06Zm12.268 12.268a.75.75 0 0 1 1.06-1.06l1.06 1.06a.75.75 0 0 1-1.06 1.06l-1.06-1.06ZM2.25 12a.75.75 0 0 1 .75-.75h1.5a.75.75 0 0 1 0 1.5h-1.5a.75.75 0 0 1-.75-.75Zm18 0a.75.75 0 0 1 .75-.75h1.5a.75.75 0 0 1 0 1.5h-1.5a.75.75 0 0 1-.75-.75ZM5.336 18.664a.75.75 0 0 1-1.06 1.06l-1.06-1.06a.75.75 0 0 1 1.06-1.06l1.06 1.06Zm12.268-12.268a.75.75 0 0 1-1.06 1.06l-1.06-1.06a.75.75 0 1 1 1.06-1.06l1.06 1.06ZM12 7a5 5 0 1 0 0 10 5 5 0 0 0 0-10Z"/></svg>
+           <svg class="moon-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+    <path d="M21.752 15.002A9.718 9.718 0 0118 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 003 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 009.002-5.998z" />
+</svg>
+        </button>
 
-    <!-- All Modals remain outside the main content -->
+        <h1 class="page-title">محرر قوائم تشغيل M3U/M3U8</h1>
+        
+        <div id="loadingIndicator" style="display: none;"><p>جارٍ التحميل...</p></div>
+        
+        <div id="mainControls">
+            <label for="fileInput" id="uploadArea" class="upload-area">
+                <p style="font-size: 1.1em; font-weight: bold;">اضغط لرفع ملف قائمة التشغيل</p>
+                <span class="upload-label">اختيار ملف PLS, M3U8, M3U</span>
+            </label>
+            
+            <div id="urlLoadContainer">
+                 <div class="button-row" id="initialButtonsRow">
+                    <button class="action-btn" id="loadUrlButton" onclick="openModal('multiUrlModal')">تحميل من روابط</button>
+                    <button class="action-btn" id="createNewPlaylistButton" onclick="createNewPlaylist()">إنشاء قائمة جديدة</button>
+                 </div>
+            </div>
+            
+            <div class="button-row" id="toolsMergeRow">
+                <button class="action-btn" onclick="openModal('exportModal')">تصدير القائمة</button>
+                <button class="action-btn" id="manageGroupsButton" onclick="openManageGroupsModal()">إدارة المجموعات</button>
+                <button class="action-btn" id="openSortModalButton" onclick="openSortModal()">فرز وترتيب</button>
+                <button class="action-btn" id="advancedToolsButton" onclick="openModal('advancedOptionsModal')">خيارات إضافية</button>
+                <button class="action-btn" id="openSearchFilterModalButton" onclick="handleFilterButtonClick()">بحث وتصفية</button>
+                <button class="action-btn" id="bulkActionsButton" onclick="openModal('bulkActionsModal')">
+                    إجراءات على المحدد
+                    <span id="bulkActionsBadge" class="badge"></span>
+                </button>
+            </div>
+        </div>
+
+        <input type="file" id="fileInput" accept=".m3u,.m3u8,.pls,.json,.csv" multiple style="display: none;">
+        <input type="file" id="mergeFileInput" accept=".m3u,.m3u8,.pls,.json,.csv" multiple style="display: none;">
+        <div id="results"></div>
+        <div id="paginationControls"></div>
+    </div>
+
+    <!-- All Modals -->
     <div id="dragDropChoiceModal" class="modal modal-small-top"><div class="modal-content"><span class="close" onclick="cancelDragOperation()">&times;</span><h2>كيف تريد تطبيق الترتيب؟</h2><div style="margin: 20px 0;"><div class="modal-row"><input type="radio" id="dragChoiceGroup" name="dragDropChoice" value="group" checked><label for="dragChoiceGroup">تجميع المجموعة وترتيبها</label></div><div class="modal-row"><input type="radio" id="dragChoiceInPlace" name="dragDropChoice" value="sortInPlace"><label for="dragChoiceInPlace">الترتيب في الأماكن الحالية فقط</label></div></div><div class="modal-buttons"><button id="executeDragDropChoice">تنفيذ</button><button class="cancel" onclick="cancelDragOperation()">إلغاء</button></div></div></div>
     <div id="searchFilterModal" class="modal modal-small-top"><div class="modal-content"><span class="close" onclick="closeModal('searchFilterModal')">&times;</span><h2>بحث وتصفية القنوات</h2><input type="text" id="searchInput" placeholder="ابحث عن قناة..."><select id="groupFilter"><option value="all">كل المجموعات</option></select><div class="modal-buttons"><button id="searchFilterActionButton">تطبيق التصفية</button></div></div></div>
     <div id="bulkActionsModal" class="modal"><div class="modal-content"><span class="close" onclick="closeModal('bulkActionsModal')">&times;</span><h2>إجراءات على القنوات المحددة</h2><div id="bulk-actions-list"><div class="modal-row"><input type="radio" id="bulk-action-sort" name="bulkAction" value="sort" checked><label for="bulk-action-sort">فرز المحدد أبجدياً</label></div><div class="modal-row"><input type="radio" id="bulk-action-move" name="bulkAction" value="move"><label for="bulk-action-move">نقل المحدد إلى موضع</label><div id="bulk-move-input-container"><label for="bulk-move-target-index">رقم:</label><input type="number" id="bulk-move-target-index" min="1" placeholder="مثال: 1"></div></div><div class="modal-row"><input type="radio" id="bulk-action-group" name="bulkAction" value="group"><label for="bulk-action-group">تعديل المجموعة</label><div id="bulk-edit-group-container"><input type="text" id="bulk-new-group-name" placeholder="أدخل اسم المجموعة الجديد"></div></div><div class="modal-row"><input type="radio" id="bulk-action-remove-group" name="bulkAction" value="removeGroup"><label for="bulk-action-remove-group">إزالة التصنيف عن المحدد</label></div><div class="modal-row"><input type="radio" id="bulk-action-delete" name="bulkAction" value="delete"><label for="bulk-action-delete">حذف المحدد</label></div><div class="modal-row"><input type="radio" id="bulk-action-export" name="bulkAction" value="export"><label for="bulk-action-export">تصدير المحدد</label></div></div><div class="modal-buttons"><button onclick="executeBulkAction()">تنفيذ</button><button onclick="closeModal('bulkActionsModal')" class="cancel">إلغاء</button></div></div></div>
