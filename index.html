@@ -2,10 +2,11 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- === التعديل الأول: تحديث وسم meta viewport === -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>محرر قوائم تشغيل M3U/M3U8</title>
-    
-    <!-- === الإضافات الجديدة لـ PWA === -->
+
+     <!-- === الإضافات الجديدة لـ PWA === -->
     <meta name="theme-color" content="#fdfcfb">
     <link rel="manifest" href="manifest.json">
     <link rel="icon" href="icon-1024.png">
@@ -66,7 +67,8 @@
             background-color: var(--background-color);
             color: var(--text-color);
             margin: 0;
-            padding: 20px;
+            /* === التعديل الثاني: تعديل الـ padding الخاص بالـ body === */
+            padding: 20px 20px calc(0.55cm + env(safe-area-inset-bottom)) 20px;
             direction: rtl;
             display: flex;
             flex-direction: column;
@@ -4018,10 +4020,4 @@ h1.page-title {
     
     </script>
 </body>
-
 </html>
-
-
-
-
-
