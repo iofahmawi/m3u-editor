@@ -21,8 +21,8 @@
     <style>
         /* Warm & Minimalist Theme with Final Polishing */
         :root {
-            --primary-color: #e67e22; /* Carrot Orange */
-            --primary-hover: #d35400;
+            --primary-color: #f79000; /* Carrot Orange */
+            --primary-hover: #fff1de;
             --secondary-color: #34495e; /* Wet Asphalt Blue */
             --secondary-hover: #2c3e50;
             --delete-color: #c0392b; /* Pomegranate Red for delete actions */
@@ -4006,7 +4006,7 @@ h1.page-title {
         
         if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
-            navigator.serviceWorker.register('sw.js')
+            navigator.serviceWorker.register('/sw.js')
                 .then(registration => {
                     console.log('ServiceWorker registration successful');
                 })
@@ -4019,6 +4019,3 @@ h1.page-title {
     </script>
 </body>
 </html>
-
-
-
