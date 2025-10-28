@@ -2,12 +2,13 @@
 <html lang="en" dir="ltr">
 <head>
     <meta charset="UTF-8">
+    <base href="/m3u-editor/en/">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>M3U/M3U8 Playlist Editor</title>
 
      <!-- === New Additions for PWA === -->
     <meta name="theme-color" content="#fdfcfb">
-    <link rel="manifest" href="/en/manifest.json">
+    <link rel="manifest" href="manifest.json">
     <link rel="icon" href="icon-1024.png">
     <link rel="apple-touch-icon" href="icon-1024.png">
     <!-- ============================= -->
@@ -4100,7 +4101,7 @@ h1.page-title {
         
         if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/en/sw.js') // <-- تأكد أن المسار هنا صحيح
+        navigator.serviceWorker.register('sw.js') // <-- تأكد أن المسار هنا صحيح
             .then(registration => {
                 console.log('ServiceWorker registration successful');
             })
@@ -4114,3 +4115,4 @@ h1.page-title {
 </body>
 
 </html>
+
