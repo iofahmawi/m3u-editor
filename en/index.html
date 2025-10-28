@@ -4101,7 +4101,7 @@ h1.page-title {
         
         if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
-        navigator.serviceWorker.register('sw.js') // <-- تأكد أن المسار هنا صحيح
+        navigator.serviceWorker.register('/m3u-editor/en/sw.js') // <-- تأكد أن المسار هنا صحيح
             .then(registration => {
                 console.log('ServiceWorker registration successful');
             })
@@ -4115,4 +4115,5 @@ h1.page-title {
 </body>
 
 </html>
+
 
