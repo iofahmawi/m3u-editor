@@ -2,7 +2,6 @@
 <html lang="en" dir="ltr">
 <head>
     <meta charset="UTF-8">
-    <base href="/m3u-editor/en/">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>M3U/M3U8 Playlist Editor</title>
 
@@ -1395,6 +1394,11 @@ h1.page-title {
     margin-bottom: 25px;
 }
 /* --- END: Added space under Import from iptv-org Modal title --- */
+/* --- START: Added space under Load from Multiple URLs Modal title --- */
+#multiUrlModal h2 {
+    margin-bottom: 35px;
+}
+/* --- END: Added space under Load from Multiple URLs Modal title --- */
 </style>
 </head>
 <body>
@@ -4101,7 +4105,7 @@ h1.page-title {
         
         if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/m3u-editor/en/sw.js') // <-- تأكد أن المسار هنا صحيح
+        navigator.serviceWorker.register('/en/sw.js') // <-- تأكد أن المسار هنا صحيح
             .then(registration => {
                 console.log('ServiceWorker registration successful');
             })
@@ -4113,7 +4117,4 @@ h1.page-title {
     
     </script>
 </body>
-
 </html>
-
-
