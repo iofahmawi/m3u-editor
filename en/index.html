@@ -1399,10 +1399,35 @@ h1.page-title {
     margin-bottom: 35px;
 }
 /* --- END: Added space under Load from Multiple URLs Modal title --- */
+/* --- START: Language Switcher Link Style (for LTR) --- */
+#language-switcher {
+    position: absolute;
+    top: 11px;
+    left: 11px; /* <-- التغيير هنا: أصبح على اليسار */
+    right: auto; /* <-- إضافة هذا السطر لضمان عدم التعارض */
+    
+    color: #e0e0e0; 
+    font-size: 0.85em;
+    font-weight: bold;
+    text-decoration: none;
+    transition: opacity 0.2s;
+    z-index: 10;
+}
+
+#language-switcher:hover {
+    opacity: 0.8;
+}
+
+/* تعديل اللون ليتناسب مع الوضع الليلي */
+body.dark-mode #language-switcher {
+    color: #EAEAEA;
+}
+/* --- END: Language Switcher Link Style (for LTR) --- */
 </style>
 </head>
 <body>
     <div class="container">
+        <a href="/m3u-editor/" id="language-switcher">AR</a>
         <button id="theme-toggle" title="Toggle Mode">
             <svg class="sun-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.25a.75.75 0 0 1 .75.75v1.5a.75.75 0 0 1-1.5 0v-1.5A.75.75 0 0 1 12 2.25Zm0 18a.75.75 0 0 1 .75.75v1.5a.75.75 0 0 1-1.5 0v-1.5a.75.75 0 0 1 .75-.75ZM5.336 5.336a.75.75 0 0 1 1.06-1.06l1.06 1.06a.75.75 0 0 1-1.06 1.06l-1.06-1.06Zm12.268 12.268a.75.75 0 0 1 1.06-1.06l1.06 1.06a.75.75 0 0 1-1.06 1.06l-1.06-1.06ZM2.25 12a.75.75 0 0 1 .75-.75h1.5a.75.75 0 0 1 0 1.5h-1.5a.75.75 0 0 1-.75-.75Zm18 0a.75.75 0 0 1 .75-.75h1.5a.75.75 0 0 1 0 1.5h-1.5a.75.75 0 0 1-.75-.75ZM5.336 18.664a.75.75 0 0 1-1.06 1.06l-1.06-1.06a.75.75 0 0 1 1.06-1.06l1.06 1.06Zm12.268-12.268a.75.75 0 0 1-1.06 1.06l-1.06-1.06a.75.75 0 1 1 1.06-1.06l1.06 1.06ZM12 7a5 5 0 1 0 0 10 5 5 0 0 0 0-10Z"/></svg>
            <svg class="moon-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
