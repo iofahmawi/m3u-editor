@@ -2707,11 +2707,7 @@ body.dark-mode #language-switcher {
                     channelsToSort.reverse();
                 }
 
-                if (scope === 'all' || scope === 'specificGroup' || !isGroupingEnabled) {
-                     originalIndices.forEach((originalIndex, i) => {
-                        channelsData[originalIndex] = channelsToSort[i];
-                    });
-                } else {
+                if (isGroupingEnabled && (scope === 'filtered' || scope === 'selected' || scope === 'specificGroup')) {
                     const insertionIndex = originalIndices[0];
                     const indicesToRemove = originalIndices.sort((a, b) => b - a);
                     
@@ -2720,7 +2716,13 @@ body.dark-mode #language-switcher {
                     });
 
                     channelsData.splice(insertionIndex, 0, ...channelsToSort);
-                    selectedIndices.clear();
+                    if (scope === 'selected') {
+                        selectedIndices.clear();
+                    }
+                } else {
+                     originalIndices.forEach((originalIndex, i) => {
+                        channelsData[originalIndex] = channelsToSort[i];
+                    });
                 }
             }
 
@@ -3017,6 +3019,7 @@ body.dark-mode #language-switcher {
         function handleSortScopeChange() {
             const scope = document.getElementById('sort-scope-selector').value;
             const groupContainer = document.getElementById('sort-specific-group-container');
+            const groupingContainer = document.getElementById('sort-grouping-container');
             const isSpecificGroup = (scope === 'specificGroup');
 
             groupContainer.style.display = isSpecificGroup ? 'block' : 'none';
@@ -3037,6 +3040,9 @@ body.dark-mode #language-switcher {
                     });
                 }
             }
+            
+            const shouldShowGrouping = (scope !== 'all');
+            groupingContainer.style.display = shouldShowGrouping ? 'flex' : 'none';
         }
         
         function handleSortCriteriaChange() {
@@ -3057,18 +3063,16 @@ body.dark-mode #language-switcher {
 
             const scopeContainer = document.getElementById('sort-scope-container');
             const specificGroupContainer = document.getElementById('sort-specific-group-container');
+            const groupingContainer = document.getElementById('sort-grouping-container');
+            
             if (criteria === 'moveBlock') {
                 scopeContainer.style.display = 'none';
                 specificGroupContainer.style.display = 'none';
+                groupingContainer.style.display = 'none';
             } else {
                 scopeContainer.style.display = 'block';
                 handleSortScopeChange(); 
             }
-
-            const scopeIsSubSet = document.getElementById('sort-scope-selector').value !== 'all';
-            
-            const groupingContainer = document.getElementById('sort-grouping-container');
-            groupingContainer.style.display = (criteria !== 'moveBlock' && scopeIsSubSet) ? 'flex' : 'none';
             
             const moveRangeContainer = document.getElementById('moveBlockRangeContainer');
             if(moveRangeContainer) {
