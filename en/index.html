@@ -2117,7 +2117,7 @@ body.dark-mode #language-switcher {
                     row.classList.add('selected'); 
                 } 
                 
-                const groupsDisplay = channel.groups && channel.groups.length > 0 ? channel.groups.join(', ') : 'Uncategorized'; 
+                const groupsDisplay = channel.groups && channel.groups.length > 0 ? channel.groups.join(', ') : 'Unclasfd'; 
                 
                 const logoHtml = `
                     ${channel.logo ? `<img src="${channel.logo}" alt="Logo" onclick="event.stopPropagation(); openEditModal(${originalIndex});" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">` : ''}
