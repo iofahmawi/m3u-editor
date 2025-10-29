@@ -3641,11 +3641,17 @@ body.dark-mode #language-switcher {
             exceptionsContainer.style.display = document.getElementById('case-title').checked ? 'block' : 'none';
         }
         
+        // =================================================================
+        // START: MODIFIED FUNCTION
+        // =================================================================
         function handleFormatScopeChange() {
             const scope = document.getElementById('format-scope-selector').value;
             const groupTitleContainer = document.getElementById('format-group-title-container');
             const removeLogosRow = document.getElementById('format-remove-logos').closest('.modal-row');
             
+            // --- NEW: Select the "Search in" container ---
+            const findReplaceOptionsContainer = document.querySelector('#FormatReplace .find-replace-options');
+
             const findInName = document.getElementById('find-in-name');
             const findInGroup = document.getElementById('find-in-group');
             const findInUrl = document.getElementById('find-in-url');
@@ -3653,15 +3659,17 @@ body.dark-mode #language-switcher {
             const findInGroupLabel = findInGroup.parentElement;
             const findInUrlLabel = findInUrl.parentElement;
 
-            const showGroupSelector = (scope === 'groupTitle' || scope === 'specificGroup');
+            const showGroupSelector = (scope === 'groupTitle'); // MODIFIED: was 'groupTitle' || 'specificGroup'
             groupTitleContainer.style.display = showGroupSelector ? 'block' : 'none';
-            groupTitleContainer.querySelector('label').textContent = (scope === 'groupTitle') 
-                ? 'اختر التسمية للتنسيق:' 
-                : 'اختر المجموعة للتنسيق:';
+            groupTitleContainer.querySelector('label').textContent = 'اختر التسمية للتنسيق:'; // MODIFIED: Simplified
 
             if (scope === 'groupTitle') {
                 removeLogosRow.style.display = 'none';
 
+                // --- NEW: Hide the "Search in" container ---
+                if (findReplaceOptionsContainer) findReplaceOptionsContainer.style.display = 'none';
+
+                // This part is now less relevant but kept for safety
                 findInName.checked = false;
                 findInName.disabled = true;
                 findInUrl.checked = false;
@@ -3675,6 +3683,9 @@ body.dark-mode #language-switcher {
 
             } else {
                 removeLogosRow.style.display = 'flex';
+                
+                // --- NEW: Show the "Search in" container ---
+                if (findReplaceOptionsContainer) findReplaceOptionsContainer.style.display = 'block';
 
                 findInName.disabled = false;
                 findInUrl.disabled = false;
@@ -3689,7 +3700,14 @@ body.dark-mode #language-switcher {
                 if(findInGroupLabel) findInGroupLabel.style.opacity = '1';
             }
         }
+        // =================================================================
+        // END: MODIFIED FUNCTION
+        // =================================================================
 
+
+        // =================================================================
+        // START: MODIFIED FUNCTION
+        // =================================================================
         function openFormatDataModal() {
             if (channelsData.length === 0) return showToast("لا توجد قنوات لتنسيقها", "error");
 
@@ -3700,7 +3718,8 @@ body.dark-mode #language-switcher {
             });
             
             const scopeSelector = document.getElementById('format-scope-selector');
-            scopeSelector.add(new Option('مجموعة معينة', 'specificGroup'));
+            // --- MODIFIED: The following line has been removed to fulfill your request ---
+            // scopeSelector.add(new Option('مجموعة معينة', 'specificGroup'));
             scopeSelector.add(new Option('تسمية المجموعة', 'groupTitle'));
 
             const groupTitleSelector = document.getElementById('format-group-title-selector');
@@ -3746,6 +3765,9 @@ body.dark-mode #language-switcher {
 
             openModal('formatDataModal');
         }
+        // =================================================================
+        // END: MODIFIED FUNCTION
+        // =================================================================
 
         const titleCaseExceptions = ['TV', 'SD', 'HD', 'FHD', 'UHD', '4K', '8K', 'HEVC', 'H265', 'VIP', '3D', 'OSN', 'ART', 'SSC'];
 
