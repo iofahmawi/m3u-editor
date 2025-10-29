@@ -159,26 +159,26 @@
         .upload-label:hover { background-color: var(--primary-hover); }
 
         .action-btn {
-    /* الخصائص الأصلية المحافظ عليها */
-    background-color: var(--secondary-color);
-    color: white;
-    border-radius: 10px;
-    cursor: pointer;
-    font-weight: bold;
-    border: none;
-    transition: background-color 0.3s, opacity 0.3s;
-    margin: 10px 5px;
-    flex-shrink: 0;
-    white-space: nowrap;
-    font-size: 0.86em;
+            /* Original properties maintained */
+            background-color: var(--secondary-color);
+            color: white;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: bold;
+            border: none;
+            transition: background-color 0.3s, opacity 0.3s;
+            margin: 10px 5px;
+            flex-shrink: 0;
+            white-space: nowrap;
+            font-size: 0.86em;
 
-    /* --- التحديثات لتوحيد الارتفاع --- */
-    height: 38px;                  /* 1. تحديد ارتفاع ثابت (يمكنك تعديل القيمة) */
-    display: inline-flex;          /* 2. استخدام flexbox للتحكم في المحاذاة */
-    align-items: center;           /* 3. توسيط المحتوى (النص) عمودياً */
-    justify-content: center;       /* (اختياري) توسيط المحتوى أفقياً لمظهر أفضل */
-    padding: 0 20px;               /* 4. إزالة الحشوة العمودية والمحافظة على الأفقية */
-}
+            /* --- Updates for consistent height --- */
+            height: 38px;                  /* 1. Set a fixed height (you can adjust the value) */
+            display: inline-flex;          /* 2. Use flexbox to control alignment */
+            align-items: center;           /* 3. Center content (text) vertically */
+            justify-content: center;       /* (Optional) Center content horizontally for a better look */
+            padding: 0 20px;               /* 4. Remove vertical padding and maintain horizontal padding */
+        }
         body.dark-mode .action-btn {
             color: var(--text-light-color);
         }
@@ -256,22 +256,17 @@
 
         /* Control header row height */
         th {
-    height: 34px;              /* 1. تحديد ارتفاع ثابت لصف العنوان */
-    padding: 0 4px;            /* 2. إلغاء الحشوة العمودية والإبقاء على الأفقية */
-
-    /* الخصائص التالية موجودة في قاعدة th, td العامة ونبقي عليها */
-    vertical-align: middle;
-}
+            height: 34px;              /* 1. Set a fixed height for the header row */
+            padding: 0 4px;            /* 2. Remove vertical padding and keep horizontal */
+            vertical-align: middle;
+        }
 
         /* Control data row height */
-        /* التحكم بارتفاع صفوف البيانات (Rows) */
-td {
-    height: 46px;              /* 1. تحديد ارتفاع ثابت لصفوف البيانات */
-    padding: 0 4px;            /* 2. إلغاء الحشوة العمودية والإبقاء على الأفقية */
-
-    /* الخصائص التالية موجودة في قاعدة th, td العامة ونبقي عليها */
-    vertical-align: middle;
-}
+        td {
+            height: 46px;              /* 1. Set a fixed height for data rows */
+            padding: 0 4px;            /* 2. Remove vertical padding and keep horizontal */
+            vertical-align: middle;
+        }
         th { background-color: var(--primary-color); color: white; }
         body.dark-mode th {
             color: #1a1a1a;
@@ -325,21 +320,21 @@ td {
         }
         
         td.channel-name {
-    position: relative;
-    padding-left: 45px; /* <-- هذا السطر يضيف مساحة على اليسار لوضع الصورة فيها */
-}
+            position: relative;
+            padding-left: 45px; /* Adds space on the left for the image */
+        }
 
         td.channel-name img,
-td.channel-name .placeholder {
-    position: absolute; 
-    left: 8px; /* <-- هذا السطر يضع الصورة على بعد 8 بكسل من الحافة اليسرى */
-    top: 50%; 
-    transform: translateY(-50%); 
-    width: 30px;
-    height: 30px;
-    object-fit: contain;
-    cursor: pointer; 
-}
+        td.channel-name .placeholder {
+            position: absolute; 
+            left: 8px; /* Places the image 8px from the left edge */
+            top: 50%; 
+            transform: translateY(-50%); 
+            width: 30px;
+            height: 30px;
+            object-fit: contain;
+            cursor: pointer; 
+        }
 
         td.channel-name .name-text {
             text-align: center;
@@ -372,15 +367,15 @@ td.channel-name .placeholder {
         .modal-content { background-color: var(--container-bg-color); }
         
         /* =================================================================== */
-/* === START: FINAL ENGLISH-ONLY TOAST STYLES                      === */
+/* === START: CORRECTED TOAST STYLES (As Per Your Request)         === */
 /* =================================================================== */
 
-/* --- 1. The main container for all notifications (Positioned on the RIGHT) --- */
+/* --- 1. The main container for all notifications (Positioned on the LEFT) --- */
 #toastContainer {
     position: fixed;
     top: 20px;
-    right: 20px;
-    left: auto;
+    left: 20px; /* MODIFIED */
+    right: auto;
     z-index: 2000;
     display: flex;
     flex-direction: column;
@@ -388,10 +383,10 @@ td.channel-name .placeholder {
     direction: ltr; 
 }
 
-/* --- 2. The animation wrapper (Moves from and to the RIGHT) --- */
+/* --- 2. The animation wrapper (Moves from and to the LEFT) --- */
 .toast-wrapper {
     opacity: 0;
-    transform: translateX(-120%); /* Starts off-screen to the right */
+    transform: translateX(-120%); /* MODIFIED: Starts off-screen to the left */
     transition: all 0.5s cubic-bezier(0.68, -0.55, 0.27, 1.55);
 }
 .toast-wrapper.show {
@@ -411,14 +406,14 @@ td.channel-name .placeholder {
     border-radius: 8px;
     box-shadow: 0 4px 12px rgba(0,0,0,0.15);
     box-sizing: border-box;
-    /* --- Border is ALWAYS on the RIGHT --- */
-    border-right: 5px solid #ccc;
+    /* --- Border is on the RIGHT --- */
+    border-right: 5px solid #ccc; /* MODIFIED */
     border-left: none;
 }
 
 /* --- 4. The Close Button (X) - Visually on the LEFT --- */
 .toast-close {
-    order: 1; /* This places the close button FIRST (visually on the left) */
+    order: 1; /* MODIFIED: This places the close button FIRST */
     background: none;
     border: none;
     color: #aaa;
@@ -433,8 +428,8 @@ td.channel-name .placeholder {
 
 /* --- 5. Content (Text) - Fills the middle space --- */
 .toast-content {
-    order: 2; /* Text comes after the close button */
-    flex-grow: 1; /* Takes all available space */
+    order: 2; /* MODIFIED: Text comes after the close button */
+    flex-grow: 1;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -443,7 +438,7 @@ td.channel-name .placeholder {
 
 /* --- 6. Action button ("Undo") - Is last on the right --- */
 .toast-action {
-    order: 3; /* Action button is last */
+    order: 3; /* MODIFIED: Action button is last */
     color: var(--primary-color);
     cursor: pointer;
     font-weight: bold;
@@ -460,16 +455,16 @@ body.dark-mode .toast-close:hover {
 }
 
 /* --- 8. Border Colors (Applied to the right border) --- */
-.toast.success { border-right-color: var(--primary-color); }
-.toast.error   { border-right-color: var(--delete-color); }
-.toast.info    { border-right-color: var(--secondary-color); }
-.toast.play    { border-right-color: var(--primary-color); } 
+.toast.success { border-right-color: var(--primary-color); } /* MODIFIED */
+.toast.error   { border-right-color: var(--delete-color); } /* MODIFIED */
+.toast.info    { border-right-color: var(--secondary-color); } /* MODIFIED */
+.toast.play    { border-right-color: #5cb85c; } /* MODIFIED */
 body.dark-mode .toast.info {
     border-right-color: #85c1e9;
 }
 
 /* =================================================================== */
-/* === END: FINAL ENGLISH-ONLY TOAST STYLES                        === */
+/* === END: CORRECTED TOAST STYLES                                 === */
 /* =================================================================== */
         
         #paginationControls { display: flex; justify-content: center; align-items: center; margin-top: 20px; gap: 10px; } 
@@ -500,15 +495,15 @@ body.dark-mode .toast.info {
         } 
 
         .modal-content { padding: 20px; border: 1px solid var(--border-color); width: auto; max-width: 500px; border-radius: 15px; position: relative; box-sizing: border-box; overflow-y: auto; max-height: 90vh; margin: auto; } .modal-content textarea { 
-    width: 95%; 
-    min-height: 150px; 
-    padding: 8px; 
-    margin: 10px auto; 
-    display: block; 
-    border: 1px solid var(--border-color); 
-    border-radius: 8px;
-    box-sizing: border-box; 
-} 
+            width: 95%; 
+            min-height: 150px; 
+            padding: 8px; 
+            margin: 10px auto; 
+            display: block; 
+            border: 1px solid var(--border-color); 
+            border-radius: 8px;
+            box-sizing: border-box; 
+        } 
 
         #multiUrlTextarea,
         #mergeUrlTextarea,
@@ -545,27 +540,27 @@ body.dark-mode .toast.info {
         
         body.dark-mode .close { color: #ccc; } 
         body.dark-mode .close:hover { color: #fff; }
-/* General rule for inputs in modals */
-.modal-content input[type="text"], .modal-content input[type="url"], .modal-content input[type="number"], .modal-content select { 
-    width: 95%; 
-    padding: 8.5px 9px; 
-    margin: 10px 0; 
-    display: inline-block; 
-    border: 1px solid var(--border-color); 
-    border-radius: 8px;
-    box-sizing: border-box; 
-    transition: border-color 0.3s, box-shadow 0.3s;
-    background-color: #FFFFFF;
-}
+        /* General rule for inputs in modals */
+        .modal-content input[type="text"], .modal-content input[type="url"], .modal-content input[type="number"], .modal-content select { 
+            width: 95%; 
+            padding: 8.5px 9px; 
+            margin: 10px 0; 
+            display: inline-block; 
+            border: 1px solid var(--border-color); 
+            border-radius: 8px;
+            box-sizing: border-box; 
+            transition: border-color 0.3s, box-shadow 0.3s;
+            background-color: #FFFFFF;
+        }
 
-/* Exception and customization for specific dropdowns */
-#formatDataModal #format-scope-selector,
-#sortModal #sort-scope-selector,
-#manageGroupsModal #groupSelector,
-#findReplaceModal #replace-scope-selector {
-    padding: 9px;
-    font-size: 0.9em;
-} 
+        /* Exception and customization for specific dropdowns */
+        #formatDataModal #format-scope-selector,
+        #sortModal #sort-scope-selector,
+        #manageGroupsModal #groupSelector,
+        #findReplaceModal #replace-scope-selector {
+            padding: 9px;
+            font-size: 0.9em;
+        } 
         body.dark-mode .modal-content input[type="text"], 
         body.dark-mode .modal-content input[type="url"], 
         body.dark-mode .modal-content input[type="number"], 
@@ -584,24 +579,24 @@ body.dark-mode .toast.info {
             cursor: not-allowed;
         }
         .modal-content button {
-    /* الخصائص الأصلية المحافظ عليها */
-    background-color: var(--primary-color);
-    color: var(--text-light-color);
-    border: none;
-    border-radius: 10px;
-    font-weight: bold;
-    cursor: pointer;
-    margin-right: 3px; /* أو margin-left حسب اتجاه صفحتك */
-    box-sizing: border-box;
-    min-width: 80px;
+            /* Original properties maintained */
+            background-color: var(--primary-color);
+            color: var(--text-light-color);
+            border: none;
+            border-radius: 10px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-left: 3px;
+            box-sizing: border-box;
+            min-width: 80px;
 
-    /* --- التحديثات لتوحيد الارتفاع --- */
-    height: 38px;                  /* 1. تحديد ارتفاع ثابت وموحد (نفس قيمة الأزرار الرئيسية) */
-    display: inline-flex;          /* 2. استخدام flexbox للمحاذاة */
-    align-items: center;           /* 3. توسيط المحتوى (النص) عمودياً */
-    justify-content: center;       /* (اختياري) توسيط المحتوى أفقياً لمظهر أفضل */
-    padding: 0 20px;               /* 4. إلغاء الحشوة العمودية والمحافظة على الأفقية */
-}
+            /* --- Updates for consistent height --- */
+            height: 38px;                  /* 1. Set a fixed, consistent height (same as main buttons) */
+            display: inline-flex;          /* 2. Use flexbox for alignment */
+            align-items: center;           /* 3. Center content (text) vertically */
+            justify-content: center;       /* (Optional) Center content horizontally for a better look */
+            padding: 0 20px;               /* 4. Remove vertical padding and maintain horizontal */
+        }
         .modal-content button.cancel { background-color: var(--button-delete-color); color: white; } 
         .modal-content button:hover { opacity: 0.8; } 
         .modal-row { display: flex; align-items: center; margin-bottom: 10px; } 
@@ -858,10 +853,10 @@ body.dark-mode .toast.info {
             text-align: center;
         } 
         .merge-option-container p {
-    margin-top: 0;      /* <-- هذا السطر الجديد يزيل المسافة العلوية */
-    margin-bottom: 20px;
-    color: #666;
-}
+            margin-top: 0;      /* Removes top margin */
+            margin-bottom: 20px;
+            color: #666;
+        }
         body.dark-mode .merge-option-container p { color: #ccc; }
         .merge-option-container button { background-color: var(--primary-color); color: white; padding: 7.5px 25px; font-size: 1em; border: none; border-radius: 10px; cursor: pointer; }
         .merge-option-container button:hover { background-color: var(--primary-hover); } 
@@ -890,117 +885,117 @@ body.dark-mode .toast.info {
             background-color: var(--secondary-hover);
         }
         
-#advancedOptionsModal .modal-content {
-    padding-bottom: 17px; /* You can adjust this value as needed */
-}
+        #advancedOptionsModal .modal-content {
+            padding-bottom: 17px; /* You can adjust this value as needed */
+        }
        
-/* START: FINAL FIX FOR TABS */
-.library-tabs {
-    overflow: hidden;
-    border: 1px solid var(--border-color);
-    background-color: var(--row-alt-color);
-    display: flex;
-    border-radius: 8px;
-    margin-top: 15px;
-    box-sizing: border-box;
-    -webkit-transform: translateZ(0);
-    transform: translateZ(0);
-}
+        /* START: FINAL FIX FOR TABS */
+        .library-tabs {
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+            background-color: var(--row-alt-color);
+            display: flex;
+            border-radius: 8px;
+            margin-top: 15px;
+            box-sizing: border-box;
+            -webkit-transform: translateZ(0);
+            transform: translateZ(0);
+        }
 
-.library-tabs button {
-    background-color: inherit;
-    flex: 1; 
-    min-width: 0; 
-    border: none;
-    outline: none;
-    cursor: pointer;
-    padding: 8px 6px; 
-    font-size: 0.85em; 
-    color: var(--text-color);
-    font-weight: bold;
-    -webkit-tap-highlight-color: transparent;
-    white-space: nowrap; 
-    transition: none !important;
-}
-.library-tabs button:first-child { border-radius: 4px 0 0 4px; } /* MODIFIED */
-.library-tabs button:last-child { border-radius: 0 4px 4px 0; } /* MODIFIED */
-.library-tabs button:hover { background-color: #e0e0e0; }
-.library-tabs button.active { background-color: #e8e8e8; color: var(--text-color); cursor: default; }
-body.dark-mode .library-tabs button:hover { background-color: #2c2c2e; }
-body.dark-mode .library-tabs button.active { background-color: #3a3a3c; color: var(--text-color); }
-.library-tab-pane { display: none; padding: 15px 0 0 0; border-top: none; }
+        .library-tabs button {
+            background-color: inherit;
+            flex: 1; 
+            min-width: 0; 
+            border: none;
+            outline: none;
+            cursor: pointer;
+            padding: 8px 6px; 
+            font-size: 0.85em; 
+            color: var(--text-color);
+            font-weight: bold;
+            -webkit-tap-highlight-color: transparent;
+            white-space: nowrap; 
+            transition: none !important;
+        }
+        .library-tabs button:first-child { border-radius: 4px 0 0 4px; } /* MODIFIED */
+        .library-tabs button:last-child { border-radius: 0 4px 4px 0; } /* MODIFIED */
+        .library-tabs button:hover { background-color: #e0e0e0; }
+        .library-tabs button.active { background-color: #e8e8e8; color: var(--text-color); cursor: default; }
+        body.dark-mode .library-tabs button:hover { background-color: #2c2c2e; }
+        body.dark-mode .library-tabs button.active { background-color: #3a3a3c; color: var(--text-color); }
+        .library-tab-pane { display: none; padding: 15px 0 0 0; border-top: none; }
 
-/* -- New Container Rule -- */
-.format-container {
-    border: 1px solid var(--border-color);
-    border-radius: 8px;
-    margin-top: 15px;
-    overflow: hidden; /* Crucial for containing the rounded corners */
-}
+        /* -- New Container Rule -- */
+        .format-container {
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            margin-top: 15px;
+            overflow: hidden; /* Crucial for containing the rounded corners */
+        }
 
-/* -- Modified .format-tabs -- */
-.format-tabs {
-    border: none; /* The container handles the border now */
-    background-color: var(--row-alt-color);
-    display: flex;
-    box-sizing: border-box;
-    -webkit-transform: translateZ(0);
-    transform: translateZ(0);
-    width: 100%;
-}
+        /* -- Modified .format-tabs -- */
+        .format-tabs {
+            border: none; /* The container handles the border now */
+            background-color: var(--row-alt-color);
+            display: flex;
+            box-sizing: border-box;
+            -webkit-transform: translateZ(0);
+            transform: translateZ(0);
+            width: 100%;
+        }
 
-.format-tabs button {
-    background-color: inherit;
-    flex: 1; 
-    min-width: 0; 
-    border: none;
-    outline: none;
-    cursor: pointer;
-    padding: 5px 6px; 
-    font-size: 0.85em; 
-    color: var(--text-color);
-    font-weight: bold;
-    -webkit-tap-highlight-color: transparent;
-    white-space: nowrap; 
-    transition: none !important;
-}
+        .format-tabs button {
+            background-color: inherit;
+            flex: 1; 
+            min-width: 0; 
+            border: none;
+            outline: none;
+            cursor: pointer;
+            padding: 5px 6px; 
+            font-size: 0.85em; 
+            color: var(--text-color);
+            font-weight: bold;
+            -webkit-tap-highlight-color: transparent;
+            white-space: nowrap; 
+            transition: none !important;
+        }
 
-.format-tabs button:hover { background-color: #e0e0e0; }
-.format-tabs button.active { background-color: #e8e8e8; color: var(--text-color); cursor: default; }
-body.dark-mode .format-tabs button:hover { background-color: #2c2c2e; }
-body.dark-mode .format-tabs button.active { background-color: #3a3a3c; color: var(--text-color); }
+        .format-tabs button:hover { background-color: #e0e0e0; }
+        .format-tabs button.active { background-color: #e8e8e8; color: var(--text-color); cursor: default; }
+        body.dark-mode .format-tabs button:hover { background-color: #2c2c2e; }
+        body.dark-mode .format-tabs button.active { background-color: #3a3a3c; color: var(--text-color); }
 
 
-/* -- Modified .format-tab-pane -- */
-.format-tab-pane {
-    max-height: 0;
-    overflow: hidden;
-    border: none; /* The container handles the border now */
-    padding: 0 20px;
-    box-sizing: border-box;
-    transition: max-height 0.4s ease-in-out, padding-top 0.4s ease-in-out, padding-bottom 0.4s ease-in-out;
-}
+        /* -- Modified .format-tab-pane -- */
+        .format-tab-pane {
+            max-height: 0;
+            overflow: hidden;
+            border: none; /* The container handles the border now */
+            padding: 0 20px;
+            box-sizing: border-box;
+            transition: max-height 0.4s ease-in-out, padding-top 0.4s ease-in-out, padding-bottom 0.4s ease-in-out;
+        }
 
-.format-tab-pane.active {
-    max-height: 500px; /* Increased max-height */
-    padding: 20px;
-}
-/* END: FINAL FIX FOR TABS */
+        .format-tab-pane.active {
+            max-height: 500px; /* Increased max-height */
+            padding: 20px;
+        }
+        /* END: FINAL FIX FOR TABS */
         
         #libraryImportModal .library-tabs {
             width: 95%;
         }
         
         /* Modification to increase rule strength and make it customizable */
-#libraryImportModal .library-search-input {
-    width: 95%;
-    padding: 12px;
-    margin-top: 13px;
-    margin-bottom: 13px;
-    border: 1px solid var(--border-color);
-    border-radius: 8px; 
-    box-sizing: border-box;
-}
+        #libraryImportModal .library-search-input {
+            width: 95%;
+            padding: 12px;
+            margin-top: 13px;
+            margin-bottom: 13px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px; 
+            box-sizing: border-box;
+        }
         body.dark-mode .library-search-input {
             background-color: #3a3a3a;
             color: var(--text-color);
@@ -1008,11 +1003,11 @@ body.dark-mode .format-tabs button.active { background-color: #3a3a3c; color: va
         }
         
         .library-select {
-    width: 100%;
-    padding: 8px;
-    font-size: 0.85em;
-    line-height: 1.6;
-}
+            width: 100%;
+            padding: 8px;
+            font-size: 0.85em;
+            line-height: 1.6;
+        }
         
         .format-options-grid {
             display: grid;
@@ -1025,28 +1020,28 @@ body.dark-mode .format-tabs button.active { background-color: #3a3a3c; color: va
         }
         
         @media (max-width: 600px) {
-    h1.page-title {
-        font-size: 1.9em;
-    }
+            h1.page-title {
+                font-size: 1.9em;
+            }
 
-    .container {
-        padding: 15px;
-        margin: 10px auto;
-    }
-    table {
-        font-size: 13.5px;
-    }
-    th {
-        padding: 6px 3px;
-        font-size: 13.5px;
-    }
-    td {
-        padding: 14px 5px;
-    }
-    
-    table th:nth-child(2), table td:nth-child(2) { 
-        display: table-cell; 
-    }
+            .container {
+                padding: 15px;
+                margin: 10px auto;
+            }
+            table {
+                font-size: 13.5px;
+            }
+            th {
+                padding: 6px 3px;
+                font-size: 13.5px;
+            }
+            td {
+                padding: 14px 5px;
+            }
+            
+            table th:nth-child(2), table td:nth-child(2) { 
+                display: table-cell; 
+            }
 
             .modal-content {
                 width: 91%;
@@ -1114,317 +1109,317 @@ body.dark-mode .format-tabs button.active { background-color: #3a3a3c; color: va
             width: 100%;
             margin: 0;
         }
-    #libraryImportModal h2 {
-    color: #333333;
-}
+        #libraryImportModal h2 {
+            color: #333333;
+        }
 
-body.dark-mode #libraryImportModal h2 {
-    color: var(--text-color);
-}
+        body.dark-mode #libraryImportModal h2 {
+            color: var(--text-color);
+        }
 
-    .sort-options-container {
-        display: flex;
-        justify-content: flex-start;
-        align-items: center;
-        gap: 25px;
-        margin-top: 10px;
-        padding-top: 15px;
-        border-top: 1px solid var(--border-color);
-        margin-bottom: 20px;
-    }
-    .sort-options-container .modal-row {
-        margin-bottom: 0;
-    }
-    /* Add this code at the beginning of the <style> section */
-#mainControls #uploadArea, 
-#mainControls #urlLoadContainer, 
-#mainControls #toolsMergeRow {
-    display: none;
-}
-/* Adjust height and font size of scope list in Data Format modal only */
-#formatDataModal #format-scope-selector {
-    padding: 8.5px;
-    font-size: 0.9em;
-}
-/* Adjust height and font size of scope list in Sort & Order modal */
-#sortModal #sort-scope-selector {
-    padding: 8px;
-    font-size: 0.9em;
-}
-/* Adjust height and font size of "Select Group" list in Manage Groups modal */
-#manageGroupsModal #groupSelector {
-    padding: 8px;
-    font-size: 0.9em;
-}
-/* Adjust height and font size of scope list in Find & Replace modal */
-#findReplaceModal #replace-scope-selector {
-    padding: 8px !important;
-    font-size: 0.9em !important;
-}
+        .sort-options-container {
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+            gap: 25px;
+            margin-top: 10px;
+            padding-top: 15px;
+            border-top: 1px solid var(--border-color);
+            margin-bottom: 20px;
+        }
+        .sort-options-container .modal-row {
+            margin-bottom: 0;
+        }
+        /* Add this code at the beginning of the <style> section */
+        #mainControls #uploadArea, 
+        #mainControls #urlLoadContainer, 
+        #mainControls #toolsMergeRow {
+            display: none;
+        }
+        /* Adjust height and font size of scope list in Data Format modal only */
+        #formatDataModal #format-scope-selector {
+            padding: 8.5px;
+            font-size: 0.9em;
+        }
+        /* Adjust height and font size of scope list in Sort & Order modal */
+        #sortModal #sort-scope-selector {
+            padding: 8px;
+            font-size: 0.9em;
+        }
+        /* Adjust height and font size of "Select Group" list in Manage Groups modal */
+        #manageGroupsModal #groupSelector {
+            padding: 8px;
+            font-size: 0.9em;
+        }
+        /* Adjust height and font size of scope list in Find & Replace modal */
+        #findReplaceModal #replace-scope-selector {
+            padding: 8px !important;
+            font-size: 0.9em !important;
+        }
 
-/* --- New Badge Styles --- */
-#bulkActionsButton {
-    position: relative;
-    overflow: visible; 
-}
+        /* --- New Badge Styles --- */
+        #bulkActionsButton {
+            position: relative;
+            overflow: visible; 
+        }
 
-.badge {
-    position: absolute;
-    top: -8px;    
-    right: -8px; /* MODIFIED */
-    left: auto;
-    background-color: var(--primary-color);
-    color: white;
-    font-weight: bold;
-    font-size: 12px;
-    border-radius: 50%;
-    width: 22px;
-    height: 22px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-    
-    transform: scale(0);
-    opacity: 0;
-    transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.2s;
-}
+        .badge {
+            position: absolute;
+            top: -8px;    
+            right: -8px; /* MODIFIED */
+            left: auto;
+            background-color: var(--primary-color);
+            color: white;
+            font-weight: bold;
+            font-size: 12px;
+            border-radius: 50%;
+            width: 22px;
+            height: 22px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            
+            transform: scale(0);
+            opacity: 0;
+            transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.2s;
+        }
 
-.badge.visible {
-    transform: scale(1);
-    opacity: 1;
-}
+        .badge.visible {
+            transform: scale(1);
+            opacity: 1;
+        }
 
-/* --- START: New styles for scrollable duplicate results --- */
+        /* --- START: New styles for scrollable duplicate results --- */
 
-#removeDuplicatesModal .modal-content {
-    display: flex;
-    flex-direction: column;
-}
+        #removeDuplicatesModal .modal-content {
+            display: flex;
+            flex-direction: column;
+        }
 
-#duplicate-results-step {
-    display: flex;
-    flex-direction: column;
-    flex-grow: 1;
-    min-height: 0; 
-}
+        #duplicate-results-step {
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+            min-height: 0; 
+        }
 
-#duplicate-results-list {
-    overflow-y: auto;
-    flex-grow: 1;
-    padding: 10px 5px; 
-    margin-top: 3px;
-    margin-bottom: 15px;
+        #duplicate-results-list {
+            overflow-y: auto;
+            flex-grow: 1;
+            padding: 10px 5px; 
+            margin-top: 3px;
+            margin-bottom: 15px;
 
-    /* --- START: CODE TO HIDE THE SCROLLBAR --- */
-    /* For Firefox */
-    scrollbar-width: none;
-    /* For Internet Explorer and Edge */
-    -ms-overflow-style: none;  
-}
+            /* --- START: CODE TO HIDE THE SCROLLBAR --- */
+            /* For Firefox */
+            scrollbar-width: none;
+            /* For Internet Explorer and Edge */
+            -ms-overflow-style: none;  
+        }
 
-/* For Chrome, Safari, and Opera */
-#duplicate-results-list::-webkit-scrollbar {
-    display: none;
-}
-/* --- END: CODE TO HIDE THE SCROLLBAR --- */
+        /* For Chrome, Safari, and Opera */
+        #duplicate-results-list::-webkit-scrollbar {
+            display: none;
+        }
+        /* --- END: CODE TO HIDE THE SCROLLBAR --- */
 
-#duplicate-results-step > p,
-#duplicate-results-step > .modal-buttons {
-    flex-shrink: 0;
-}
-/* --- END: New styles for scrollable duplicate results --- */
-/* --- START: MODIFICATION TO REDUCE TITLE SPACING --- */
-.modal-content h2 {
-    text-align: left; /* MODIFIED */
-    margin-top: 5px;
-    margin-bottom: 0px;
-}
-/* --- END: MODIFICATION --- */
-/* --- Rule to Remove Tap Highlight Globally --- */
-* {
-    -webkit-tap-highlight-color: transparent !important;
-}
-/* --- Final fix for custom select arrow (CSS only) --- */
+        #duplicate-results-step > p,
+        #duplicate-results-step > .modal-buttons {
+            flex-shrink: 0;
+        }
+        /* --- END: New styles for scrollable duplicate results --- */
+        /* --- START: MODIFICATION TO REDUCE TITLE SPACING --- */
+        .modal-content h2 {
+            text-align: left; /* MODIFIED */
+            margin-top: 5px;
+            margin-bottom: 0px;
+        }
+        /* --- END: MODIFICATION --- */
+        /* --- Rule to Remove Tap Highlight Globally --- */
+        * {
+            -webkit-tap-highlight-color: transparent !important;
+        }
+        /* --- Final fix for custom select arrow (CSS only) --- */
 
-/* Target all select lists inside modals */
-.modal-content select {
-    -webkit-appearance: none;
-    -moz-appearance: none;
-    appearance: none;
-    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
-    background-repeat: no-repeat;
-    background-position: right 10px center; /* MODIFIED */
-    background-size: 1.2em;
-    padding-right: 35px !important; /* MODIFIED */
-    padding-left: 9px !important;
-}
+        /* Target all select lists inside modals */
+        .modal-content select {
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 10px center; /* MODIFIED */
+            background-size: 1.2em;
+            padding-right: 35px !important; /* MODIFIED */
+            padding-left: 9px !important;
+        }
 
-/* Adjust arrow color for dark mode */
-body.dark-mode .modal-content select {
-     background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23FFFFFF' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
-}
-/* --- START: Added space in Sort Modal --- */
-#sortModal #sort-scope-container {
-    margin-top: 14px;
-}
-/* --- END: Added space in Sort Modal --- */
-/* --- START: Added space in Bulk Actions Modal --- */
-#bulkActionsModal #bulk-actions-list {
-    margin-top: 15px;
-}
-/* --- END: Added space in Bulk Actions Modal --- */
-/* --- START: Added space in Remove Duplicates Modal --- */
-#removeDuplicatesModal #duplicate-criteria-step {
-    margin-top: 13px;
-}
-/* --- END: Added space in Remove Duplicates Modal --- */
-/* --- START: Added space after Duplicate Criteria Label --- */
-#removeDuplicatesModal #duplicate-criteria-step > label {
-    display: block;
-    margin-bottom: 10px;
-    font-size: 1.1em;
-}
-/* --- END: Added space after Duplicate Criteria Label --- */
-/* --- START: Added space in Format Data Modal --- */
-#formatDataModal h2 {
-    margin-bottom: 10px;
-}
-/* --- END: Added space in Format Data Modal --- */
+        /* Adjust arrow color for dark mode */
+        body.dark-mode .modal-content select {
+             background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23FFFFFF' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+        }
+        /* --- START: Added space in Sort Modal --- */
+        #sortModal #sort-scope-container {
+            margin-top: 14px;
+        }
+        /* --- END: Added space in Sort Modal --- */
+        /* --- START: Added space in Bulk Actions Modal --- */
+        #bulkActionsModal #bulk-actions-list {
+            margin-top: 15px;
+        }
+        /* --- END: Added space in Bulk Actions Modal --- */
+        /* --- START: Added space in Remove Duplicates Modal --- */
+        #removeDuplicatesModal #duplicate-criteria-step {
+            margin-top: 13px;
+        }
+        /* --- END: Added space in Remove Duplicates Modal --- */
+        /* --- START: Added space after Duplicate Criteria Label --- */
+        #removeDuplicatesModal #duplicate-criteria-step > label {
+            display: block;
+            margin-bottom: 10px;
+            font-size: 1.1em;
+        }
+        /* --- END: Added space after Duplicate Criteria Label --- */
+        /* --- START: Added space in Format Data Modal --- */
+        #formatDataModal h2 {
+            margin-bottom: 10px;
+        }
+        /* --- END: Added space in Format Data Modal --- */
 
-#remove-words-container {
-    max-height: 0;
-    overflow: hidden;
-    transition: max-height 0.3s ease-in-out, margin-top 0.3s ease-in-out;
-    margin-top: 0;
-}
-#remove-words-container.visible {
-    max-height: 100px;
-    margin-top: 10px;
-}
-#bulk-edit-group-container {
-    max-height: 0;
-    overflow: hidden;
-    transition: max-height 0.3s ease-in-out, margin-top 0.3s ease-in-out;
-    margin-top: 0;
-    width: 100%;
-    padding-left: 25px; /* MODIFIED */
-    padding-right: 0;
-}
-#bulk-edit-group-container.visible {
-    max-height: 100px;
-    margin-top: 10px;
-}
-h1.page-title {
-    color: var(--primary-color);
-    margin-top: 32px; /* <-- أضف هذا السطر */
-}
-#bulk-new-group-name {
-    width: 100%;
-    margin: 0;
-    padding: 9px 9px;
-}
-/* --- START: Fix for Merge URL Textarea Width --- */
-.merge-option-container {
-    padding-left: 0;
-    padding-right: 0;
-}
+        #remove-words-container {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-in-out, margin-top 0.3s ease-in-out;
+            margin-top: 0;
+        }
+        #remove-words-container.visible {
+            max-height: 100px;
+            margin-top: 10px;
+        }
+        #bulk-edit-group-container {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-in-out, margin-top 0.3s ease-in-out;
+            margin-top: 0;
+            width: 100%;
+            padding-left: 25px; /* MODIFIED */
+            padding-right: 0;
+        }
+        #bulk-edit-group-container.visible {
+            max-height: 100px;
+            margin-top: 10px;
+        }
+        h1.page-title {
+            color: var(--primary-color);
+            margin-top: 32px;
+        }
+        #bulk-new-group-name {
+            width: 100%;
+            margin: 0;
+            padding: 9px 9px;
+        }
+        /* --- START: Fix for Merge URL Textarea Width --- */
+        .merge-option-container {
+            padding-left: 0;
+            padding-right: 0;
+        }
 
-#mergeUrlTextarea {
-    width: calc(100% - 2px);
-    display: block;
-    margin-left: auto;
-    margin-right: auto;
-}
-/* --- END: Fix for Merge URL Textarea Width --- */
-/* --- START: Fix Vertical Spacing in Format Modal --- */
+        #mergeUrlTextarea {
+            width: calc(100% - 2px);
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        /* --- END: Fix for Merge URL Textarea Width --- */
+        /* --- START: Fix Vertical Spacing in Format Modal --- */
 
-/* 1. Remove excess bottom padding from tab container */
-#formatDataModal .format-tab-pane.active {
-    padding-bottom: 14px;
-}
+        /* 1. Remove excess bottom padding from tab container */
+        #formatDataModal .format-tab-pane.active {
+            padding-bottom: 14px;
+        }
 
-/* 2. Set appropriate top margin for buttons */
-#formatDataModal .modal-buttons {
-    margin-top: 20px;
-}
+        /* 2. Set appropriate top margin for buttons */
+        #formatDataModal .modal-buttons {
+            margin-top: 20px;
+        }
 
-/* --- END: Fix Vertical Spacing in Format Modal --- */
-/* --- START: Added space under Search & Filter Modal title --- */
-#searchFilterModal h2 {
-    margin-bottom: 20px;
-}
-/* --- END: Added space under Search & Filter Modal title --- */
-/* --- START: Added space under Manage Groups Modal title --- */
-#manageGroupsModal h2 {
-    margin-bottom: 20px;
-}
-/* --- END: Added space under Manage Groups Modal title --- */
-/* --- START: Added space under Sort & Order Modal title --- */
-#sortModal h2 {
-    margin-bottom: 25px;
-}
-/* --- END: Added space under Sort & Order Modal title --- */
-/* --- START: Added space under Export Playlist Modal title --- */
-#exportModal h2 {
-    margin-bottom: 25px;
-}
-/* --- END: Added space under Export Playlist Modal title --- */
-/* --- START: Added space under Remove Duplicates Modal title --- */
-#removeDuplicatesModal h2 {
-    margin-bottom: 15px;
-}
-/* --- END: Added space under Remove Duplicates Modal title --- */
-/* --- START: Added space under Merge Options Modal title --- */
-#mergeModal h2 {
-    margin-bottom: 25px;
-}
-/* --- END: Added space under Merge Options Modal title --- */
-/* --- START: Added space under Channel Status Checker Modal title --- */
-#channelCheckerModal h2 {
-    margin-bottom: 25px;
-}
-/* --- END: Added space under Channel Status Checker Modal title --- */
-/* --- START: Added space in Format Data Modal --- */
-#formatDataModal h2 {
-    margin-bottom: 25px; /* <--- قم بتعديل هذه القيمة */
-}
-/* --- END: Added space in Format Data Modal --- */
-/* --- START: Added space under Import from iptv-org Modal title --- */
-#libraryImportModal h2 {
-    margin-bottom: 25px;
-}
-/* --- END: Added space under Import from iptv-org Modal title --- */
-/* --- START: Added space under Load from Multiple URLs Modal title --- */
-#multiUrlModal h2 {
-    margin-bottom: 35px;
-}
-/* --- END: Added space under Load from Multiple URLs Modal title --- */
-/* --- START: Language Switcher Link Style (for LTR) --- */
-#language-switcher {
-    position: absolute;
-    top: 11px;
-    left: 11px; /* <-- التغيير هنا: أصبح على اليسار */
-    right: auto; /* <-- إضافة هذا السطر لضمان عدم التعارض */
-    
-    color: #e0e0e0; 
-    font-size: 0.85em;
-    font-weight: bold;
-    text-decoration: none;
-    transition: opacity 0.2s;
-    z-index: 10;
-}
+        /* --- END: Fix Vertical Spacing in Format Modal --- */
+        /* --- START: Added space under Search & Filter Modal title --- */
+        #searchFilterModal h2 {
+            margin-bottom: 20px;
+        }
+        /* --- END: Added space under Search & Filter Modal title --- */
+        /* --- START: Added space under Manage Groups Modal title --- */
+        #manageGroupsModal h2 {
+            margin-bottom: 20px;
+        }
+        /* --- END: Added space under Manage Groups Modal title --- */
+        /* --- START: Added space under Sort & Order Modal title --- */
+        #sortModal h2 {
+            margin-bottom: 25px;
+        }
+        /* --- END: Added space under Sort & Order Modal title --- */
+        /* --- START: Added space under Export Playlist Modal title --- */
+        #exportModal h2 {
+            margin-bottom: 25px;
+        }
+        /* --- END: Added space under Export Playlist Modal title --- */
+        /* --- START: Added space under Remove Duplicates Modal title --- */
+        #removeDuplicatesModal h2 {
+            margin-bottom: 15px;
+        }
+        /* --- END: Added space under Remove Duplicates Modal title --- */
+        /* --- START: Added space under Merge Options Modal title --- */
+        #mergeModal h2 {
+            margin-bottom: 25px;
+        }
+        /* --- END: Added space under Merge Options Modal title --- */
+        /* --- START: Added space under Channel Status Checker Modal title --- */
+        #channelCheckerModal h2 {
+            margin-bottom: 25px;
+        }
+        /* --- END: Added space under Channel Status Checker Modal title --- */
+        /* --- START: Added space in Format Data Modal --- */
+        #formatDataModal h2 {
+            margin-bottom: 25px; /* <--- Adjust this value */
+        }
+        /* --- END: Added space in Format Data Modal --- */
+        /* --- START: Added space under Import from iptv-org Modal title --- */
+        #libraryImportModal h2 {
+            margin-bottom: 25px;
+        }
+        /* --- END: Added space under Import from iptv-org Modal title --- */
+        /* --- START: Added space under Load from Multiple URLs Modal title --- */
+        #multiUrlModal h2 {
+            margin-bottom: 35px;
+        }
+        /* --- END: Added space under Load from Multiple URLs Modal title --- */
+        /* --- START: Language Switcher Link Style (for LTR) --- */
+        #language-switcher {
+            position: absolute;
+            top: 11px;
+            left: 11px; /* <-- Changed: now on the left */
+            right: auto; /* <-- Added to prevent conflict */
+            
+            color: #e0e0e0; 
+            font-size: 0.85em;
+            font-weight: bold;
+            text-decoration: none;
+            transition: opacity 0.2s;
+            z-index: 10;
+        }
 
-#language-switcher:hover {
-    opacity: 0.8;
-}
+        #language-switcher:hover {
+            opacity: 0.8;
+        }
 
-/* تعديل اللون ليتناسب مع الوضع الليلي */
-body.dark-mode #language-switcher {
-    color: #EAEAEA;
-}
-/* --- END: Language Switcher Link Style (for LTR) --- */
-</style>
+        /* Adjust color for dark mode */
+        body.dark-mode #language-switcher {
+            color: #EAEAEA;
+        }
+        /* --- END: Language Switcher Link Style (for LTR) --- */
+    </style>
 </head>
 <body>
     <div class="container">
@@ -1571,6 +1566,11 @@ body.dark-mode #language-switcher {
             <div style="margin-bottom: 15px;">
                 <label for="format-scope-selector" style="display:block; margin-bottom: 5px;"><strong>Apply to:</strong></label>
                 <select id="format-scope-selector" style="width: 100%;"></select>
+            </div>
+
+            <div id="format-group-title-container" style="display: none; margin-bottom: 15px;">
+                <label for="format-group-title-selector" style="display:block; margin-bottom: 5px;"><strong>Select Group:</strong></label>
+                <select id="format-group-title-selector" style="width: 100%;"></select>
             </div>
 
             <div class="format-container">
@@ -1965,12 +1965,11 @@ body.dark-mode #language-switcher {
             const toast = document.createElement('div');
             toast.className = `toast ${type}`;
             
-            let contentHTML = '';
+            const cleanMessage = message.trim().replace(/\.$/, '');
+            let contentHTML = `<div class="toast-content">${cleanMessage}</div>`;
+
             if (action) {
-                contentHTML = `<div class="toast-content" style="white-space: normal;">${message} <span class="toast-action" style="margin-left: 5px;">${action.text}</span></div>`;
-            } else {
-                const cleanMessage = message.trim().replace(/\.$/, '');
-                contentHTML = `<div class="toast-content">${cleanMessage}</div>`;
+                contentHTML += `<span class="toast-action">${action.text}</span>`;
             }
             
             contentHTML += `<button class="toast-close">&times;</button>`;
@@ -2117,7 +2116,7 @@ body.dark-mode #language-switcher {
                     row.classList.add('selected'); 
                 } 
                 
-                const groupsDisplay = channel.groups && channel.groups.length > 0 ? channel.groups.join(', ') : 'Unclasfd'; 
+                const groupsDisplay = channel.groups && channel.groups.length > 0 ? channel.groups.join(', ') : 'Uncat'; 
                 
                 const logoHtml = `
                     ${channel.logo ? `<img src="${channel.logo}" alt="Logo" onclick="event.stopPropagation(); openEditModal(${originalIndex});" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">` : ''}
@@ -3733,6 +3732,63 @@ body.dark-mode #language-switcher {
             const exceptionsContainer = document.getElementById('title-case-exceptions-container');
             exceptionsContainer.style.display = document.getElementById('case-title').checked ? 'block' : 'none';
         }
+        
+        // =================================================================
+        // START: NEW AND MODIFIED FUNCTIONS FOR FORMAT DATA
+        // =================================================================
+        
+        function handleFormatScopeChange() {
+            const scope = document.getElementById('format-scope-selector').value;
+            const groupTitleContainer = document.getElementById('format-group-title-container');
+            const removeLogosRow = document.getElementById('format-remove-logos').closest('.modal-row');
+            
+            const findReplaceOptionsContainer = document.querySelector('#FormatReplace .find-replace-options');
+
+            const findInName = document.getElementById('find-in-name');
+            const findInGroup = document.getElementById('find-in-group');
+            const findInUrl = document.getElementById('find-in-url');
+            const findInNameLabel = findInName.parentElement;
+            const findInGroupLabel = findInGroup.parentElement;
+            const findInUrlLabel = findInUrl.parentElement;
+
+            const showGroupSelector = (scope === 'groupTitle');
+            groupTitleContainer.style.display = showGroupSelector ? 'block' : 'none';
+            groupTitleContainer.querySelector('label').textContent = 'Select group to format:';
+
+            if (scope === 'groupTitle') {
+                removeLogosRow.style.display = 'none';
+
+                if (findReplaceOptionsContainer) findReplaceOptionsContainer.style.display = 'none';
+
+                findInName.checked = false;
+                findInName.disabled = true;
+                findInUrl.checked = false;
+                findInUrl.disabled = true;
+                findInGroup.checked = true;
+                findInGroup.disabled = true;
+                
+                if(findInNameLabel) findInNameLabel.style.opacity = '0.5';
+                if(findInUrlLabel) findInUrlLabel.style.opacity = '0.5';
+                if(findInGroupLabel) findInGroupLabel.style.opacity = '1';
+
+            } else {
+                removeLogosRow.style.display = 'flex';
+                
+                if (findReplaceOptionsContainer) findReplaceOptionsContainer.style.display = 'block';
+
+                findInName.disabled = false;
+                findInUrl.disabled = false;
+                findInGroup.disabled = false;
+                
+                findInName.checked = true;
+                findInGroup.checked = false;
+                findInUrl.checked = false;
+                
+                if(findInNameLabel) findInNameLabel.style.opacity = '1';
+                if(findInUrlLabel) findInUrlLabel.style.opacity = '1';
+                if(findInGroupLabel) findInGroupLabel.style.opacity = '1';
+            }
+        }
 
         function openFormatDataModal() {
             if (channelsData.length === 0) return showToast("There are no channels to format", "error");
@@ -3742,6 +3798,25 @@ body.dark-mode #language-switcher {
                 selected: 'Format Selected Channels',
                 all: 'Format Entire Playlist'
             });
+            
+            const scopeSelector = document.getElementById('format-scope-selector');
+            scopeSelector.add(new Option('Group Title', 'groupTitle'));
+
+            const groupTitleSelector = document.getElementById('format-group-title-selector');
+            groupTitleSelector.innerHTML = '';
+            const allGroups = channelsData.flatMap(ch => (ch.groups && ch.groups.length) ? ch.groups : []);
+            const uniqueGroups = [...new Set(allGroups)].filter(g => g);
+            uniqueGroups.sort((a, b) => a.localeCompare(b, undefined, { sensitivity: 'base' })).forEach(group => {
+                const option = document.createElement('option');
+                option.value = group;
+                option.textContent = group;
+                groupTitleSelector.appendChild(option);
+            });
+            
+            scopeSelector.removeEventListener('change', handleFormatScopeChange);
+            scopeSelector.addEventListener('change', handleFormatScopeChange);
+            
+            handleFormatScopeChange();
             
             document.querySelectorAll('input[name="formatCase"]').forEach(radio => {
                 radio.onchange = handleCaseTypeChange;
@@ -3787,36 +3862,117 @@ body.dark-mode #language-switcher {
 
         function executeFormatting() {
             const scope = document.getElementById('format-scope-selector').value;
-            let targetChannels;
-            if (scope === 'selected' && selectedIndices.size > 0) {
-                targetChannels = Array.from(selectedIndices).map(index => channelsData[index]);
-            } else if (scope === 'filtered') {
-                targetChannels = [...displayedChannels];
-            } else {
-                targetChannels = [...channelsData];
-            }
-            
-            if (targetChannels.length === 0) {
-                closeModal('formatDataModal');
-                return;
-            }
-            
             let affectedChannelsCount = 0;
-            const activeTabId = document.querySelector('.format-tab-pane.active').id;
 
-            targetChannels.forEach(channel => {
-                let modified = false;
+            // --- Get all settings from all tabs ---
+            const caseType = document.querySelector('input[name="formatCase"]:checked').value;
+            const userExceptionsText = document.getElementById('title-case-exceptions-input').value;
+            
+            const prefix = document.getElementById('format-prefix').value.trim();
+            const suffix = document.getElementById('format-suffix').value.trim();
+            
+            const findText = document.getElementById('find-text').value;
+            const replaceText = document.getElementById('replace-text').value;
+            const findInName = document.getElementById('find-in-name').checked;
+            const findInGroup = document.getElementById('find-in-group').checked;
+            const findInUrl = document.getElementById('find-in-url').checked;
+
+            const shouldTrim = document.getElementById('format-trim').checked;
+            const shouldRemoveLogos = document.getElementById('format-remove-logos').checked;
+            const shouldRemoveWords = document.getElementById('format-remove-words-toggle').checked;
+            const wordsToRemoveText = document.getElementById('format-remove-words-input').value.trim();
+            const wordsToRemove = wordsToRemoveText ? wordsToRemoveText.split(',').map(w => w.trim()).filter(w => w) : [];
+
+            // --- Logic for Group Title Formatting ---
+            if (scope === 'groupTitle') {
+                const groupToModify = document.getElementById('format-group-title-selector').value;
+                if (!groupToModify) {
+                    closeModal('formatDataModal');
+                    return;
+                }
                 
-                if (activeTabId === 'FormatCase') {
-                    const caseType = document.querySelector('input[name="formatCase"]:checked').value;
+                let newGroupName = groupToModify;
+
+                // 1. Case
+                if (caseType === 'upper') newGroupName = newGroupName.toUpperCase();
+                else if (caseType === 'lower') newGroupName = newGroupName.toLowerCase();
+                else if (caseType === 'title') {
+                    localStorage.setItem('m3uEditorTitleCaseExceptions', userExceptionsText);
+                    let finalExceptions = [...titleCaseExceptions];
+                    if (userExceptionsText.trim()) {
+                        const userExceptionsArray = userExceptionsText.split(',').map(ex => ex.trim().toUpperCase()).filter(ex => ex);
+                        finalExceptions = [...new Set([...finalExceptions, ...userExceptionsArray])];
+                    }
+                    newGroupName = smartTitleCase(newGroupName, finalExceptions);
+                }
+
+                // 2. Affix
+                if (prefix) newGroupName = `${prefix} ${newGroupName}`;
+                if (suffix) newGroupName = `${newGroupName} ${suffix}`;
+
+                // 3. Replace
+                if (findText) {
+                    newGroupName = newGroupName.replaceAll(findText, replaceText);
+                }
+                
+                // 4. Clean
+                if (wordsToRemove.length > 0) {
+                    wordsToRemove.forEach(word => {
+                        const regex = new RegExp(word.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&'), 'gi');
+                        newGroupName = newGroupName.replace(regex, '');
+                    });
+                }
+                if (shouldTrim) {
+                    newGroupName = newGroupName.trim().replace(/\s+/g, ' ');
+                }
+
+                if (newGroupName !== groupToModify && newGroupName.trim() !== '') {
+                    channelsData.forEach(channel => {
+                        if (channel.groups && channel.groups.includes(groupToModify)) {
+                            const originalGroups = [...channel.groups];
+                            channel.groups = channel.groups.map(g => g === groupToModify ? newGroupName.trim() : g);
+                            if (JSON.stringify(originalGroups) !== JSON.stringify(channel.groups)) {
+                                affectedChannelsCount++;
+                            }
+                        }
+                    });
+                }
+            
+            // --- Logic for Channel Data Formatting ---
+            } else {
+                let targetChannels;
+                if (scope === 'specificGroup') {
+                    const selectedGroup = document.getElementById('format-group-title-selector').value;
+                    targetChannels = channelsData.filter(ch => ch.groups && ch.groups.includes(selectedGroup));
+                } else if (scope === 'selected' && selectedIndices.size > 0) {
+                    targetChannels = Array.from(selectedIndices).map(index => channelsData[index]);
+                } else if (scope === 'filtered') {
+                    targetChannels = [...displayedChannels];
+                } else {
+                    targetChannels = [...channelsData];
+                }
+                
+                if (targetChannels.length === 0) {
+                    closeModal('formatDataModal');
+                    return;
+                }
+
+                targetChannels.forEach(channel => {
+                    const originalChannelState = JSON.stringify(channel);
+                    
+                    // --- Apply transformations sequentially ---
+
+                    // 1. Clean: Remove Logos
+                    if (shouldRemoveLogos && channel.logo) {
+                        channel.logo = '';
+                    }
+
+                    // 2. Case (on Name)
                     if (caseType !== 'none' && channel.name) {
-                        let originalName = channel.name;
                         if (caseType === 'upper') channel.name = channel.name.toUpperCase();
                         else if (caseType === 'lower') channel.name = channel.name.toLowerCase();
                         else if (caseType === 'title') {
-                            const userExceptionsText = document.getElementById('title-case-exceptions-input').value;
                             localStorage.setItem('m3uEditorTitleCaseExceptions', userExceptionsText);
-
                             let finalExceptions = [...titleCaseExceptions];
                             if (userExceptionsText.trim()) {
                                 const userExceptionsArray = userExceptionsText.split(',').map(ex => ex.trim().toUpperCase()).filter(ex => ex);
@@ -3824,93 +3980,50 @@ body.dark-mode #language-switcher {
                             }
                             channel.name = smartTitleCase(channel.name, finalExceptions);
                         }
-                        if (originalName !== channel.name) modified = true;
                     }
-                } else if (activeTabId === 'FormatAffix') {
-                    const prefix = document.getElementById('format-prefix').value;
-                    const suffix = document.getElementById('format-suffix').value;
-                    let nameChanged = false;
-                    if (prefix && channel.name) {
-                        channel.name = `${prefix.trim()} ${channel.name.trim()}`;
-                        nameChanged = true;
-                    }
-                    if (suffix && channel.name) {
-                        channel.name = `${channel.name.trim()} ${suffix.trim()}`;
-                        nameChanged = true;
-                    }
-                    if(nameChanged) {
-                        channel.name = channel.name.trim().replace(/\s+/g, ' ');
-                        modified = true;
-                    }
-                } else if (activeTabId === 'FormatReplace') {
-                    const findText = document.getElementById('find-text').value;
-                    if (findText) {
-                        const replaceText = document.getElementById('replace-text').value;
-                        const findInName = document.getElementById('find-in-name').checked;
-                        const findInGroup = document.getElementById('find-in-group').checked;
-                        const findInUrl = document.getElementById('find-in-url').checked;
 
-                        if (findInName && channel.name && channel.name.includes(findText)) {
-                            const original = channel.name;
-                            channel.name = channel.name.replaceAll(findText, replaceText);
-                            if (original !== channel.name) modified = true;
-                        }
-                        if (findInGroup && channel.groups && channel.groups.length > 0) {
-                            const originalGroups = [...channel.groups];
-                            channel.groups = channel.groups.map(group => group.replaceAll(findText, replaceText));
-                            if(JSON.stringify(originalGroups) !== JSON.stringify(channel.groups)) modified = true;
-                        }
-                        if (findInUrl && channel.url && channel.url.includes(findText)) {
-                            const original = channel.url;
-                            channel.url = channel.url.replaceAll(findText, replaceText);
-                            if (original !== channel.url) modified = true;
-                        }
-                    }
-                } else if (activeTabId === 'FormatClean') {
-                    const shouldTrim = document.getElementById('format-trim').checked;
-                    const shouldRemoveLogos = document.getElementById('format-remove-logos').checked;
-                    const shouldRemoveWords = document.getElementById('format-remove-words-toggle').checked;
+                    // 3. Affix (on Name)
+                    if (prefix && channel.name) channel.name = `${prefix} ${channel.name}`;
+                    if (suffix && channel.name) channel.name = `${channel.name} ${suffix}`;
                     
+                    // 4. Replace (on selected fields)
+                    if (findText) {
+                        if (findInName && channel.name) channel.name = channel.name.replaceAll(findText, replaceText);
+                        if (findInGroup && channel.groups) channel.groups = channel.groups.map(group => group.replaceAll(findText, replaceText));
+                        if (findInUrl && channel.url) channel.url = channel.url.replaceAll(findText, replaceText);
+                    }
+
+                    // 5. Clean: Remove words (on Name)
+                    if (wordsToRemove.length > 0 && channel.name) {
+                        wordsToRemove.forEach(word => {
+                            const regex = new RegExp(word.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&'), 'gi');
+                            channel.name = channel.name.replace(regex, '');
+                        });
+                    }
+
+                    // 6. Clean: Trim spaces (on Name and Groups)
                     if (shouldTrim) {
-                        if (channel.name) {
-                            const originalName = channel.name;
-                            channel.name = channel.name.trim().replace(/\s+/g, ' ');
-                            if (originalName !== channel.name) modified = true;
-                        }
-                        if (channel.groups && channel.groups.length > 0) {
-                            const originalGroups = [...channel.groups];
-                            channel.groups = channel.groups.map(g => g.trim().replace(/\s+/g, ' ')).filter(g => g);
-                            if (JSON.stringify(originalGroups) !== JSON.stringify(channel.groups)) modified = true;
-                        }
+                        if (channel.name) channel.name = channel.name.trim().replace(/\s+/g, ' ');
+                        if (channel.groups) channel.groups = channel.groups.map(g => g.trim().replace(/\s+/g, ' ')).filter(g => g);
                     }
-                    if (shouldRemoveLogos && channel.logo) {
-                        channel.logo = '';
-                        modified = true;
-                    }
-                    if (shouldRemoveWords) {
-                        const wordsToRemoveText = document.getElementById('format-remove-words-input').value.trim();
-                        if (wordsToRemoveText && channel.name) {
-                            const originalName = channel.name;
-                            const wordsToRemove = wordsToRemoveText.split(',').map(w => w.trim()).filter(w => w);
-                            wordsToRemove.forEach(word => {
-                                const regex = new RegExp(word.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&'), 'gi');
-                                channel.name = channel.name.replace(regex, '');
-                            });
-                            channel.name = channel.name.trim().replace(/\s+/g, ' ');
-                            if (originalName !== channel.name) modified = true;
-                        }
-                    }
-                }
 
-                if (modified) affectedChannelsCount++;
-            });
+                    if (JSON.stringify(channel) !== originalChannelState) {
+                        affectedChannelsCount++;
+                    }
+                });
+            }
 
-            setTimeout(() => closeModal('formatDataModal'), 0);
+            closeModal('formatDataModal');
             
             if (affectedChannelsCount > 0) {
                 updateAndRefreshUI();
             }
         }
+        
+        // =================================================================
+        // END: NEW AND MODIFIED FUNCTIONS FOR FORMAT DATA
+        // =================================================================
+
 
         function openLibraryTab(evt, tabName) {
             let i, tabcontent, tablinks;
@@ -4130,19 +4243,17 @@ body.dark-mode #language-switcher {
         }
         
         if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/en/sw.js') // <-- تأكد أن المسار هنا صحيح
-            .then(registration => {
-                console.log('ServiceWorker registration successful');
-            })
-            .catch(error => {
-                console.log('ServiceWorker registration failed: ', error);
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/en/sw.js') // <-- Make sure this path is correct
+                    .then(registration => {
+                        console.log('ServiceWorker registration successful');
+                    })
+                    .catch(error => {
+                        console.log('ServiceWorker registration failed: ', error);
+                    });
             });
-    });
-}
+        }
     
     </script>
 </body>
 </html>
-
-
