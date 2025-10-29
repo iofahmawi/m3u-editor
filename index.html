@@ -1466,6 +1466,11 @@ body.dark-mode #language-switcher {
                 <select id="format-scope-selector" style="width: 100%;"></select>
             </div>
 
+            <div id="format-group-title-container" style="display: none; margin-bottom: 15px;">
+                <label for="format-group-title-selector" style="display:block; margin-bottom: 5px;"><strong>اختر المجموعة:</strong></label>
+                <select id="format-group-title-selector" style="width: 100%;"></select>
+            </div>
+
             <div class="format-container">
                 <!-- Tab buttons -->
                 <div class="format-tabs">
@@ -3635,15 +3640,84 @@ body.dark-mode #language-switcher {
             const exceptionsContainer = document.getElementById('title-case-exceptions-container');
             exceptionsContainer.style.display = document.getElementById('case-title').checked ? 'block' : 'none';
         }
+        
+        function handleFormatScopeChange() {
+            const scope = document.getElementById('format-scope-selector').value;
+            const groupTitleContainer = document.getElementById('format-group-title-container');
+            const removeLogosRow = document.getElementById('format-remove-logos').closest('.modal-row');
+            
+            const findInName = document.getElementById('find-in-name');
+            const findInGroup = document.getElementById('find-in-group');
+            const findInUrl = document.getElementById('find-in-url');
+            const findInNameLabel = findInName.parentElement;
+            const findInGroupLabel = findInGroup.parentElement;
+            const findInUrlLabel = findInUrl.parentElement;
+
+            const showGroupSelector = (scope === 'groupTitle' || scope === 'specificGroup');
+            groupTitleContainer.style.display = showGroupSelector ? 'block' : 'none';
+            groupTitleContainer.querySelector('label').textContent = (scope === 'groupTitle') 
+                ? 'اختر التسمية للتنسيق:' 
+                : 'اختر المجموعة للتنسيق:';
+
+            if (scope === 'groupTitle') {
+                removeLogosRow.style.display = 'none';
+
+                findInName.checked = false;
+                findInName.disabled = true;
+                findInUrl.checked = false;
+                findInUrl.disabled = true;
+                findInGroup.checked = true;
+                findInGroup.disabled = true;
+                
+                if(findInNameLabel) findInNameLabel.style.opacity = '0.5';
+                if(findInUrlLabel) findInUrlLabel.style.opacity = '0.5';
+                if(findInGroupLabel) findInGroupLabel.style.opacity = '1';
+
+            } else {
+                removeLogosRow.style.display = 'flex';
+
+                findInName.disabled = false;
+                findInUrl.disabled = false;
+                findInGroup.disabled = false;
+                
+                findInName.checked = true;
+                findInGroup.checked = false;
+                findInUrl.checked = false;
+                
+                if(findInNameLabel) findInNameLabel.style.opacity = '1';
+                if(findInUrlLabel) findInUrlLabel.style.opacity = '1';
+                if(findInGroupLabel) findInGroupLabel.style.opacity = '1';
+            }
+        }
 
         function openFormatDataModal() {
             if (channelsData.length === 0) return showToast("لا توجد قنوات لتنسيقها", "error");
 
             populateDynamicScopeSelector('format-scope-selector', {
-                filtered: 'تنسيق نتيجة البحث والتصفية',
-                selected: 'تنسيق القنوات المحددة',
-                all: 'تنسيق كامل القائمة'
+                filtered: 'نتيجة البحث والتصفية',
+                selected: 'القنوات المحددة',
+                all: 'كامل القائمة'
             });
+            
+            const scopeSelector = document.getElementById('format-scope-selector');
+            scopeSelector.add(new Option('مجموعة معينة', 'specificGroup'));
+            scopeSelector.add(new Option('تسمية المجموعة', 'groupTitle'));
+
+            const groupTitleSelector = document.getElementById('format-group-title-selector');
+            groupTitleSelector.innerHTML = '';
+            const allGroups = channelsData.flatMap(ch => (ch.groups && ch.groups.length) ? ch.groups : []);
+            const uniqueGroups = [...new Set(allGroups)].filter(g => g);
+            uniqueGroups.sort((a, b) => a.localeCompare(b, 'ar')).forEach(group => {
+                const option = document.createElement('option');
+                option.value = group;
+                option.textContent = group;
+                groupTitleSelector.appendChild(option);
+            });
+            
+            scopeSelector.removeEventListener('change', handleFormatScopeChange);
+            scopeSelector.addEventListener('change', handleFormatScopeChange);
+            
+            handleFormatScopeChange();
             
             document.querySelectorAll('input[name="formatCase"]').forEach(radio => {
                 radio.onchange = handleCaseTypeChange;
@@ -3689,125 +3763,191 @@ body.dark-mode #language-switcher {
 
         function executeFormatting() {
             const scope = document.getElementById('format-scope-selector').value;
-            let targetChannels;
-            if (scope === 'selected' && selectedIndices.size > 0) {
-                targetChannels = Array.from(selectedIndices).map(index => channelsData[index]);
-            } else if (scope === 'filtered') {
-                targetChannels = [...displayedChannels];
-            } else {
-                targetChannels = [...channelsData];
-            }
-            
-            if (targetChannels.length === 0) {
-                closeModal('formatDataModal');
-                return;
-            }
-            
-            let affectedChannelsCount = 0;
             const activeTabId = document.querySelector('.format-tab-pane.active').id;
+            let affectedChannelsCount = 0;
 
-            targetChannels.forEach(channel => {
-                let modified = false;
+            if (scope === 'groupTitle') {
+                const groupToModify = document.getElementById('format-group-title-selector').value;
+                if (!groupToModify) {
+                    closeModal('formatDataModal');
+                    return;
+                }
                 
+                let newGroupName = groupToModify;
+
                 if (activeTabId === 'FormatCase') {
                     const caseType = document.querySelector('input[name="formatCase"]:checked').value;
-                    if (caseType !== 'none' && channel.name) {
-                        let originalName = channel.name;
-                        if (caseType === 'upper') channel.name = channel.name.toUpperCase();
-                        else if (caseType === 'lower') channel.name = channel.name.toLowerCase();
-                        else if (caseType === 'title') {
-                            const userExceptionsText = document.getElementById('title-case-exceptions-input').value;
-                            localStorage.setItem('m3uEditorTitleCaseExceptions', userExceptionsText);
-
-                            let finalExceptions = [...titleCaseExceptions];
-                            if (userExceptionsText.trim()) {
-                                const userExceptionsArray = userExceptionsText.split(',').map(ex => ex.trim().toUpperCase()).filter(ex => ex);
-                                finalExceptions = [...new Set([...finalExceptions, ...userExceptionsArray])];
-                            }
-                            channel.name = smartTitleCase(channel.name, finalExceptions);
+                    if (caseType === 'upper') newGroupName = newGroupName.toUpperCase();
+                    else if (caseType === 'lower') newGroupName = newGroupName.toLowerCase();
+                    else if (caseType === 'title') {
+                        const userExceptionsText = document.getElementById('title-case-exceptions-input').value;
+                        let finalExceptions = [...titleCaseExceptions];
+                        if (userExceptionsText.trim()) {
+                            const userExceptionsArray = userExceptionsText.split(',').map(ex => ex.trim().toUpperCase()).filter(ex => ex);
+                            finalExceptions = [...new Set([...finalExceptions, ...userExceptionsArray])];
                         }
-                        if (originalName !== channel.name) modified = true;
+                        newGroupName = smartTitleCase(newGroupName, finalExceptions);
                     }
                 } else if (activeTabId === 'FormatAffix') {
-                    const prefix = document.getElementById('format-prefix').value;
-                    const suffix = document.getElementById('format-suffix').value;
-                    let nameChanged = false;
-                    if (prefix && channel.name) {
-                        channel.name = `${prefix.trim()} ${channel.name.trim()}`;
-                        nameChanged = true;
-                    }
-                    if (suffix && channel.name) {
-                        channel.name = `${channel.name.trim()} ${suffix.trim()}`;
-                        nameChanged = true;
-                    }
-                    if(nameChanged) {
-                        channel.name = channel.name.trim().replace(/\s+/g, ' ');
-                        modified = true;
-                    }
+                    const prefix = document.getElementById('format-prefix').value.trim();
+                    const suffix = document.getElementById('format-suffix').value.trim();
+                    if (prefix) newGroupName = `${prefix} ${newGroupName}`;
+                    if (suffix) newGroupName = `${newGroupName} ${suffix}`;
+                    newGroupName = newGroupName.trim().replace(/\s+/g, ' ');
                 } else if (activeTabId === 'FormatReplace') {
                     const findText = document.getElementById('find-text').value;
+                    const replaceText = document.getElementById('replace-text').value;
                     if (findText) {
-                        const replaceText = document.getElementById('replace-text').value;
-                        const findInName = document.getElementById('find-in-name').checked;
-                        const findInGroup = document.getElementById('find-in-group').checked;
-                        const findInUrl = document.getElementById('find-in-url').checked;
-
-                        if (findInName && channel.name && channel.name.includes(findText)) {
-                            const original = channel.name;
-                            channel.name = channel.name.replaceAll(findText, replaceText);
-                            if (original !== channel.name) modified = true;
-                        }
-                        if (findInGroup && channel.groups && channel.groups.length > 0) {
-                            const originalGroups = [...channel.groups];
-                            channel.groups = channel.groups.map(group => group.replaceAll(findText, replaceText));
-                            if(JSON.stringify(originalGroups) !== JSON.stringify(channel.groups)) modified = true;
-                        }
-                        if (findInUrl && channel.url && channel.url.includes(findText)) {
-                            const original = channel.url;
-                            channel.url = channel.url.replaceAll(findText, replaceText);
-                            if (original !== channel.url) modified = true;
-                        }
+                        newGroupName = newGroupName.replaceAll(findText, replaceText);
                     }
                 } else if (activeTabId === 'FormatClean') {
-                    const shouldTrim = document.getElementById('format-trim').checked;
-                    const shouldRemoveLogos = document.getElementById('format-remove-logos').checked;
-                    const shouldRemoveWords = document.getElementById('format-remove-words-toggle').checked;
-                    
-                    if (shouldTrim) {
-                        if (channel.name) {
-                            const originalName = channel.name;
-                            channel.name = channel.name.trim().replace(/\s+/g, ' ');
-                            if (originalName !== channel.name) modified = true;
-                        }
-                        if (channel.groups && channel.groups.length > 0) {
-                            const originalGroups = [...channel.groups];
-                            channel.groups = channel.groups.map(g => g.trim().replace(/\s+/g, ' ')).filter(g => g);
-                            if (JSON.stringify(originalGroups) !== JSON.stringify(channel.groups)) modified = true;
-                        }
-                    }
-                    if (shouldRemoveLogos && channel.logo) {
-                        channel.logo = '';
-                        modified = true;
-                    }
-                    if (shouldRemoveWords) {
+                     const shouldTrim = document.getElementById('format-trim').checked;
+                     if (shouldTrim) {
+                        newGroupName = newGroupName.trim().replace(/\s+/g, ' ');
+                     }
+                     const shouldRemoveWords = document.getElementById('format-remove-words-toggle').checked;
+                     if (shouldRemoveWords) {
                         const wordsToRemoveText = document.getElementById('format-remove-words-input').value.trim();
-                        if (wordsToRemoveText && channel.name) {
-                            const originalName = channel.name;
+                        if (wordsToRemoveText) {
                             const wordsToRemove = wordsToRemoveText.split(',').map(w => w.trim()).filter(w => w);
                             wordsToRemove.forEach(word => {
                                 const regex = new RegExp(word.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&'), 'gi');
-                                channel.name = channel.name.replace(regex, '');
+                                newGroupName = newGroupName.replace(regex, '');
                             });
-                            channel.name = channel.name.trim().replace(/\s+/g, ' ');
-                            if (originalName !== channel.name) modified = true;
+                            newGroupName = newGroupName.trim().replace(/\s+/g, ' ');
                         }
-                    }
+                     }
                 }
 
-                if (modified) affectedChannelsCount++;
-            });
+                if (newGroupName === groupToModify || newGroupName === '') {
+                    closeModal('formatDataModal');
+                    return;
+                }
 
-            setTimeout(() => closeModal('formatDataModal'), 0);
+                channelsData.forEach(channel => {
+                    if (channel.groups && channel.groups.includes(groupToModify)) {
+                        channel.groups = channel.groups.map(g => g === groupToModify ? newGroupName : g);
+                        affectedChannelsCount++;
+                    }
+                });
+
+            } else {
+                let targetChannels;
+                if (scope === 'specificGroup') {
+                    const selectedGroup = document.getElementById('format-group-title-selector').value;
+                    targetChannels = channelsData.filter(ch => ch.groups && ch.groups.includes(selectedGroup));
+                } else if (scope === 'selected' && selectedIndices.size > 0) {
+                    targetChannels = Array.from(selectedIndices).map(index => channelsData[index]);
+                } else if (scope === 'filtered') {
+                    targetChannels = [...displayedChannels];
+                } else {
+                    targetChannels = [...channelsData];
+                }
+                
+                if (targetChannels.length === 0) {
+                    closeModal('formatDataModal');
+                    return;
+                }
+
+                targetChannels.forEach(channel => {
+                    let modified = false;
+                    
+                    if (activeTabId === 'FormatCase') {
+                        const caseType = document.querySelector('input[name="formatCase"]:checked').value;
+                        if (caseType !== 'none' && channel.name) {
+                            let originalName = channel.name;
+                            if (caseType === 'upper') channel.name = channel.name.toUpperCase();
+                            else if (caseType === 'lower') channel.name = channel.name.toLowerCase();
+                            else if (caseType === 'title') {
+                                const userExceptionsText = document.getElementById('title-case-exceptions-input').value;
+                                localStorage.setItem('m3uEditorTitleCaseExceptions', userExceptionsText);
+                                let finalExceptions = [...titleCaseExceptions];
+                                if (userExceptionsText.trim()) {
+                                    const userExceptionsArray = userExceptionsText.split(',').map(ex => ex.trim().toUpperCase()).filter(ex => ex);
+                                    finalExceptions = [...new Set([...finalExceptions, ...userExceptionsArray])];
+                                }
+                                channel.name = smartTitleCase(channel.name, finalExceptions);
+                            }
+                            if (originalName !== channel.name) modified = true;
+                        }
+                    } else if (activeTabId === 'FormatAffix') {
+                        const prefix = document.getElementById('format-prefix').value;
+                        const suffix = document.getElementById('format-suffix').value;
+                        let nameChanged = false;
+                        if (prefix && channel.name) {
+                            channel.name = `${prefix.trim()} ${channel.name.trim()}`;
+                            nameChanged = true;
+                        }
+                        if (suffix && channel.name) {
+                            channel.name = `${channel.name.trim()} ${suffix.trim()}`;
+                            nameChanged = true;
+                        }
+                        if(nameChanged) {
+                            channel.name = channel.name.trim().replace(/\s+/g, ' ');
+                            modified = true;
+                        }
+                    } else if (activeTabId === 'FormatReplace') {
+                        const findText = document.getElementById('find-text').value;
+                        if (findText) {
+                            const replaceText = document.getElementById('replace-text').value;
+                            const findInName = document.getElementById('find-in-name').checked;
+                            const findInGroup = document.getElementById('find-in-group').checked;
+                            const findInUrl = document.getElementById('find-in-url').checked;
+                            if (findInName && channel.name && channel.name.includes(findText)) {
+                                const original = channel.name;
+                                channel.name = channel.name.replaceAll(findText, replaceText);
+                                if (original !== channel.name) modified = true;
+                            }
+                            if (findInGroup && channel.groups && channel.groups.length > 0) {
+                                const originalGroups = [...channel.groups];
+                                channel.groups = channel.groups.map(group => group.replaceAll(findText, replaceText));
+                                if(JSON.stringify(originalGroups) !== JSON.stringify(channel.groups)) modified = true;
+                            }
+                            if (findInUrl && channel.url && channel.url.includes(findText)) {
+                                const original = channel.url;
+                                channel.url = channel.url.replaceAll(findText, replaceText);
+                                if (original !== channel.url) modified = true;
+                            }
+                        }
+                    } else if (activeTabId === 'FormatClean') {
+                        const shouldTrim = document.getElementById('format-trim').checked;
+                        const shouldRemoveLogos = document.getElementById('format-remove-logos').checked;
+                        const shouldRemoveWords = document.getElementById('format-remove-words-toggle').checked;
+                        if (shouldTrim) {
+                            if (channel.name) {
+                                const originalName = channel.name;
+                                channel.name = channel.name.trim().replace(/\s+/g, ' ');
+                                if (originalName !== channel.name) modified = true;
+                            }
+                            if (channel.groups && channel.groups.length > 0) {
+                                const originalGroups = [...channel.groups];
+                                channel.groups = channel.groups.map(g => g.trim().replace(/\s+/g, ' ')).filter(g => g);
+                                if (JSON.stringify(originalGroups) !== JSON.stringify(channel.groups)) modified = true;
+                            }
+                        }
+                        if (shouldRemoveLogos && channel.logo) {
+                            channel.logo = '';
+                            modified = true;
+                        }
+                        if (shouldRemoveWords) {
+                            const wordsToRemoveText = document.getElementById('format-remove-words-input').value.trim();
+                            if (wordsToRemoveText && channel.name) {
+                                const originalName = channel.name;
+                                const wordsToRemove = wordsToRemoveText.split(',').map(w => w.trim()).filter(w => w);
+                                wordsToRemove.forEach(word => {
+                                    const regex = new RegExp(word.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&'), 'gi');
+                                    channel.name = channel.name.replace(regex, '');
+                                });
+                                channel.name = channel.name.trim().replace(/\s+/g, ' ');
+                                if (originalName !== channel.name) modified = true;
+                            }
+                        }
+                    }
+                    if (modified) affectedChannelsCount++;
+                });
+            }
+
+            closeModal('formatDataModal');
             
             if (affectedChannelsCount > 0) {
                 updateAndRefreshUI();
