@@ -1362,7 +1362,7 @@ body.dark-mode #language-switcher {
     <div id="dragDropChoiceModal" class="modal modal-small-top"><div class="modal-content"><span class="close" onclick="cancelDragOperation()">&times;</span><h2>كيف تريد تطبيق الترتيب؟</h2><div style="margin: 20px 0;"><div class="modal-row"><input type="radio" id="dragChoiceGroup" name="dragDropChoice" value="group" checked><label for="dragChoiceGroup">تجميع المجموعة وترتيبها</label></div><div class="modal-row"><input type="radio" id="dragChoiceInPlace" name="dragDropChoice" value="sortInPlace"><label for="dragChoiceInPlace">الترتيب في الأماكن الحالية فقط</label></div></div><div class="modal-buttons"><button id="executeDragDropChoice">تنفيذ</button><button class="cancel" onclick="cancelDragOperation()">إلغاء</button></div></div></div>
     <div id="searchFilterModal" class="modal modal-small-top"><div class="modal-content"><span class="close" onclick="closeModal('searchFilterModal')">&times;</span><h2>بحث وتصفية القنوات</h2><input type="text" id="searchInput" placeholder="ابحث عن قناة..."><select id="groupFilter"><option value="all">كل المجموعات</option></select><div class="modal-buttons"><button id="searchFilterActionButton">تطبيق التصفية</button></div></div></div>
     <div id="bulkActionsModal" class="modal"><div class="modal-content"><span class="close" onclick="closeModal('bulkActionsModal')">&times;</span><h2>إجراءات على القنوات المحددة</h2><div id="bulk-actions-list"><div class="modal-row"><input type="radio" id="bulk-action-sort" name="bulkAction" value="sort" checked><label for="bulk-action-sort">فرز المحدد أبجدياً</label></div><div class="modal-row"><input type="radio" id="bulk-action-move" name="bulkAction" value="move"><label for="bulk-action-move">نقل المحدد إلى موضع</label><div id="bulk-move-input-container"><label for="bulk-move-target-index">رقم:</label><input type="number" id="bulk-move-target-index" min="1" placeholder="مثال: 1"></div></div><div class="modal-row"><input type="radio" id="bulk-action-group" name="bulkAction" value="group"><label for="bulk-action-group">تعديل المجموعة</label><div id="bulk-edit-group-container"><input type="text" id="bulk-new-group-name" placeholder="أدخل اسم المجموعة الجديد"></div></div><div class="modal-row"><input type="radio" id="bulk-action-remove-group" name="bulkAction" value="removeGroup"><label for="bulk-action-remove-group">إزالة التصنيف عن المحدد</label></div><div class="modal-row"><input type="radio" id="bulk-action-delete" name="bulkAction" value="delete"><label for="bulk-action-delete">حذف المحدد</label></div><div class="modal-row"><input type="radio" id="bulk-action-export" name="bulkAction" value="export"><label for="bulk-action-export">تصدير المحدد</label></div></div><div class="modal-buttons"><button onclick="executeBulkAction()">تنفيذ</button><button onclick="closeModal('bulkActionsModal')" class="cancel">إلغاء</button></div></div></div>
-    <div id="channelCheckerModal" class="modal modal-small-top"><div class="modal-content"><span class="close" onclick="closeModal('channelCheckerModal')">&times;</span><h2>مدقق حالة القنوات</h2><p>سيقوم هذا الإجراء بالتحقق من كل قناة لتحديد ما إذا كانت تعمل. قد يستغرق هذا بعض الوقت للقوائم الكبيرة.</p><div id="checker-progress-container"><p id="checker-progress-text">اضغط على زر 'بدء الفحص' للتحقق من حالة القنوات.</p><div id="checker-progress-bar-container"><div id="checker-progress-bar">0%</div></div></div><p id="checker-summary-text" style="font-weight: bold;"></p><div class="modal-buttons"><button id="start-check-btn" onclick="executeChannelCheck()">بدء الفحص</button><button id="stop-check-btn" onclick="stopChannelCheck()" class="cancel" style="display:none;">إيقاف الفحص</button><button id="checker-cancel-btn" onclick="closeModal('channelCheckerModal')" class="cancel">إغلاق</button></div><div class="dropdown-container" id="checker-actions-container" style="display: none;"><button onclick="toggleCheckerActions()" class="dropdown-btn">إجراءات &#9662;</button><div id="checker-actions-dropdown" class="dropdown-content"><a href="#" id="export-working-btn" onclick="exportWorkingChannels()">تصدير القنوات التي تعمل</a><a href="#" id="select-failed-btn" onclick="selectFailedChannels()">تحديد القنوات التي لا تعمل</a><a href="#" id="delete-failed-btn" class="delete-option" onclick="deleteFailedChannels()">حذف القنوات التي لا تعمل</a></div></div></div></div>
+    <div id="channelCheckerModal" class="modal modal-small-top"><div class="modal-content"><span class="close" onclick="closeModal('channelCheckerModal')">&times;</span><h2>فحص حالة القنوات</h2><p>سيقوم هذا الإجراء بالتحقق من كل قناة لتحديد ما إذا كانت تعمل. قد يستغرق هذا بعض الوقت للقوائم الكبيرة.</p><div id="checker-progress-container"><p id="checker-progress-text">اضغط على زر 'بدء الفحص' للتحقق من حالة القنوات.</p><div id="checker-progress-bar-container"><div id="checker-progress-bar">0%</div></div></div><p id="checker-summary-text" style="font-weight: bold;"></p><div class="modal-buttons"><button id="start-check-btn" onclick="executeChannelCheck()">بدء الفحص</button><button id="stop-check-btn" onclick="stopChannelCheck()" class="cancel" style="display:none;">إيقاف الفحص</button><button id="checker-cancel-btn" onclick="closeModal('channelCheckerModal')" class="cancel">إغلاق</button></div><div class="dropdown-container" id="checker-actions-container" style="display: none;"><button onclick="toggleCheckerActions()" class="dropdown-btn">إجراءات &#9662;</button><div id="checker-actions-dropdown" class="dropdown-content"><a href="#" id="export-working-btn" onclick="exportWorkingChannels()">تصدير القنوات التي تعمل</a><a href="#" id="select-failed-btn" onclick="selectFailedChannels()">تحديد القنوات التي لا تعمل</a><a href="#" id="delete-failed-btn" class="delete-option" onclick="deleteFailedChannels()">حذف القنوات التي لا تعمل</a></div></div></div></div>
     <div id="multiUrlModal" class="modal modal-medium-top"><div class="modal-content"><span class="close" onclick="closeModal('multiUrlModal')">&times;</span><h2>تحميل من عدة روابط</h2><p>ألصق الروابط هنا، كل رابط في سطر جديد. سيتم دمجها بالترتيب.</p><textarea id="multiUrlTextarea" placeholder="https://example.com/playlist1.m3u&#10;https://example.com/playlist2.m3u8"></textarea><div class="modal-buttons"><button onclick="processMultiUrlLoad()">تحميل</button><button onclick="closeModal('multiUrlModal')" class="cancel">إلغاء</button></div></div></div>
     <div id="editModal" class="modal modal-medium-top"><div class="modal-content"><span class="close" onclick="closeModal('editModal')">&times;</span><h2>تحرير القناة</h2><div class="modal-form-row"><label for="editIndexField">رقم القناة:</label><input type="number" id="editIndexField" min="1"></div><div class="modal-form-row"><label for="editName">اسم القناة:</label><input type="text" id="editName"></div><div class="modal-form-row"><label for="editGroup">المجموعة:</label><input type="text" id="editGroup"></div><div class="modal-form-row"><label for="editLogo">رابط الصورة:</label><input type="url" id="editLogo"><div id="logoPreview"><img id="previewImage"></div></div><div class="modal-form-row"><label for="editUrl">رابط التشغيل:</label><input type="url" id="editUrl"></div><input type="hidden" id="editOriginalIndex"><div class="modal-buttons"><button onclick="saveEdit()">حفظ</button><button onclick="closeModal('editModal')" class="cancel">إلغاء</button></div></div></div>
     <div id="addModal" class="modal modal-medium-top"><div class="modal-content"><span class="close" onclick="closeModal('addModal')">&times;</span><h2>إضافة قناة جديدة</h2><div class="modal-form-row"><label for="addIndexField">رقم القناة:</label><input type="number" id="addIndexField" min="1"></div><div class="modal-form-row"><label for="addName">اسم القناة:</label><input type="text" id="addName" required></div><div class="modal-form-row"><label for="addGroup">المجموعة:</label><input type="text" id="addGroup"></div><div class="modal-form-row"><label for="addLogo">رابط الصورة:</label><input type="url" id="addLogo"><div id="addLogoPreview"><img id="addPreviewImage"></div></div><div class="modal-form-row"><label for="addUrl">رابط التشغيل:</label><input type="url" id="addUrl" required></div><div class="modal-buttons"><button onclick="saveNewChannel()">إضافة</button><button onclick="closeModal('addModal')" class="cancel">إلغاء</button></div></div></div>
@@ -3641,15 +3641,11 @@ body.dark-mode #language-switcher {
             exceptionsContainer.style.display = document.getElementById('case-title').checked ? 'block' : 'none';
         }
         
-        // =================================================================
-        // START: MODIFIED FUNCTION
-        // =================================================================
         function handleFormatScopeChange() {
             const scope = document.getElementById('format-scope-selector').value;
             const groupTitleContainer = document.getElementById('format-group-title-container');
             const removeLogosRow = document.getElementById('format-remove-logos').closest('.modal-row');
             
-            // --- NEW: Select the "Search in" container ---
             const findReplaceOptionsContainer = document.querySelector('#FormatReplace .find-replace-options');
 
             const findInName = document.getElementById('find-in-name');
@@ -3659,17 +3655,15 @@ body.dark-mode #language-switcher {
             const findInGroupLabel = findInGroup.parentElement;
             const findInUrlLabel = findInUrl.parentElement;
 
-            const showGroupSelector = (scope === 'groupTitle'); // MODIFIED: was 'groupTitle' || 'specificGroup'
+            const showGroupSelector = (scope === 'groupTitle');
             groupTitleContainer.style.display = showGroupSelector ? 'block' : 'none';
-            groupTitleContainer.querySelector('label').textContent = 'اختر التسمية للتنسيق:'; // MODIFIED: Simplified
+            groupTitleContainer.querySelector('label').textContent = 'اختر التسمية للتنسيق:';
 
             if (scope === 'groupTitle') {
                 removeLogosRow.style.display = 'none';
 
-                // --- NEW: Hide the "Search in" container ---
                 if (findReplaceOptionsContainer) findReplaceOptionsContainer.style.display = 'none';
 
-                // This part is now less relevant but kept for safety
                 findInName.checked = false;
                 findInName.disabled = true;
                 findInUrl.checked = false;
@@ -3684,7 +3678,6 @@ body.dark-mode #language-switcher {
             } else {
                 removeLogosRow.style.display = 'flex';
                 
-                // --- NEW: Show the "Search in" container ---
                 if (findReplaceOptionsContainer) findReplaceOptionsContainer.style.display = 'block';
 
                 findInName.disabled = false;
@@ -3700,14 +3693,7 @@ body.dark-mode #language-switcher {
                 if(findInGroupLabel) findInGroupLabel.style.opacity = '1';
             }
         }
-        // =================================================================
-        // END: MODIFIED FUNCTION
-        // =================================================================
-
-
-        // =================================================================
-        // START: MODIFIED FUNCTION
-        // =================================================================
+        
         function openFormatDataModal() {
             if (channelsData.length === 0) return showToast("لا توجد قنوات لتنسيقها", "error");
 
@@ -3718,8 +3704,6 @@ body.dark-mode #language-switcher {
             });
             
             const scopeSelector = document.getElementById('format-scope-selector');
-            // --- MODIFIED: The following line has been removed to fulfill your request ---
-            // scopeSelector.add(new Option('مجموعة معينة', 'specificGroup'));
             scopeSelector.add(new Option('تسمية المجموعة', 'groupTitle'));
 
             const groupTitleSelector = document.getElementById('format-group-title-selector');
@@ -3765,9 +3749,6 @@ body.dark-mode #language-switcher {
 
             openModal('formatDataModal');
         }
-        // =================================================================
-        // END: MODIFIED FUNCTION
-        // =================================================================
 
         const titleCaseExceptions = ['TV', 'SD', 'HD', 'FHD', 'UHD', '4K', '8K', 'HEVC', 'H265', 'VIP', '3D', 'OSN', 'ART', 'SSC'];
 
@@ -3783,11 +3764,33 @@ body.dark-mode #language-switcher {
             }).join(' ');
         }
 
+        // =================================================================
+        // START: MODIFIED FUNCTION (The Fix)
+        // =================================================================
         function executeFormatting() {
             const scope = document.getElementById('format-scope-selector').value;
-            const activeTabId = document.querySelector('.format-tab-pane.active').id;
             let affectedChannelsCount = 0;
 
+            // --- Get all settings from all tabs ---
+            const caseType = document.querySelector('input[name="formatCase"]:checked').value;
+            const userExceptionsText = document.getElementById('title-case-exceptions-input').value;
+            
+            const prefix = document.getElementById('format-prefix').value.trim();
+            const suffix = document.getElementById('format-suffix').value.trim();
+            
+            const findText = document.getElementById('find-text').value;
+            const replaceText = document.getElementById('replace-text').value;
+            const findInName = document.getElementById('find-in-name').checked;
+            const findInGroup = document.getElementById('find-in-group').checked;
+            const findInUrl = document.getElementById('find-in-url').checked;
+
+            const shouldTrim = document.getElementById('format-trim').checked;
+            const shouldRemoveLogos = document.getElementById('format-remove-logos').checked;
+            const shouldRemoveWords = document.getElementById('format-remove-words-toggle').checked;
+            const wordsToRemoveText = document.getElementById('format-remove-words-input').value.trim();
+            const wordsToRemove = wordsToRemoveText ? wordsToRemoveText.split(',').map(w => w.trim()).filter(w => w) : [];
+
+            // --- Logic for Group Title Formatting ---
             if (scope === 'groupTitle') {
                 const groupToModify = document.getElementById('format-group-title-selector').value;
                 if (!groupToModify) {
@@ -3797,62 +3800,52 @@ body.dark-mode #language-switcher {
                 
                 let newGroupName = groupToModify;
 
-                if (activeTabId === 'FormatCase') {
-                    const caseType = document.querySelector('input[name="formatCase"]:checked').value;
-                    if (caseType === 'upper') newGroupName = newGroupName.toUpperCase();
-                    else if (caseType === 'lower') newGroupName = newGroupName.toLowerCase();
-                    else if (caseType === 'title') {
-                        const userExceptionsText = document.getElementById('title-case-exceptions-input').value;
-                        let finalExceptions = [...titleCaseExceptions];
-                        if (userExceptionsText.trim()) {
-                            const userExceptionsArray = userExceptionsText.split(',').map(ex => ex.trim().toUpperCase()).filter(ex => ex);
-                            finalExceptions = [...new Set([...finalExceptions, ...userExceptionsArray])];
-                        }
-                        newGroupName = smartTitleCase(newGroupName, finalExceptions);
+                // 1. Case
+                if (caseType === 'upper') newGroupName = newGroupName.toUpperCase();
+                else if (caseType === 'lower') newGroupName = newGroupName.toLowerCase();
+                else if (caseType === 'title') {
+                    localStorage.setItem('m3uEditorTitleCaseExceptions', userExceptionsText);
+                    let finalExceptions = [...titleCaseExceptions];
+                    if (userExceptionsText.trim()) {
+                        const userExceptionsArray = userExceptionsText.split(',').map(ex => ex.trim().toUpperCase()).filter(ex => ex);
+                        finalExceptions = [...new Set([...finalExceptions, ...userExceptionsArray])];
                     }
-                } else if (activeTabId === 'FormatAffix') {
-                    const prefix = document.getElementById('format-prefix').value.trim();
-                    const suffix = document.getElementById('format-suffix').value.trim();
-                    if (prefix) newGroupName = `${prefix} ${newGroupName}`;
-                    if (suffix) newGroupName = `${newGroupName} ${suffix}`;
+                    newGroupName = smartTitleCase(newGroupName, finalExceptions);
+                }
+
+                // 2. Affix
+                if (prefix) newGroupName = `${prefix} ${newGroupName}`;
+                if (suffix) newGroupName = `${newGroupName} ${suffix}`;
+
+                // 3. Replace
+                if (findText) {
+                    newGroupName = newGroupName.replaceAll(findText, replaceText);
+                }
+                
+                // 4. Clean
+                if (wordsToRemove.length > 0) {
+                    wordsToRemove.forEach(word => {
+                        const regex = new RegExp(word.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&'), 'gi');
+                        newGroupName = newGroupName.replace(regex, '');
+                    });
+                }
+                if (shouldTrim) {
                     newGroupName = newGroupName.trim().replace(/\s+/g, ' ');
-                } else if (activeTabId === 'FormatReplace') {
-                    const findText = document.getElementById('find-text').value;
-                    const replaceText = document.getElementById('replace-text').value;
-                    if (findText) {
-                        newGroupName = newGroupName.replaceAll(findText, replaceText);
-                    }
-                } else if (activeTabId === 'FormatClean') {
-                     const shouldTrim = document.getElementById('format-trim').checked;
-                     if (shouldTrim) {
-                        newGroupName = newGroupName.trim().replace(/\s+/g, ' ');
-                     }
-                     const shouldRemoveWords = document.getElementById('format-remove-words-toggle').checked;
-                     if (shouldRemoveWords) {
-                        const wordsToRemoveText = document.getElementById('format-remove-words-input').value.trim();
-                        if (wordsToRemoveText) {
-                            const wordsToRemove = wordsToRemoveText.split(',').map(w => w.trim()).filter(w => w);
-                            wordsToRemove.forEach(word => {
-                                const regex = new RegExp(word.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&'), 'gi');
-                                newGroupName = newGroupName.replace(regex, '');
-                            });
-                            newGroupName = newGroupName.trim().replace(/\s+/g, ' ');
+                }
+
+                if (newGroupName !== groupToModify && newGroupName.trim() !== '') {
+                    channelsData.forEach(channel => {
+                        if (channel.groups && channel.groups.includes(groupToModify)) {
+                            const originalGroups = [...channel.groups];
+                            channel.groups = channel.groups.map(g => g === groupToModify ? newGroupName.trim() : g);
+                            if (JSON.stringify(originalGroups) !== JSON.stringify(channel.groups)) {
+                                affectedChannelsCount++;
+                            }
                         }
-                     }
+                    });
                 }
-
-                if (newGroupName === groupToModify || newGroupName === '') {
-                    closeModal('formatDataModal');
-                    return;
-                }
-
-                channelsData.forEach(channel => {
-                    if (channel.groups && channel.groups.includes(groupToModify)) {
-                        channel.groups = channel.groups.map(g => g === groupToModify ? newGroupName : g);
-                        affectedChannelsCount++;
-                    }
-                });
-
+            
+            // --- Logic for Channel Data Formatting ---
             } else {
                 let targetChannels;
                 if (scope === 'specificGroup') {
@@ -3872,100 +3865,58 @@ body.dark-mode #language-switcher {
                 }
 
                 targetChannels.forEach(channel => {
-                    let modified = false;
+                    const originalChannelState = JSON.stringify(channel);
                     
-                    if (activeTabId === 'FormatCase') {
-                        const caseType = document.querySelector('input[name="formatCase"]:checked').value;
-                        if (caseType !== 'none' && channel.name) {
-                            let originalName = channel.name;
-                            if (caseType === 'upper') channel.name = channel.name.toUpperCase();
-                            else if (caseType === 'lower') channel.name = channel.name.toLowerCase();
-                            else if (caseType === 'title') {
-                                const userExceptionsText = document.getElementById('title-case-exceptions-input').value;
-                                localStorage.setItem('m3uEditorTitleCaseExceptions', userExceptionsText);
-                                let finalExceptions = [...titleCaseExceptions];
-                                if (userExceptionsText.trim()) {
-                                    const userExceptionsArray = userExceptionsText.split(',').map(ex => ex.trim().toUpperCase()).filter(ex => ex);
-                                    finalExceptions = [...new Set([...finalExceptions, ...userExceptionsArray])];
-                                }
-                                channel.name = smartTitleCase(channel.name, finalExceptions);
+                    // --- Apply transformations sequentially ---
+
+                    // 1. Clean: Remove Logos
+                    if (shouldRemoveLogos && channel.logo) {
+                        channel.logo = '';
+                    }
+
+                    // 2. Case (on Name)
+                    if (caseType !== 'none' && channel.name) {
+                        if (caseType === 'upper') channel.name = channel.name.toUpperCase();
+                        else if (caseType === 'lower') channel.name = channel.name.toLowerCase();
+                        else if (caseType === 'title') {
+                            localStorage.setItem('m3uEditorTitleCaseExceptions', userExceptionsText);
+                            let finalExceptions = [...titleCaseExceptions];
+                            if (userExceptionsText.trim()) {
+                                const userExceptionsArray = userExceptionsText.split(',').map(ex => ex.trim().toUpperCase()).filter(ex => ex);
+                                finalExceptions = [...new Set([...finalExceptions, ...userExceptionsArray])];
                             }
-                            if (originalName !== channel.name) modified = true;
-                        }
-                    } else if (activeTabId === 'FormatAffix') {
-                        const prefix = document.getElementById('format-prefix').value;
-                        const suffix = document.getElementById('format-suffix').value;
-                        let nameChanged = false;
-                        if (prefix && channel.name) {
-                            channel.name = `${prefix.trim()} ${channel.name.trim()}`;
-                            nameChanged = true;
-                        }
-                        if (suffix && channel.name) {
-                            channel.name = `${channel.name.trim()} ${suffix.trim()}`;
-                            nameChanged = true;
-                        }
-                        if(nameChanged) {
-                            channel.name = channel.name.trim().replace(/\s+/g, ' ');
-                            modified = true;
-                        }
-                    } else if (activeTabId === 'FormatReplace') {
-                        const findText = document.getElementById('find-text').value;
-                        if (findText) {
-                            const replaceText = document.getElementById('replace-text').value;
-                            const findInName = document.getElementById('find-in-name').checked;
-                            const findInGroup = document.getElementById('find-in-group').checked;
-                            const findInUrl = document.getElementById('find-in-url').checked;
-                            if (findInName && channel.name && channel.name.includes(findText)) {
-                                const original = channel.name;
-                                channel.name = channel.name.replaceAll(findText, replaceText);
-                                if (original !== channel.name) modified = true;
-                            }
-                            if (findInGroup && channel.groups && channel.groups.length > 0) {
-                                const originalGroups = [...channel.groups];
-                                channel.groups = channel.groups.map(group => group.replaceAll(findText, replaceText));
-                                if(JSON.stringify(originalGroups) !== JSON.stringify(channel.groups)) modified = true;
-                            }
-                            if (findInUrl && channel.url && channel.url.includes(findText)) {
-                                const original = channel.url;
-                                channel.url = channel.url.replaceAll(findText, replaceText);
-                                if (original !== channel.url) modified = true;
-                            }
-                        }
-                    } else if (activeTabId === 'FormatClean') {
-                        const shouldTrim = document.getElementById('format-trim').checked;
-                        const shouldRemoveLogos = document.getElementById('format-remove-logos').checked;
-                        const shouldRemoveWords = document.getElementById('format-remove-words-toggle').checked;
-                        if (shouldTrim) {
-                            if (channel.name) {
-                                const originalName = channel.name;
-                                channel.name = channel.name.trim().replace(/\s+/g, ' ');
-                                if (originalName !== channel.name) modified = true;
-                            }
-                            if (channel.groups && channel.groups.length > 0) {
-                                const originalGroups = [...channel.groups];
-                                channel.groups = channel.groups.map(g => g.trim().replace(/\s+/g, ' ')).filter(g => g);
-                                if (JSON.stringify(originalGroups) !== JSON.stringify(channel.groups)) modified = true;
-                            }
-                        }
-                        if (shouldRemoveLogos && channel.logo) {
-                            channel.logo = '';
-                            modified = true;
-                        }
-                        if (shouldRemoveWords) {
-                            const wordsToRemoveText = document.getElementById('format-remove-words-input').value.trim();
-                            if (wordsToRemoveText && channel.name) {
-                                const originalName = channel.name;
-                                const wordsToRemove = wordsToRemoveText.split(',').map(w => w.trim()).filter(w => w);
-                                wordsToRemove.forEach(word => {
-                                    const regex = new RegExp(word.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&'), 'gi');
-                                    channel.name = channel.name.replace(regex, '');
-                                });
-                                channel.name = channel.name.trim().replace(/\s+/g, ' ');
-                                if (originalName !== channel.name) modified = true;
-                            }
+                            channel.name = smartTitleCase(channel.name, finalExceptions);
                         }
                     }
-                    if (modified) affectedChannelsCount++;
+
+                    // 3. Affix (on Name)
+                    if (prefix && channel.name) channel.name = `${prefix} ${channel.name}`;
+                    if (suffix && channel.name) channel.name = `${channel.name} ${suffix}`;
+                    
+                    // 4. Replace (on selected fields)
+                    if (findText) {
+                        if (findInName && channel.name) channel.name = channel.name.replaceAll(findText, replaceText);
+                        if (findInGroup && channel.groups) channel.groups = channel.groups.map(group => group.replaceAll(findText, replaceText));
+                        if (findInUrl && channel.url) channel.url = channel.url.replaceAll(findText, replaceText);
+                    }
+
+                    // 5. Clean: Remove words (on Name)
+                    if (wordsToRemove.length > 0 && channel.name) {
+                        wordsToRemove.forEach(word => {
+                            const regex = new RegExp(word.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&'), 'gi');
+                            channel.name = channel.name.replace(regex, '');
+                        });
+                    }
+
+                    // 6. Clean: Trim spaces (on Name and Groups)
+                    if (shouldTrim) {
+                        if (channel.name) channel.name = channel.name.trim().replace(/\s+/g, ' ');
+                        if (channel.groups) channel.groups = channel.groups.map(g => g.trim().replace(/\s+/g, ' ')).filter(g => g);
+                    }
+
+                    if (JSON.stringify(channel) !== originalChannelState) {
+                        affectedChannelsCount++;
+                    }
                 });
             }
 
@@ -3975,6 +3926,10 @@ body.dark-mode #language-switcher {
                 updateAndRefreshUI();
             }
         }
+        // =================================================================
+        // END: MODIFIED FUNCTION
+        // =================================================================
+
 
         function openLibraryTab(evt, tabName) {
             let i, tabcontent, tablinks;
