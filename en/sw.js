@@ -1,6 +1,6 @@
 // sw.js - M3U Editor English (Dynamic Version)
 
-const CACHE_NAME = 'm3u-editor-en-dynamic-v5';
+const CACHE_NAME = 'm3u-editor-en-dynamic-v6';
 
 // نخزن فقط ملفات الواجهة الأساسية لضمان نجاح التثبيت 100%
 const urlsToCache = [
