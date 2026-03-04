@@ -1,6 +1,6 @@
 // sw.js - M3U Editor (Dynamic Version)
 
-const CACHE_NAME = 'm3u-editor-dynamic-v3';
+const CACHE_NAME = 'm3u-editor-dynamic-v4';
 
 // نخزن الملفات المحلية الأساسية فقط لضمان التثبيت السريع والناجح
 const urlsToCache = [
